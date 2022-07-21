@@ -83,6 +83,8 @@ THIRD_PARTY_APPS = [
     'django_extensions',
     'drf_yasg',
     'storages',
+    'django_filters',
+    'corsheaders',
 ]
 MODULES_APPS = get_modules()
 
@@ -257,3 +259,43 @@ if GS_BUCKET_NAME:
     DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     GS_DEFAULT_ACL = "publicRead"
+
+
+REST_FRAMEWORK = {
+   'DEFAULT_AUTHENTICATION_CLASSES': (
+       #'users.authentication.ExpiringTokenAuthentication',
+       'rest_framework.authentication.SessionAuthentication',
+
+   ),
+   'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAdminUser',
+   ),
+   'DATETIME_FORMAT': "%Y-%m-%d %H:%M:%S",
+   'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+#    'DEFAULT_PAGINATION_CLASS': 'home.api.v1.paginations.CustomLimitOffsetPagination',
+   'PAGE_SIZE': 50,
+}
+
+CORS_ALLOW_ALL_ORIGINS = True 
+CORS_ORIGIN_ALLOW_ALL = True
+
+AWS_QUERYSTRING_AUTH = False
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    },
+    'facebook': {
+        'SCOPE': [
+            'email',
+            'public_profile'
+        ],
+        'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
+    }
+}
