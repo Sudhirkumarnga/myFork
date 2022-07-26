@@ -18,7 +18,6 @@ import google.auth
 from google.cloud import secretmanager
 from google.auth.exceptions import DefaultCredentialsError
 from google.api_core.exceptions import PermissionDenied
-from modules.manifest import get_modules
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -48,7 +47,7 @@ except (DefaultCredentialsError, PermissionDenied):
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env.str("SECRET_KEY")
 
-ALLOWED_HOSTS = env.list("HOST", default=["*"])
+ALLOWED_HOSTS = ["*","127.0.0.1", "localhost"]#env.list("HOST", default=["*","127.0.0.1", "localhost"])
 SITE_ID = 1
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
@@ -85,10 +84,11 @@ THIRD_PARTY_APPS = [
     'storages',
     'django_filters',
     'corsheaders',
+    'cities_light',
 ]
-MODULES_APPS = get_modules()
 
-INSTALLED_APPS += LOCAL_APPS + THIRD_PARTY_APPS + MODULES_APPS
+
+INSTALLED_APPS += LOCAL_APPS + THIRD_PARTY_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -262,18 +262,17 @@ if GS_BUCKET_NAME:
 
 
 REST_FRAMEWORK = {
-   'DEFAULT_AUTHENTICATION_CLASSES': (
+    'DEFAULT_AUTHENTICATION_CLASSES': (
        #'users.authentication.ExpiringTokenAuthentication',
-       'rest_framework.authentication.SessionAuthentication',
-
-   ),
-   'DEFAULT_PERMISSION_CLASSES': (
+       #'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAdminUser',
-   ),
-   'DATETIME_FORMAT': "%Y-%m-%d %H:%M:%S",
-   'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
-#    'DEFAULT_PAGINATION_CLASS': 'home.api.v1.paginations.CustomLimitOffsetPagination',
-   'PAGE_SIZE': 50,
+    ),
+    'DATETIME_FORMAT': "%Y-%m-%d %H:%M:%S",
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 50,
 }
 
 CORS_ALLOW_ALL_ORIGINS = True 
