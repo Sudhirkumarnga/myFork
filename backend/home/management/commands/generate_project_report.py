@@ -21,7 +21,7 @@ class Command(BaseCommand):
                         str(model).split(".")[-1].replace("'", "").strip(">")
                         for model in models
                     ],
-                    "urls": json.loads(loc.stdout.decode().strip()),
+                    "api": json.loads(loc.stdout.decode().strip()),
                 }
             )
         )

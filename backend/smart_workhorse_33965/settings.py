@@ -18,6 +18,7 @@ import google.auth
 from google.cloud import secretmanager
 from google.auth.exceptions import DefaultCredentialsError
 from google.api_core.exceptions import PermissionDenied
+from modules.manifest import get_modules
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -68,6 +69,8 @@ INSTALLED_APPS = [
 LOCAL_APPS = [
     'home',
     'users.apps.UsersConfig',
+    'business',
+    ''
 ]
 THIRD_PARTY_APPS = [
     'rest_framework',
@@ -240,6 +243,9 @@ if USE_S3:
     )
     MEDIA_URL = '/mediafiles/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
+else:
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Swagger settings for api docs
 SWAGGER_SETTINGS = {
@@ -263,8 +269,9 @@ if GS_BUCKET_NAME:
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-       #'users.authentication.ExpiringTokenAuthentication',
-       #'rest_framework.authentication.SessionAuthentication',
+        #'users.authentication.ExpiringTokenAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication'
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAdminUser',
@@ -298,3 +305,4 @@ SOCIALACCOUNT_PROVIDERS = {
         'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
     }
 }
+CITIES_LIGHT_APP_NAME = "business"

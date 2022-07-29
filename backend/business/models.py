@@ -7,22 +7,18 @@ from phonenumber_field.modelfields import PhoneNumberField
 from django_countries.fields import CountryField
 from home.models import TimeStampedModel
 from cities_light.abstract_models import (AbstractCity, AbstractRegion,
-    AbstractCountry)
+                                          AbstractCountry, AbstractSubRegion)
 from cities_light.receivers import connect_default_signals
 
-from backend.business.constants import (
-    Banks,
-    Status,
-    Categories,
-    Industeries,
-    BusinessTypes,
-    BusinessPayFrequency
-)
+from business.constants import BusinessPayFrequency
 
 User = get_user_model()
 
 
 class Country(AbstractCountry):
+    pass
+
+class SubRegion(AbstractSubRegion):
     pass
 
 class Region(AbstractRegion):
@@ -34,18 +30,25 @@ class City(AbstractCity):
 connect_default_signals(Country)
 connect_default_signals(Region)
 connect_default_signals(City)
+connect_default_signals(SubRegion)
 
 def user_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT / user_<id>/<filename>
-    return 'user_{0}/{1}'.format(instance.user.email, filename)
+    return 'user/{0}/{1}'.format(instance.user.id, filename)
+
+
+def business_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT / user_<id>/<filename>
+    return 'business/{0}/{1}'.format(instance.id, filename)
 
 class Business(TimeStampedModel):
     name = models.CharField(_("Business Name"), blank=True, null=True, max_length=255)
-    profile_image = models.FileField(_('Profile Picture'), upload_to=user_directory_path, null=True, blank=True)
+    profile_image = models.FileField(_('Profile Picture'), upload_to=business_directory_path, null=True, blank=True)
     pay_frequency = models.CharField(
         _('Business Pay Frequency'), max_length=255, blank=True, null=True,
         choices=[(type.value, type.value) for type in BusinessPayFrequency]
     )
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = "Business"
@@ -56,11 +59,11 @@ class Business(TimeStampedModel):
 
 
 class BusinessAddress(TimeStampedModel):
-    business = models.ForeignKey(Business, on_delete=models.CASCADE())
+    business = models.OneToOneField(Business, on_delete=models.CASCADE, related_name="business_address")
     address_line_one = models.TextField(null=True, blank=True)
     address_line_two = models.TextField(null=True, blank=True)
-    city = models.ForeignKey(City, on_delete=models.CASCADE())
-    country = models.ForeignKey(Country, on_delete=models.CASCADE())
+    city = models.ForeignKey(City, on_delete=models.CASCADE)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE)
     state = models.CharField(_("State"), blank=True, null=True, max_length=255)
     zipcode = models.CharField(_("ZipCode"), blank=True, null=True, max_length=255)
 
@@ -80,19 +83,32 @@ class BusinessAddress(TimeStampedModel):
 class Employee(TimeStampedModel):
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
-    user = models.ForeignKey(User, on_delete=models.CASCADE())
-    business = models.ForeignKey(Business, on_delete=models.CASCADE())
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    business = models.ForeignKey(Business, on_delete=models.CASCADE)
+    date_of_birth = models.DateField(null=True, blank=True)
     phone = PhoneNumberField(null=True, blank=True)
     is_owner = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+
 
     class Meta:
         verbose_name = "Employee"
         verbose_name_plural = "Employees"
 
-    # def save(self, *args, **kwargs):
-    #   print(self.profile_image.__dir__())
-    #   super(BusinesProfile, self).save(*args, **kwargs)
-
     def __str__(self):
         return f'{self.user.email}'
+
+
+class EmergencyContact(TimeStampedModel):
+    first_name = models.CharField(max_length=20)
+    last_name = models.CharField(max_length=20)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name="emergency_contact")
+    is_active = models.BooleanField(default=True)
+
+
+    class Meta:
+        verbose_name = "EmergencyContact"
+        verbose_name_plural = "EmergencyContact"
+
+    def __str__(self):
+        return f'{self.employee.first_name} - {self.employee.last_name}'
