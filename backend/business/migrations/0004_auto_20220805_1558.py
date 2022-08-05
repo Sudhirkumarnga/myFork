@@ -27,20 +27,5 @@ class Migration(migrations.Migration):
             model_name='business',
             name='user',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
-        ),
-        migrations.AlterField(
-            model_name='businessaddress',
-            name='city',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='business.city'),
-        ),
-        migrations.AlterField(
-            model_name='businessaddress',
-            name='country',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='business.country'),
-        ),
-        migrations.AlterField(
-            model_name='businessaddress',
-            name='state',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='business.region'),
-        ),
+        )
     ]
