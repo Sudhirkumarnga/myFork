@@ -22,5 +22,5 @@ class UserSubscriptionModelViewSet(viewsets.ModelViewSet):
     serializer_class = UserSubscriptionSerializer
     http_method_names = ['get',]
 
-    def get_queryset(self):
-        return OrganizationSubscription.objects.filter(user=self.request.user)
+    # def get_queryset(self):
+    #     return OrganizationSubscription.objects.filter(user=self.request.user)
