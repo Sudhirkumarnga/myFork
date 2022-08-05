@@ -69,8 +69,8 @@ INSTALLED_APPS = [
 LOCAL_APPS = [
     'home',
     'users.apps.UsersConfig',
+    "workside",
     'business',
-    ''
 ]
 THIRD_PARTY_APPS = [
     'rest_framework',
@@ -90,8 +90,9 @@ THIRD_PARTY_APPS = [
     'cities_light',
 ]
 
+MODULES_APPS = get_modules()
 
-INSTALLED_APPS += LOCAL_APPS + THIRD_PARTY_APPS
+INSTALLED_APPS += LOCAL_APPS + THIRD_PARTY_APPS + MODULES_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

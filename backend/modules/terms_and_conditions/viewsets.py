@@ -16,6 +16,7 @@ class TermAndConditionViewSet(viewsets.ModelViewSet):
         authentication.SessionAuthentication,
         authentication.TokenAuthentication,
     )
+    http_method_names = ['get']
 
     # This query will only return a single (if it exists) T&C string, and that will be 
     # the most recently updated one that *also* has an active flag. You must set at least
