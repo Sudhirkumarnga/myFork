@@ -20,11 +20,12 @@ class WorkSide(TimeStampedModel):
     number_of_workers_needed = models.CharField(_("WorkSide Num Of Workers Needed"), max_length=10, blank=True, null=True)
     supplies_needed = models.CharField(_("WorkSide Supplier Needed"), max_length=10, blank=True, null=True)
     contact_person_name = models.CharField(_("Contact Person Name"), max_length=10, blank=True, null=True)
-    phone_number = models.CharField(_("Contact Person Number"), max_length=10, blank=True, null=True)
+    contact_phone_number = models.CharField(_("Contact Person Number"), max_length=10, blank=True, null=True)
     logo = models.FileField(_('Worksidet Logo'), upload_to=business_directory_path, null=True, blank=True)
     business = models.ForeignKey(Business, on_delete=models.CASCADE, null=True, blank=True)
     instruction_video = models.FileField(_('Profile Picture'), upload_to=business_directory_path, null=True, blank=True)
     is_active = models.BooleanField(default=True)
+
 
     class Meta:
         verbose_name = "Workside"
@@ -54,3 +55,18 @@ class Task(TimeStampedModel):
 
     def __str__(self):
         return f'{self.name}'
+
+# class Event(TimeStampedModel):
+#     name = models.CharField(_("WorkSide Name"), blank=True, null=True, max_length=255)
+#     description = models.TextField(_("WorkSide Description"), blank=True, null=True)
+#     notes = models.TextField(_("WorkSide Description"), blank=True, null=True)
+#     start_time = models.DateTimeField()
+#     end_time = models.DateTimeField()
+#
+#
+#     class Meta:
+#         verbose_name = "Event"
+#         verbose_name_plural = "Events"
+#
+#     def __str__(self):
+#         return f'{self.name}'
