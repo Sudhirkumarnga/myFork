@@ -8,16 +8,27 @@ from allauth.account.adapter import get_adapter
 from allauth.account.utils import setup_user_email
 from rest_framework import serializers
 from rest_auth.serializers import PasswordResetSerializer
-
+from business.models import (
+    Business,
+    BusinessAddress
+)
+from home.services import(
+    create_business_and_business_address,
+    create_organization_employee,
+    create_employee
+) 
 
 User = get_user_model()
 
 
 class SignupSerializer(serializers.ModelSerializer):
-    organization_code = serializers.CharField()
+    is_read_terms = serializers.BooleanField(write_only=True)
+    employee_types = serializers.CharField(write_only=True, required=False)
+    business_code = serializers.CharField(write_only=True, required=False)
+
     class Meta:
         model = User
-        fields = ('id', 'name', 'email', 'password', 'phone', 'organization_code')
+        fields = ('id', 'name', 'email', 'password', 'phone', 'business_code', 'employee_types', 'is_read_terms')
         extra_kwargs = {
             'password': {
                 'write_only': True,
@@ -53,12 +64,25 @@ class SignupSerializer(serializers.ModelSerializer):
                 validated_data.get('name'),
                 validated_data.get('email'),
                 'user'
-            ])
+            ]),
+            is_read_terms = validated_data.get('is_read_terms'),
         )
         user.set_password(validated_data.get('password'))
         user.save()
         request = self._get_request()
         setup_user_email(request, user, [])
+        
+        if validated_data.__contains__("business_code"):
+            business = Business.objects.filter(
+                business_code=validated_data['business_code']
+            )
+            if business.exists():
+                create_organization_employee(user, business, validated_data)
+            else:
+                raise serializers.ValidationError(_("Invalid Origanization Code"))
+        else:
+            business = create_business_and_business_address(user,validated_data)
+            employee = create_employee(business,user,validated_data)
         return user
 
     def save(self, request=None):

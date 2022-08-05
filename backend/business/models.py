@@ -42,12 +42,15 @@ def business_directory_path(instance, filename):
     return 'business/{0}/{1}'.format(instance.id, filename)
 
 class Business(TimeStampedModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(_("Business Name"), blank=True, null=True, max_length=255)
     profile_image = models.FileField(_('Profile Picture'), upload_to=business_directory_path, null=True, blank=True)
     pay_frequency = models.CharField(
         _('Business Pay Frequency'), max_length=255, blank=True, null=True,
         choices=[(type.value, type.value) for type in BusinessPayFrequency]
     )
+    business_code = models.CharField(_('Business Code'), max_length=255, blank=True, null=True)
+    employe_types = models.CharField(_('How do you refer to your employees'), max_length=255, blank=True, null=True)
     is_active = models.BooleanField(default=True)
 
     class Meta:
@@ -62,9 +65,9 @@ class BusinessAddress(TimeStampedModel):
     business = models.OneToOneField(Business, on_delete=models.CASCADE, related_name="business_address")
     address_line_one = models.TextField(null=True, blank=True)
     address_line_two = models.TextField(null=True, blank=True)
-    city = models.ForeignKey(City, on_delete=models.CASCADE)
-    country = models.ForeignKey(Country, on_delete=models.CASCADE)
-    state = models.CharField(_("State"), blank=True, null=True, max_length=255)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, null=True, blank=True)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, null=True, blank=True)
+    state = models.ForeignKey(Region, on_delete=models.CASCADE, null=True, blank=True)
     zipcode = models.CharField(_("ZipCode"), blank=True, null=True, max_length=255)
 
     class Meta:
