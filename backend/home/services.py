@@ -25,10 +25,12 @@ def create_employee(business,user,data):
         is_owner=True
     )
 
-def create_organization_employee(user,business,data):
+def create_organization_employee(user,data):
     Employee.objects.create(
         user=user,
-        business=business.first(),
+        business=Business.objects.get(
+            business_code=data['business_code']
+        ),
         phone= data['phone'],
         first_name=data['name'],
         is_owner=False

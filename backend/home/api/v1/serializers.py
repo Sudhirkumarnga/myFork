@@ -56,6 +56,16 @@ class SignupSerializer(serializers.ModelSerializer):
                     _("A user is already registered with this e-mail address."))
         return email
 
+    def validate(self, data):
+        if data.__contains__('business_code'):
+            business = Business.objects.filter(
+                business_code=data['business_code']
+            )
+            if business.exists():
+                return data
+            else:
+                raise serializers.ValidationError(_("Invalid Origanization Code"))
+
     def create(self, validated_data):
         user = User(
             email=validated_data.get('email'),
@@ -73,13 +83,7 @@ class SignupSerializer(serializers.ModelSerializer):
         setup_user_email(request, user, [])
         
         if validated_data.__contains__("business_code"):
-            business = Business.objects.filter(
-                business_code=validated_data['business_code']
-            )
-            if business.exists():
-                create_organization_employee(user, business, validated_data)
-            else:
-                raise serializers.ValidationError(_("Invalid Origanization Code"))
+            create_organization_employee(user, validated_data)
         else:
             business = create_business_and_business_address(user,validated_data)
             employee = create_employee(business,user,validated_data)
