@@ -13,7 +13,6 @@ import {
   BusinessProfileScene,
   AllSubscriptionScene,
   AddEmployeeScene,
-  AllWorksiteScene,
   WorksiteDetailScene,
   AddWorksiteScene,
   CreateTaskScene,
@@ -21,7 +20,12 @@ import {
   FeedbackScene,
   CardDetailScene,
   PaymentScene,
-  NewMessageScene
+  NewMessageScene,
+  ResetPasswordScene,
+  SignupComplete,
+  EmployeesView,
+  MessageChat,
+  GroupMessageScene
 } from "../UI"
 import { drawerNavigator } from "./DrawerNavigation"
 import { TabBar } from "./TabBar"
@@ -31,16 +35,18 @@ export const AuthNavigator = props => {
   return (
     <Stack.Navigator
       screenOptions={{ gestureEnabled: false }}
-      initialRouteName={"addEmployee"}
+      initialRouteName={"splash"}
       headerMode="none"
     >
       <Stack.Screen name={"splash"} component={SplashScene} />
       <Stack.Screen name={"chooseEnv"} component={ChooseEnvScene} />
 
       <Stack.Screen name={"registration"} component={RegistrationScene} />
+      <Stack.Screen name={"signupComplete"} component={SignupComplete} />
       <Stack.Screen name={"login"} component={LoginScene} />
       <Stack.Screen name={"tokenScene"} component={TokenScene} />
       <Stack.Screen name={"forgotPwd"} component={ForgotPasswordScene} />
+      <Stack.Screen name={"resetPwd"} component={ResetPasswordScene} />
       <Stack.Screen name={"privacyPolicy"} component={PrivacyPolicyScene} />
       <Stack.Screen name={"termsPrivacy"} component={TermsPrivacyScene} />
       <Stack.Screen name={"profileCreation"} component={ProfileScene} />
@@ -52,11 +58,13 @@ export const AuthNavigator = props => {
 
       <Stack.Screen name={"home"} component={drawerNavigator} />
       <Stack.Screen name={"allSubscription"} component={AllSubscriptionScene} />
+      <Stack.Screen name={"employeesView"} component={EmployeesView} />
       <Stack.Screen name={"addEmployee"} component={AddEmployeeScene} />
-      <Stack.Screen name={"allWorksite"} component={AllWorksiteScene} />
       <Stack.Screen name={"worksiteDetail"} component={WorksiteDetailScene} />
       <Stack.Screen name={"addWorksite"} component={AddWorksiteScene} />
       <Stack.Screen name={"createTask"} component={CreateTaskScene} />
+      <Stack.Screen name={"MessageChat"} component={MessageChat} />
+      <Stack.Screen name={"GroupMessageScene"} component={GroupMessageScene} />
 
       {/* Settings Screens */}
       <Stack.Screen name={"changePassword"} component={ChangePassword} />

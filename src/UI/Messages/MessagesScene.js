@@ -1,88 +1,92 @@
-import React from "react"
-import { View, TouchableOpacity, StyleSheet, Text } from "react-native"
+import React from 'react'
+import { View, TouchableOpacity, StyleSheet, Text } from 'react-native'
 import {
   BaseScene,
   Header,
   PrimaryTextInput,
   Button,
   DateSelectionView
-} from "../Common"
-import { Fonts, Colors } from "../../res"
-import MessageCell from "./MessageCell"
+} from '../Common'
+import { Fonts, Colors } from '../../res'
+import MessageCell from './MessageCell'
 export default class MessagesScene extends BaseScene {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
-      env: ""
+      env: ''
     }
   }
 
-  renderNewMessage() {
+  renderNewMessage () {
     return (
       <TouchableOpacity
         style={{
-          justifyContent: "flex-end",
-          alignItems: "flex-end",
+          justifyContent: 'flex-end',
+          alignItems: 'flex-end',
           paddingHorizontal: 20,
           padding: 10
         }}
-        onPress={() => this.props.navigation.navigate("newMessage")}
+        onPress={() => this.props.navigation.navigate('newMessage')}
       >
-        <Text style={styles.cancelText}>{this.ls("newMessage")}</Text>
+        <Text style={styles.cancelText}>{this.ls('newMessage')}</Text>
       </TouchableOpacity>
     )
   }
 
-  renderDatesInput() {
+  renderDatesInput () {
     return <DateSelectionView />
   }
 
-  renderSearchInput() {
+  renderSearchInput () {
     return (
       <PrimaryTextInput
-        ref={o => (this["search"] = o)}
-        label={this.ls("searchConversation")}
+        ref={o => (this['search'] = o)}
+        label={this.ls('searchConversation')}
         onChangeText={() => {}}
-        rightIcon={{ ...this.images("search") }}
+        rightIcon={{ ...this.images('search') }}
       />
     )
   }
 
-  renderButton() {
+  renderButton () {
     return (
       <Button
-        title={this.ls("sendReq")}
+        title={this.ls('sendReq')}
         style={styles.footerButton}
         onPress={this.props.onPress}
       />
     )
   }
 
-  renderContent() {
+  renderContent () {
     return (
       <View style={styles.childContainer}>
         {this.renderSearchInput()}
         {this.renderNewMessage()}
-        <MessageCell />
-        <MessageCell />
+        <MessageCell
+          onPress={() => this.props.navigation.navigate('MessageChat')}
+        />
+        <MessageCell
+          onPress={() => this.props.navigation.navigate('MessageChat')}
+        />
       </View>
     )
   }
 
-  render() {
+  render () {
     return (
       <View style={styles.container}>
         <Header
-          leftIcon={{ ...this.images("bar") }}
+          leftIcon={{ ...this.images('bar') }}
           leftButton
-          title={this.ls("messagesTitle")}
+          title={this.ls('messagesTitle')}
           onLeftPress={() =>
             this.props.navigation.toggleDrawer({
-              side: "left",
+              side: 'left',
               animated: true
             })
           }
-          rightIcon={{ ...this.images("bell") }}
+          rightIcon={{ ...this.images('bell') }}
         />
         {this.renderContent()}
       </View>
@@ -105,19 +109,19 @@ const styles = StyleSheet.create({
     paddingVertical: 15
   },
   footerButton: {
-    width: "90%",
-    marginTop: "15%"
+    width: '90%',
+    marginTop: '15%'
   },
   description: {
     ...Fonts.poppinsRegular(14),
     color: Colors.TEXT_COLOR,
-    textAlign: "left",
+    textAlign: 'left',
     marginTop: 20,
     lineHeight: 24
   },
   cancelText: {
     ...Fonts.poppinsRegular(14),
     color: Colors.BUTTON_BG,
-    fontWeight: "500"
+    fontWeight: '500'
   }
 })

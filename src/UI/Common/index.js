@@ -7,6 +7,7 @@ import Header from "./Header"
 import AvatarView from "./AvatarView"
 import WorksiteForms from "./WorksiteForms"
 import DateSelectionView from "./DateSelectionView"
+import Fab from "./Fab"
 
 module.exports = {
   BaseComponent,
@@ -17,5 +18,6 @@ module.exports = {
   Header,
   AvatarView,
   WorksiteForms,
-  DateSelectionView
+  DateSelectionView,
+  Fab
 }

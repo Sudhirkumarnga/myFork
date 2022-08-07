@@ -1,4 +1,4 @@
-import React, { Component } from "react"
+import React, { Component } from 'react'
 import {
   View,
   Text,
@@ -7,47 +7,47 @@ import {
   Image,
   Dimensions,
   TouchableOpacity
-} from "react-native"
+} from 'react-native'
 import {
   DrawerContentScrollView,
   DrawerItem,
   DrawerItemList
-} from "@react-navigation/drawer"
-import { BaseComponent } from "../UI/Common"
-import { Colors, Fonts } from "../res"
+} from '@react-navigation/drawer'
+import { BaseComponent } from '../UI/Common'
+import { Colors, Fonts } from '../res'
 
 class CustomDrawer extends BaseComponent {
   state = {
-    name: "",
-    email: ""
+    name: '',
+    email: ''
   }
 
-  renderInfoSection() {
+  renderInfoSection () {
     return (
       <View style={styles.userInfoSection}>
         <Image
-          {...this.images("appLogo")}
+          {...this.images('appLogo')}
           style={{
             tintColor: Colors.BUTTON_BG,
-            width: "60%",
-            resizeMode: "contain"
+            width: '40%',
+            resizeMode: 'contain'
           }}
         />
         <TouchableOpacity
           onPress={() =>
             this.props.navigation.toggleDrawer({
-              side: "left",
+              side: 'left',
               animated: true
             })
           }
         >
-          <Image {...this.images("cross")} />
+          <Image {...this.images('cross')} />
         </TouchableOpacity>
       </View>
     )
   }
 
-  renderDrawerCell(label, icon, name) {
+  renderDrawerCell (label, icon, name) {
     const imageName = `drawer_${icon}`
     return (
       <DrawerItem
@@ -56,7 +56,7 @@ class CustomDrawer extends BaseComponent {
         style={styles.drawerRow}
         onPress={() =>
           !!name &&
-          this.props.navigation.navigate("ConsultationScene", {
+          this.props.navigation.navigate('ConsultationScene', {
             isDrawer: true
           })
         }
@@ -65,13 +65,40 @@ class CustomDrawer extends BaseComponent {
     )
   }
 
-  render() {
+  render () {
+    const list = [
+      { title: 'My Profile', icon: `profile`, route: 'home' },
+      { title: 'Employee list', icon: `list`, route: 'EmployeeListScene' },
+      { title: 'Worksites', icon: `worksites`, route: 'AllWorksiteScene' },
+      { title: 'Report', icon: `report`, route: 'home' },
+      { title: 'Timer off Requests', icon: `timer`, route: 'home' },
+      { title: 'Settings', icon: `settings`, route: 'Settings' }
+    ]
     return (
       <View style={{ flex: 1 }}>
         {this.renderInfoSection()}
-        <DrawerContentScrollView {...this.props}>
-          <DrawerItemList {...this.props} />
-        </DrawerContentScrollView>
+        {list.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            onPress={() =>
+              this.props.navigation.navigate(item.route, {
+                isDrawer: true
+              })
+            }
+            style={styles.drawerRow}
+          >
+            <Image
+              {...this.images(item.icon)}
+              style={{
+                width: 20,
+                height: 20,
+                resizeMode: 'contain',
+                marginRight: 10
+              }}
+            />
+            <Text style={styles.drawerText}>{item.title}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
     )
   }
@@ -83,23 +110,27 @@ const styles = StyleSheet.create({
   },
   userInfoSection: {
     paddingTop: 30,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    height: "20%"
+    flexDirection: 'row',
+    width: '85%',
+    marginHorizontal: '5%',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: '20%'
   },
   imageInfo: {
-    justifyContent: "center",
-    alignItems: "center"
+    justifyContent: 'center',
+    alignItems: 'center'
   },
 
   drawerRow: {
     height: 54,
-    borderBottomWidth: 1,
-    borderBottomColor: "lightgrey"
+    width: '90%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: '5%'
   },
   drawerText: {
-    ...Fonts.poppinsMedium(18),
+    ...Fonts.poppinsRegular(16),
     marginRight: -10
   }
 })

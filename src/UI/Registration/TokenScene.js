@@ -1,4 +1,4 @@
-import React, { Component } from "react"
+import React, { Component } from 'react'
 import {
   View,
   Text,
@@ -7,27 +7,27 @@ import {
   ImageBackground,
   Image,
   TextInput
-} from "react-native"
-import { BaseScene, Button, PrimaryTextInput, Forms } from "../Common"
-import { Fonts, Colors } from "../../res"
+} from 'react-native'
+import { BaseScene, Button, PrimaryTextInput, Forms } from '../Common'
+import { Fonts, Colors } from '../../res'
 
-const accountSid = "AGi8DgnxfLmfRpV52swENuuo1cVkEP4r5q"
-const authToken = "830e190d3f256ce62d0d1469c566d146"
+const accountSid = 'AGi8DgnxfLmfRpV52swENuuo1cVkEP4r5q'
+const authToken = '830e190d3f256ce62d0d1469c566d146'
 
 export default class TokenScene extends BaseScene {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       index: 0,
       seconds: 60,
-      text: "",
+      text: '',
       code: 0,
       disabled: true,
       confirmResult: null
     }
   }
 
-  onEnterDigit(text, index) {
+  onEnterDigit (text, index) {
     const regex = /^[0-9]*$/
     if (regex.test(text)) {
       if (text && index != 3) {
@@ -46,9 +46,9 @@ export default class TokenScene extends BaseScene {
     }
   }
 
-  renderTextInput() {
+  renderTextInput () {
     return (
-      <View style={{ flexDirection: "row", marginTop: 20 }}>
+      <View style={{ flexDirection: 'row', marginTop: 20 }}>
         {[0, 1, 2, 3].map((item, index) => {
           return (
             <TextInput
@@ -59,10 +59,10 @@ export default class TokenScene extends BaseScene {
               maxLength={1}
               onChangeText={text => this.onEnterDigit(text, index)}
               onKeyPress={({ nativeEvent }) => {
-                nativeEvent.key === "Backspace" && this.onBackPressed(index)
+                nativeEvent.key === 'Backspace' && this.onBackPressed(index)
               }}
               autoFocus={index == 0}
-              keyboardType="numeric"
+              keyboardType='numeric'
             />
           )
         })}
@@ -70,40 +70,46 @@ export default class TokenScene extends BaseScene {
     )
   }
 
-  renderFooterButton() {
-    return <Button title={this.ls("submit")} style={styles.footerButton} />
+  renderFooterButton () {
+    return (
+      <Button
+        onPress={() => this.props.navigation.navigate('resetPwd')}
+        title={this.ls('submit')}
+        style={styles.footerButton}
+      />
+    )
   }
 
-  renderResendButton() {
+  renderResendButton () {
     return (
       <TouchableOpacity
         style={{
-          justifyContent: "center",
-          alignItems: "center",
+          justifyContent: 'center',
+          alignItems: 'center',
           paddingVertical: 20
         }}
       >
-        <Text style={styles.cancelText}>{this.ls("resendToken")}</Text>
+        <Text style={styles.cancelText}>{this.ls('resendToken')}</Text>
       </TouchableOpacity>
     )
   }
 
-  render() {
+  render () {
     return (
       <ImageBackground
-        source={this.images("splashBg").source}
+        source={this.images('splashBg').source}
         style={{ flex: 1 }}
       >
         <View style={styles.container}>
           <Image
-            source={this.images("appLogo").source}
-            style={{ height: 30, alignSelf: "center" }}
-            resizeMode="contain"
+            source={this.images('appLogo').source}
+            style={{ height: 30, alignSelf: 'center' }}
+            resizeMode='contain'
           />
           <View style={styles.childContainer}>
-            <Text style={styles.title}>{this.ls("tokenInput")}</Text>
-            <Text style={styles.description}>{this.ls("enterCode")}</Text>
-            <View style={{ height: "6%" }} />
+            <Text style={styles.title}>{this.ls('tokenInput')}</Text>
+            <Text style={styles.description}>{this.ls('enterCode')}</Text>
+            <View style={{ height: '6%' }} />
             {this.renderTextInput()}
             {this.renderFooterButton()}
             {this.renderResendButton()}
@@ -121,16 +127,16 @@ const styles = StyleSheet.create({
   title: {
     ...Fonts.poppinsRegular(28),
     color: Colors.BLACK,
-    textAlign: "center",
-    marginTop: "20%"
+    textAlign: 'center',
+    marginTop: '20%'
   },
   childContainer: {
     flex: 1,
-    alignItems: "center",
+    alignItems: 'center',
     backgroundColor: Colors.WHITE,
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
-    marginTop: "20%"
+    marginTop: '20%'
   },
   description: {
     ...Fonts.poppinsRegular(14),
@@ -138,7 +144,7 @@ const styles = StyleSheet.create({
     marginVertical: 10
   },
   footerButton: {
-    marginTop: "15%"
+    marginTop: '15%'
   },
   forgotPwdText: {
     ...Fonts.poppinsRegular(14),

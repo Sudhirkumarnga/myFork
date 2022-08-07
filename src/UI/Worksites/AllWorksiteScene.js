@@ -1,48 +1,65 @@
-import React from "react"
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
-import { BaseScene, Header, Button } from "../Common"
-import { Colors, Fonts } from "../../res"
+import React from 'react'
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity
+} from 'react-native'
+import { BaseScene, Header, Button, Fab } from '../Common'
+import { Colors, Fonts } from '../../res'
 
 export default class AllWorksiteScene extends BaseScene {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
-      isVisible: "false"
+      isVisible: 'false'
     }
   }
 
-  renderButton() {
-    return <Button style={styles.footerButton} title={this.ls("subscribe")} />
+  renderButton () {
+    return <Button style={styles.footerButton} title={this.ls('subscribe')} />
   }
 
-  renderContent() {
+  renderContent () {
     return (
-      <View style={styles.childContainer}>
-        <Text style={styles.title}>{this.ls("listWorksites")}</Text>
-        {[1, 2, 3].map(item => (
+      <ScrollView style={styles.childContainer}>
+        <Text style={styles.title}>{this.ls('listWorksites')}</Text>
+        {[1, 2, 3, 1, 2, 3, 1, 2, 3].map(item => (
           <View style={styles.cellContainer}>
             <View>
               <Text style={styles.cellTitle}>Worksite no 1</Text>
               <Text style={styles.description}>Worksite location:</Text>
             </View>
-            <TouchableOpacity style={{ justifyContent: "flex-end" }}>
+            <TouchableOpacity
+              onPress={() => this.props.navigation.navigate('worksiteDetail')}
+              style={{ justifyContent: 'flex-end' }}
+            >
               <Text
-                style={[styles.cellTitle, { color: Colors.LIGHT_TEXT_COLOR }]}
+                style={[
+                  styles.cellTitle,
+                  { color: Colors.BLUR_TEXT, ...Fonts.poppinsRegular(13) }
+                ]}
               >
                 View Details
               </Text>
             </TouchableOpacity>
           </View>
         ))}
-      </View>
+      </ScrollView>
     )
   }
 
-  render() {
+  render () {
     return (
       <View style={styles.container}>
-        <Header title={this.ls("worksites")} leftButton />
+        <Header
+          title={this.ls('worksites')}
+          onLeftPress={() => this.props.navigation.goBack()}
+          leftButton
+        />
         {this.renderContent()}
+        <Fab onPress={() => this.props.navigation.navigate('addWorksite')} />
       </View>
     )
   }
@@ -50,27 +67,27 @@ export default class AllWorksiteScene extends BaseScene {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    width: '100%',
+    height: '100%',
     backgroundColor: Colors.WHITE
   },
   title: {
     ...Fonts.poppinsMedium(22),
     color: Colors.TEXT_COLOR,
-    marginVertical: 20
+    marginVertical: 20,
+    marginLeft: '5%'
   },
   childContainer: {
-    flex: 1,
-    padding: 20
+    width: '100%'
   },
   footerButton: {
-    marginTop: "10%",
-    width: "100%"
+    marginTop: '10%',
+    width: '100%'
   },
   description: {
-    ...Fonts.poppinsRegular(14),
-    color: "#818080",
-    textAlign: "left",
-    marginTop: 10,
+    ...Fonts.poppinsRegular(13),
+    color: Colors.BLUR_TEXT,
+    textAlign: 'left',
     lineHeight: 24
   },
   cellContainer: {
@@ -78,8 +95,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.8,
     margin: 10,
     borderColor: Colors.TEXT_INPUT_BORDER,
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     padding: 10
   },
   cellTitle: {

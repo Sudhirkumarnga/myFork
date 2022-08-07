@@ -1,15 +1,28 @@
-import React from "react"
-import { View, Text, StyleSheet, Image, FlatList } from "react-native"
-import { BaseScene, Button } from "../Common"
-import { Fonts, Colors } from "../../res"
+import React from 'react'
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  FlatList,
+  TouchableOpacity
+} from 'react-native'
+import { BaseScene, Button } from '../Common'
+import { Fonts, Colors } from '../../res'
 
 export default class ActiveEmpView extends BaseScene {
-  constructor(props) {
+  constructor (props) {
     super(props)
-    this.state = {}
+    this.state = {
+      isActive: false
+    }
   }
 
-  renderEmployeeCell() {
+  handleChange = (key, value) => {
+    this.setState(pre => ({ ...pre, [key]: value }))
+  }
+
+  renderEmployeeCell () {
     return (
       <View style={{ padding: 20 }}>
         <Image />
@@ -21,27 +34,52 @@ export default class ActiveEmpView extends BaseScene {
     )
   }
 
-  renderUpperView() {
+  renderUpperView () {
+    const { isActive } = this.state
     return (
-      <View style={styles.upperView}>
-        <Text style={styles.title}>{this.ls("activeEmployees")}</Text>
+      <TouchableOpacity
+        onPress={() => this.handleChange('isActive', !isActive)}
+        style={styles.upperView}
+      >
+        <Text style={styles.title}>{this.ls('activeEmployees')}</Text>
         <Image
-          {...this.images("arrowDown")}
-          style={[this.images("arrowDown").style, { tintColor: "black" }]}
+          {...this.images('arrowDown')}
+          style={[
+            this.images('arrowDown').style,
+            {
+              tintColor: 'black',
+              transform: [{ rotate: isActive ? '180deg' : '0deg' }]
+            }
+          ]}
         />
+      </TouchableOpacity>
+    )
+  }
+
+  renderBottomView () {
+    return (
+      <View style={styles.bottomView}>
+        <Text style={styles.title}>{this.ls('payPeriod')} 23h</Text>
       </View>
     )
   }
 
-  render() {
+  render () {
+    const { isActive } = this.state
     return (
-      <View style={styles.container}>
-        {this.renderUpperView()}
-        <FlatList
-          data={[{ id: 1 }, { id: 2 }, { id: 2 }, { id: 2 }]}
-          renderItem={() => this.renderEmployeeCell()}
-        />
-      </View>
+      <>
+        <View style={styles.container}>
+          {this.renderUpperView()}
+          {isActive && (
+            <FlatList
+              scrollEnabled={false}
+              data={[{ id: 1 }, { id: 2 }, { id: 2 }, { id: 2 }]}
+              renderItem={() => this.renderEmployeeCell()}
+            />
+          )}
+        </View>
+        {this.renderBottomView()}
+      </>
     )
   }
 }
@@ -51,27 +89,36 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginVertical: 20,
     borderWidth: 0.5,
-    borderColor: "#bfefec"
+    borderColor: '#bfefec'
   },
   upperView: {
-    backgroundColor: "#dedede",
+    backgroundColor: '#dedede',
     borderRadius: 10,
     height: 80,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center"
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center'
+  },
+  bottomView: {
+    backgroundColor: '#dedede',
+    borderRadius: 10,
+    marginBottom: 40,
+    height: 80,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center'
   },
   title: {
     ...Fonts.poppinsMedium(22),
     color: Colors.TEXT_COLOR
   },
   footerButton: {
-    marginTop: "15%"
+    marginTop: '15%'
   },
   description: {
     ...Fonts.poppinsRegular(14),
     color: Colors.TEXT_COLOR,
-    textAlign: "left",
+    textAlign: 'left',
     marginTop: 10
   },
   image: {

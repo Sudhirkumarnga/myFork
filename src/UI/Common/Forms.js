@@ -61,7 +61,7 @@ const fields = {
     placeholder: "",
     regex: /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/,
     phoneNumberValidation: true,
-    textInputProps: { keyboardType: "phone-pad", maxLength: 10 }
+    textInputProps: { keyboardType: "phone-pad" }
   },
   password: {
     key: "password",

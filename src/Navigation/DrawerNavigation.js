@@ -16,7 +16,8 @@ import {
   WorksiteDetailScene,
   AddWorksiteScene,
   CreateTaskScene,
-  HomeScene
+  HomeScene,
+  EmployeeListScene
 } from "../UI"
 import { TabBar } from "./TabBar"
 
@@ -45,11 +46,11 @@ export const drawerNavigator = props => {
         itemStyle: styles.drawerRow,
         activeTintColor: Colors.DRAWER_TINT_COLOR,
         activeBackgroundColor: "transparent",
-        labelStyle: styles.drawerText
+        labelStyle: styles.drawerText,
       }}
     >
       <Drawer.Screen
-        name={"Home"}
+        name={"My Profile"}
         component={TabBar}
         options={{
           drawerIcon: ({ focussed, color }) =>
@@ -58,7 +59,7 @@ export const drawerNavigator = props => {
       />
       <Drawer.Screen
         name={"Employee list"}
-        component={HomeScene}
+        component={EmployeeListScene}
         options={{
           drawerIcon: ({ focussed, color }) =>
             defaultOptions(focussed, color, "list")
@@ -73,11 +74,19 @@ export const drawerNavigator = props => {
         }}
       />
       <Drawer.Screen
-        name={"Scheduler"}
+        name={"Report"}
         component={HomeScene}
         options={{
           drawerIcon: ({ focussed, color }) =>
-            defaultOptions(focussed, color, "schedule")
+            defaultOptions(focussed, color, "report")
+        }}
+      />
+      <Drawer.Screen
+        name={"Timer off Requests"}
+        component={HomeScene}
+        options={{
+          drawerIcon: ({ focussed, color }) =>
+            defaultOptions(focussed, color, "timer")
         }}
       />
       <Drawer.Screen
@@ -97,7 +106,7 @@ const styles = StyleSheet.create({
     height: 50
   },
   drawerText: {
-    ...Fonts.poppinsRegular(18),
+    ...Fonts.poppinsRegular(16),
     color: Colors.TEXT_COLOR,
     fontWeight: "normal"
   }

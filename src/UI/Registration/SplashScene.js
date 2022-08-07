@@ -1,26 +1,22 @@
-import React, { Component } from "react"
-import { View, Text, StyleSheet, ImageBackground, Image } from "react-native"
-import { BaseScene, Button } from "../Common"
-import { Fonts, Colors } from "../../res"
+import React from 'react'
+import { View, StyleSheet } from 'react-native'
+import { BaseScene } from '../Common'
+import { Colors } from '../../res'
+import { SvgXml } from 'react-native-svg'
 
 export default class SplashScene extends BaseScene {
-  render() {
+  componentDidMount () {
+    setTimeout(() => {
+      this.props.navigation.navigate('chooseEnv')
+    }, 3000)
+  }
+  render () {
     return (
-      <ImageBackground
-        source={this.images("splashBg").source}
-        style={{ flex: 1 }}
-      >
+      <View style={{ flex: 1, backgroundColor: Colors.BACKGROUND_BG }}>
         <View style={styles.container}>
-          <Image source={this.images("appLogo").source} />
-          <Text style={styles.description}>{this.ls("splashDescription")}</Text>
-          <Button
-            title={"Continue"}
-            isWhiteBg
-            style={{ marginTop: "30%" }}
-            onPress={() => this.props.navigation.navigate("chooseEnv")}
-          />
+          <SvgXml xml={this.images('splash').source} />
         </View>
-      </ImageBackground>
+      </View>
     )
   }
 }
@@ -28,13 +24,7 @@ export default class SplashScene extends BaseScene {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center"
-  },
-  description: {
-    ...Fonts.poppinsRegular(20),
-    color: "white",
-    textAlign: "center",
-    marginVertical: 30
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 })

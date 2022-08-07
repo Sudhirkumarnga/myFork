@@ -110,7 +110,7 @@ export default class RegistrationScene extends BaseScene {
         <View style={styles.childContainerStyle}>
           <LoginScene
             onPress={() =>
-              this.props.navigation.navigate("businessProfileCreation")
+              this.props.navigation.navigate("home")
             }
             onForgotPwd={() => this.props.navigation.navigate("forgotPwd")}
           />
@@ -121,6 +121,7 @@ export default class RegistrationScene extends BaseScene {
               this.props.navigation.navigate("Home")
               this.setState({ selectedIndex: 2 })
             }}
+            navigation={this.props.navigation}
             onPrivacyPress={() =>
               this.props.navigation.navigate("privacyPolicy")
             }

@@ -1,40 +1,40 @@
-import React from "react"
-import { View, Text, StyleSheet, Image } from "react-native"
-import { BaseScene, Button } from "../Common"
-import { Fonts, Colors } from "../../res"
+import React from 'react'
+import { View, Text, StyleSheet, Image } from 'react-native'
+import { BaseScene, Button } from '../Common'
+import { Fonts, Colors } from '../../res'
 
 export default class ShiftView extends BaseScene {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {}
   }
 
-  renderClockButton() {
-    return <Button title={this.ls("clockIn")} style={{ marginTop: 30 }} />
+  renderClockButton () {
+    return <Button title={this.ls('clockIn')} style={{ marginTop: 30 }} />
   }
 
-  render() {
+  render () {
     return (
       <View style={styles.container}>
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between"
+            flexDirection: 'row',
+            justifyContent: 'space-between'
           }}
         >
           <View>
-            <Text style={styles.title}>{this.ls("upcomingShift")}</Text>
-            <Text style={styles.description}>{this.ls("worksiteNumber")}</Text>
+            <Text style={styles.title}>{this.ls('upcomingShift')}</Text>
+            <Text style={styles.description}>{this.ls('worksiteNumber')}</Text>
             <Text
               style={[
                 styles.description,
                 { fontSize: 14, color: Colors.HOME_DES }
               ]}
             >
-              {"Location:"}
+              {'Location:'}
             </Text>
           </View>
-          <Image {...this.images("calendar")} style={styles.image} />
+          <Image {...this.images('calendar')} style={styles.image} />
         </View>
         {this.renderClockButton()}
       </View>
@@ -44,7 +44,7 @@ export default class ShiftView extends BaseScene {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#dedede",
+    backgroundColor: '#dedede',
     borderRadius: 10,
     padding: 15
   },
@@ -53,16 +53,17 @@ const styles = StyleSheet.create({
     color: Colors.TEXT_COLOR
   },
   footerButton: {
-    marginTop: "15%"
+    marginTop: '15%'
   },
   description: {
     ...Fonts.poppinsRegular(14),
     color: Colors.TEXT_COLOR,
-    textAlign: "left",
+    textAlign: 'left',
     marginTop: 10
   },
   image: {
     tintColor: Colors.BUTTON_BG,
+    resizeMode: 'contain',
     width: 30,
     height: 30
   }

@@ -1,6 +1,7 @@
 const black = "black"
 const white = "white"
 const greenColor = "#06726A"
+const greenLightColor = "rgba(6, 114, 106, 0.1)"
 const greyColor = "#8B8B8B"
 const lightGrey = "#F7F7F7"
 const darkColor = "#202020"
@@ -9,6 +10,7 @@ const common = {
   BACKGROUND_BG: greenColor,
   DEFAULT_TEXT_COLOR: white,
   BUTTON_BG: greenColor,
+  MESSAGEB_BOX_LIGHT: greenLightColor,
   WHITE: white,
   BLACK: black,
   BLUR_TEXT: greyColor,

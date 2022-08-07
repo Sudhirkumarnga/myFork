@@ -1,4 +1,4 @@
-import React from "react"
+import React from 'react'
 import {
   View,
   Text,
@@ -6,7 +6,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform
-} from "react-native"
+} from 'react-native'
 import {
   BaseScene,
   Header,
@@ -14,11 +14,11 @@ import {
   Forms,
   AvatarView,
   Button
-} from "../Common"
-import { Fonts, Colors } from "../../res"
+} from '../Common'
+import { Fonts, Colors } from '../../res'
 
 export default class BusinessProfileScene extends BaseScene {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       isFormValid: false
@@ -27,11 +27,11 @@ export default class BusinessProfileScene extends BaseScene {
     // this.isFormValid = this.isFormValid.bind(this)
   }
 
-  setForms(field) {
-    this.forms = Forms.fields("businessInfo")
+  setForms (field) {
+    this.forms = Forms.fields('businessInfo')
   }
 
-  renderTextInput() {
+  renderTextInput () {
     return this.forms.map(fields => {
       return (
         <PrimaryTextInput
@@ -44,8 +44,8 @@ export default class BusinessProfileScene extends BaseScene {
     })
   }
 
-  renderEmergencyTextInput() {
-    return Forms.fields("businessAddress").map(fields => {
+  renderEmergencyTextInput () {
+    return Forms.fields('businessAddress').map(fields => {
       return (
         <PrimaryTextInput
           {...fields}
@@ -57,24 +57,28 @@ export default class BusinessProfileScene extends BaseScene {
     })
   }
 
-  renderFooterButton() {
+  renderFooterButton () {
     return (
       <Button
-        title={this.ls("submit")}
+        title={this.ls('submit')}
         style={styles.footerButton}
         onPress={() => this.onSubmit()}
       />
     )
   }
 
-  renderContent() {
+  onSubmit = () => {
+    this.props.navigation.navigate('home')
+  }
+
+  renderContent () {
     return (
       <ScrollView style={{ flex: 1, paddingBottom: 30 }}>
         <View style={styles.childContainer}>
           <AvatarView />
-          <Text style={styles.title}>{this.ls("businessInfo")}</Text>
+          <Text style={styles.title}>{this.ls('businessInfo')}</Text>
           {this.renderTextInput()}
-          <Text style={styles.title}>{this.ls("addressInfo")}</Text>
+          <Text style={styles.title}>{this.ls('addressInfo')}</Text>
           {this.renderEmergencyTextInput()}
           {this.renderFooterButton()}
         </View>
@@ -82,14 +86,18 @@ export default class BusinessProfileScene extends BaseScene {
     )
   }
 
-  render() {
+  render () {
     return (
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : null}
+        behavior={Platform.OS === 'ios' ? 'padding' : null}
       >
         <View style={styles.container}>
-          <Header title={"Create Profile"} leftButton />
+          <Header
+            onLeftPress={() => this.props.navigation.goBack()}
+            title={'Create Profile'}
+            leftButton
+          />
           {this.renderContent()}
         </View>
       </KeyboardAvoidingView>
@@ -111,12 +119,13 @@ const styles = StyleSheet.create({
     flex: 1
   },
   footerButton: {
-    marginTop: "5%"
+    marginTop: '5%',
+    marginBottom: 20
   },
   description: {
     ...Fonts.poppinsRegular(14),
     color: Colors.TEXT_COLOR,
-    textAlign: "left",
+    textAlign: 'left',
     marginTop: 20,
     lineHeight: 24
   }

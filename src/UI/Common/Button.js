@@ -1,10 +1,16 @@
-import React from "react"
-import { Text, StyleSheet, TouchableOpacity, Image } from "react-native"
-import { Fonts, Colors } from "../../res"
-import BaseComponent from "./BaseComponent"
+import React from 'react'
+import {
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator
+} from 'react-native'
+import { Fonts, Colors } from '../../res'
+import BaseComponent from './BaseComponent'
 
 class Button extends BaseComponent {
-  render() {
+  render () {
     return (
       <TouchableOpacity
         onPress={this.props.onPress}
@@ -20,19 +26,36 @@ class Button extends BaseComponent {
           }
         ]}
       >
-        <Image {...this.images(this.props.icon)} />
-        <Text
-          style={[
-            this.props.textStyle,
-            styles.text,
-            {
-              color: this.props.isWhiteBg ? Colors.BLACK : Colors.WHITE,
-              marginLeft: this.props.icon ? 10 : 0
+        <Image {...this.images(this.props.icon)} style={this.props.iconStyle} />
+        {this.props.loading ? (
+          <ActivityIndicator
+            color={
+              this.props.isWhiteBg
+                ? this.props.color
+                  ? this.props.color
+                  : Colors.BLACK
+                : Colors.WHITE
             }
-          ]}
-        >
-          {this.props.title}
-        </Text>
+            size={'small'}
+          />
+        ) : (
+          <Text
+            style={[
+              this.props.textStyle,
+              styles.text,
+              {
+                color: this.props.isWhiteBg
+                  ? this.props.color
+                    ? this.props.color
+                    : Colors.BLACK
+                  : Colors.WHITE,
+                marginLeft: this.props.icon ? 10 : 0
+              }
+            ]}
+          >
+            {this.props.title}
+          </Text>
+        )}
       </TouchableOpacity>
     )
   }
@@ -41,13 +64,13 @@ class Button extends BaseComponent {
 const styles = StyleSheet.create({
   container: {
     height: 50,
-    width: "90%",
+    width: '90%',
     borderRadius: 10,
-    alignSelf: "center",
-    alignItems: "center",
-    justifyContent: "center",
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 10,
-    flexDirection: "row"
+    flexDirection: 'row'
   },
   text: {
     color: Colors.WHITE,

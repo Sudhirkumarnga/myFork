@@ -86,7 +86,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: HEADER_HEIGHT,
     backgroundColor: Colors.HEADER_BG,
-    paddingTop: 44,
     flexDirection: "row",
     justifyContent: "space-between"
   },

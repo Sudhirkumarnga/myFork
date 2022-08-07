@@ -1,4 +1,4 @@
-import React from "react"
+import React from 'react'
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Dimensions
-} from "react-native"
+} from 'react-native'
 import {
   BaseScene,
   Header,
@@ -15,12 +15,12 @@ import {
   Forms,
   AvatarView,
   Button
-} from "../Common"
-import { Fonts, Colors } from "../../res"
-const { height, width } = Dimensions.get("window")
+} from '../Common'
+import { Fonts, Colors } from '../../res'
+const { height, width } = Dimensions.get('window')
 
 export default class AddEmployeeScene extends BaseScene {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       isFormValid: false
@@ -29,14 +29,14 @@ export default class AddEmployeeScene extends BaseScene {
     // this.isFormValid = this.isFormValid.bind(this)
   }
 
-  setForms(field) {
-    this.personalforms = Forms.fields("employeePersonalInfo")
-    this.employeeContact = Forms.fields("employeeContact")
-    this.address = Forms.fields("employeeAddress")
-    this.employeeWorkInfo = Forms.fields("employeeWorkInfo")
+  setForms (field) {
+    this.personalforms = Forms.fields('employeePersonalInfo')
+    this.employeeContact = Forms.fields('employeeContact')
+    this.address = Forms.fields('employeeAddress')
+    this.employeeWorkInfo = Forms.fields('employeeWorkInfo')
   }
 
-  renderPersonalInfoInput() {
+  renderPersonalInfoInput () {
     return this.personalforms.map(fields => {
       return (
         <PrimaryTextInput
@@ -49,7 +49,7 @@ export default class AddEmployeeScene extends BaseScene {
     })
   }
 
-  renderWorkInfo() {
+  renderWorkInfo () {
     return this.employeeWorkInfo.map(fields => {
       return (
         <PrimaryTextInput
@@ -62,7 +62,7 @@ export default class AddEmployeeScene extends BaseScene {
     })
   }
 
-  renderEmployeeContactInput() {
+  renderEmployeeContactInput () {
     return this.employeeContact.map(fields => {
       return (
         <PrimaryTextInput
@@ -75,7 +75,7 @@ export default class AddEmployeeScene extends BaseScene {
     })
   }
 
-  renderAddressInfo() {
+  renderAddressInfo () {
     return this.address.map(fields => {
       return (
         <PrimaryTextInput
@@ -88,27 +88,27 @@ export default class AddEmployeeScene extends BaseScene {
     })
   }
 
-  renderFooterButton() {
+  renderFooterButton () {
     return (
       <Button
-        title={this.ls("submit")}
+        title={this.ls('submit')}
         style={styles.footerButton}
         onPress={() => this.onSubmit()}
       />
     )
   }
 
-  renderContent() {
+  renderContent () {
     return (
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.childContainer}>
-          <Text style={styles.title}>{this.ls("personalInfo")}</Text>
+          <Text style={styles.title}>{this.ls('personalInfo')}</Text>
           {this.renderPersonalInfoInput()}
-          <Text style={styles.title}>{this.ls("contact")}</Text>
+          <Text style={styles.title}>{this.ls('contact')}</Text>
           {this.renderEmployeeContactInput()}
-          <Text style={styles.title}>{this.ls("addressInfo")}</Text>
+          <Text style={styles.title}>{this.ls('addressInfo')}</Text>
           {this.renderAddressInfo()}
-          <Text style={styles.title}>{this.ls("workInfo")}</Text>
+          <Text style={styles.title}>{this.ls('workInfo')}</Text>
           {this.renderWorkInfo()}
           {this.renderFooterButton()}
         </View>
@@ -116,14 +116,18 @@ export default class AddEmployeeScene extends BaseScene {
     )
   }
 
-  render() {
+  render () {
     return (
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : null}
+        behavior={Platform.OS === 'ios' ? 'padding' : null}
       >
         <View style={styles.container}>
-          <Header title={this.ls("addEmployee")} />
+          <Header
+            leftButton
+            onLeftPress={() => this.props.navigation.goBack()}
+            title={this.ls('addEmployee')}
+          />
           {this.renderContent()}
         </View>
       </KeyboardAvoidingView>
@@ -145,12 +149,12 @@ const styles = StyleSheet.create({
     flex: 1
   },
   footerButton: {
-    marginTop: "5%"
+    marginVertical: '5%'
   },
   description: {
     ...Fonts.poppinsRegular(14),
     color: Colors.TEXT_COLOR,
-    textAlign: "left",
+    textAlign: 'left',
     marginTop: 20,
     lineHeight: 24
   }

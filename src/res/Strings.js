@@ -8,18 +8,21 @@ const common = {
 const registration = {
   signIn: "Sign In",
   signUp: "Sign Up",
+  next: "Next",
   loginAccount: "Login to your account",
   buinessAdmin: "Business Admin",
   businessInfo: "Business Information",
   employee: "Employee",
   login: "Login",
   forgotPwd: "Forgot Password?",
+  forgotPassword: "Forgot Password",
   passwordReset: "Password Reset",
   privacyPolicy: "Privacy Policy",
   termsConditions: "Terms and conditions",
   tokenInput: "Token Input",
   resendToken: "Resend token",
   enterCode: "PLease enter 4 digit code sent to your phone",
+  enterEmail: "Please enter your email address in order to reset your password",
   personalInfo: "Personal Information",
   emergencyContact: "Emergency Contact",
   uploadPhoto: "Upload Photo",
@@ -92,7 +95,8 @@ const employee = {
 const home = {
   upcomingShift: "Upcoming shift",
   clockIn: "Clock in",
-  activeEmployees: "Active employees"
+  activeEmployees: "Active employees",
+  payPeriod: "Pay period to date:"
 }
 
 const settings = {

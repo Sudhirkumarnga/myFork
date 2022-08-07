@@ -1,10 +1,17 @@
-import React, { Component } from "react"
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
-import { BaseScene, Button, PrimaryTextInput, Forms } from "../Common"
-import { Fonts, Colors } from "../../res"
+import React, { Component } from 'react'
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Dimensions
+} from 'react-native'
+import { BaseScene, Button, PrimaryTextInput, Forms } from '../Common'
+import { Fonts, Colors } from '../../res'
 
 export default class LoginScene extends BaseScene {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       isFormValid: false
@@ -13,11 +20,11 @@ export default class LoginScene extends BaseScene {
     this.isFormValid = this.isFormValid.bind(this)
   }
 
-  setForms(field) {
-    this.forms = Forms.fields("login")
+  setForms (field) {
+    this.forms = Forms.fields('login')
   }
 
-  isFormValid() {
+  isFormValid () {
     let error = null
     this.forms.map(i => {
       if (!this[i.key].isValid()) {
@@ -34,7 +41,7 @@ export default class LoginScene extends BaseScene {
     return true
   }
 
-  onSubmit() {
+  onSubmit () {
     if (this.isFormValid()) {
       let params = {}
       this.forms.forEach(i => {
@@ -46,7 +53,7 @@ export default class LoginScene extends BaseScene {
     }
   }
 
-  renderTextInput() {
+  renderTextInput () {
     return this.forms.map(fields => {
       return (
         <PrimaryTextInput
@@ -59,40 +66,41 @@ export default class LoginScene extends BaseScene {
     })
   }
 
-  renderForgotPwd() {
+  renderForgotPwd () {
     return (
       <TouchableOpacity
         style={{
-          justifyContent: "flex-end",
-          alignItems: "center",
-          alignSelf: "flex-end"
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          alignSelf: 'flex-end'
         }}
         onPress={this.props.onForgotPwd}
       >
-        <Text style={styles.forgotPwdText}>{this.ls("forgotPwd")}</Text>
+        <Text style={styles.forgotPwdText}>{this.ls('forgotPwd')}</Text>
       </TouchableOpacity>
     )
   }
 
-  renderFooterButton() {
+  renderFooterButton () {
     return (
       <Button
-        title={this.ls("login")}
+        title={this.ls('login')}
         style={styles.footerButton}
         onPress={this.props.onPress}
       />
     )
   }
 
-  render() {
+  render () {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>{this.ls("welcomeBack")}</Text>
-        <Text style={styles.description}>{this.ls("loginAccount")}</Text>
-        <View style={{ height: "10%" }} />
-        {this.renderTextInput()}
-        {this.renderForgotPwd()}
-        {this.renderFooterButton()}
+        <ScrollView style={{ flex: 1 }}>
+          <Text style={styles.title}>{this.ls('welcomeBack')}</Text>
+          <Text style={styles.description}>{this.ls('loginAccount')}</Text>
+          {this.renderTextInput()}
+          {this.renderForgotPwd()}
+          {this.renderFooterButton()}
+        </ScrollView>
       </View>
     )
   }
@@ -101,7 +109,6 @@ export default class LoginScene extends BaseScene {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
     backgroundColor: Colors.WHITE,
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20
@@ -109,16 +116,17 @@ const styles = StyleSheet.create({
   title: {
     ...Fonts.poppinsRegular(28),
     color: Colors.BLACK,
-    textAlign: "center",
-    marginTop: "20%"
+    textAlign: 'center',
+    marginTop: '20%'
   },
   description: {
     ...Fonts.poppinsRegular(14),
+    textAlign: 'center',
     color: Colors.BLUR_TEXT,
     marginVertical: 10
   },
   footerButton: {
-    marginTop: "15%"
+    marginTop: '15%'
   },
   forgotPwdText: {
     ...Fonts.poppinsRegular(14),

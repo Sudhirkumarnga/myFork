@@ -1,4 +1,4 @@
-import React from "react"
+import React from 'react'
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   Dimensions,
   TouchableOpacity,
   Image
-} from "react-native"
+} from 'react-native'
 import {
   BaseScene,
   Header,
@@ -17,12 +17,12 @@ import {
   Forms,
   WorksiteForms,
   Button
-} from "../Common"
-import { Fonts, Colors } from "../../res"
-const { height, width } = Dimensions.get("window")
+} from '../Common'
+import { Fonts, Colors } from '../../res'
+const { height, width } = Dimensions.get('window')
 
 export default class AddWorksiteScene extends BaseScene {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       isFormValid: false
@@ -31,14 +31,14 @@ export default class AddWorksiteScene extends BaseScene {
     // this.isFormValid = this.isFormValid.bind(this)
   }
 
-  setForms(field) {
-    this.personalforms = WorksiteForms.fields("addWorksite")
-    this.employeeContact = Forms.fields("employeeContact")
-    this.address = Forms.fields("employeeAddress")
-    this.employeeWorkInfo = Forms.fields("employeeWorkInfo")
+  setForms (field) {
+    this.personalforms = WorksiteForms.fields('addWorksite')
+    this.employeeContact = Forms.fields('employeeContact')
+    this.address = Forms.fields('employeeAddress')
+    this.employeeWorkInfo = Forms.fields('employeeWorkInfo')
   }
 
-  renderPersonalInfoInput() {
+  renderPersonalInfoInput () {
     return this.personalforms.map(fields => {
       return (
         <PrimaryTextInput
@@ -51,7 +51,7 @@ export default class AddWorksiteScene extends BaseScene {
     })
   }
 
-  renderEmployeeContactInput() {
+  renderEmployeeContactInput () {
     return this.employeeContact.map(fields => {
       return (
         <PrimaryTextInput
@@ -64,40 +64,67 @@ export default class AddWorksiteScene extends BaseScene {
     })
   }
 
-  renderFooterButtons() {
+  renderFooterButtons () {
     return (
       <View style={{ padding: 20 }}>
         <Button
           style={[styles.footerWhiteButton]}
           isWhiteBg
-          icon={"upload"}
-          title={this.ls("uploadWorksiteLogo")}
+          icon={'upload'}
+          iconStyle={{
+            width: 20,
+            height: 20,
+            tintColor: Colors.GREEN_COLOR,
+            resizeMode: 'contain'
+          }}
+          color={Colors.BUTTON_BG}
+          title={this.ls('uploadWorksiteLogo')}
         />
         <Button
           style={[styles.footerWhiteButton]}
           isWhiteBg
-          icon={"upload"}
-          title={this.ls("uploadVideo")}
+          icon={'upload'}
+          iconStyle={{
+            width: 20,
+            height: 20,
+            tintColor: Colors.GREEN_COLOR,
+            resizeMode: 'contain'
+          }}
+          color={Colors.BUTTON_BG}
+          title={this.ls('uploadVideo')}
         />
         <Button
           style={[styles.footerWhiteButton]}
           isWhiteBg
-          icon={"add"}
-          title={this.ls("createTask")}
+          icon={'add'}
+          iconStyle={{
+            width: 20,
+            height: 20,
+            tintColor: Colors.GREEN_COLOR,
+            resizeMode: 'contain'
+          }}
+          color={Colors.BUTTON_BG}
+          title={this.ls('createTask')}
         />
         <Button
           style={[styles.footerWhiteButton]}
-          title={this.ls("edit")}
-          icon={"edit"}
+          title={this.ls('edit')}
+          icon={'edit'}
           isWhiteBg
-          textStyle={{ color: Colors.BUTTON_BG }}
+          iconStyle={{
+            width: 20,
+            height: 20,
+            tintColor: Colors.GREEN_COLOR,
+            resizeMode: 'contain'
+          }}
+          color={Colors.BUTTON_BG}
         />
-        <Button style={styles.footerButton} title={this.ls("save")} />
+        <Button style={styles.footerButton} title={this.ls('save')} />
       </View>
     )
   }
 
-  renderShowDetails() {
+  renderShowDetails () {
     return (
       <View style={styles.termsContainer}>
         <TouchableOpacity
@@ -105,20 +132,20 @@ export default class AddWorksiteScene extends BaseScene {
             this.setState({ termsConditions: !this.state.termsConditions })
           }
         >
-          <Image {...this.images("checkbox")} />
+          <Image {...this.images('checkbox')} />
         </TouchableOpacity>
-        <Text style={styles.textStyle}>{"Show details"}</Text>
+        <Text style={styles.textStyle}>{'Show details'}</Text>
       </View>
     )
   }
 
-  renderContent() {
+  renderContent () {
     return (
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.childContainer}>
-          <Text style={styles.title}>{this.ls("personalInfo")}</Text>
+          <Text style={styles.title}>{this.ls('personalInfo')}</Text>
           {this.renderPersonalInfoInput()}
-          <Text style={styles.title}>{this.ls("contactInfo")}</Text>
+          <Text style={styles.title}>{this.ls('contactInfo')}</Text>
           {this.renderEmployeeContactInput()}
           {this.renderShowDetails()}
           {this.renderFooterButtons()}
@@ -127,14 +154,18 @@ export default class AddWorksiteScene extends BaseScene {
     )
   }
 
-  render() {
+  render () {
     return (
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : null}
+        behavior={Platform.OS === 'ios' ? 'padding' : null}
       >
         <View style={styles.container}>
-          <Header title={this.ls("addWorksite")} leftButton />
+          <Header
+            title={this.ls('addWorksite')}
+            leftButton
+            onLeftPress={() => this.props.navigation.goBack()}
+          />
           {this.renderContent()}
         </View>
       </KeyboardAvoidingView>
@@ -156,25 +187,26 @@ const styles = StyleSheet.create({
     flex: 1
   },
   footerButton: {
-    marginTop: "5%"
+    marginTop: '5%',
+    width: '100%'
   },
   description: {
     ...Fonts.poppinsRegular(14),
     color: Colors.TEXT_COLOR,
-    textAlign: "left",
+    textAlign: 'left',
     marginTop: 20,
     lineHeight: 24
   },
   footerWhiteButton: {
-    marginTop: "5%",
-    width: "100%",
-    backgroundColor: "red",
+    marginTop: '5%',
+    width: '100%',
+    backgroundColor: 'red',
     borderWidth: 1,
     borderColor: Colors.BUTTON_BG
   },
   termsContainer: {
-    justifyContent: "flex-start",
-    flexDirection: "row",
+    justifyContent: 'flex-start',
+    flexDirection: 'row',
     marginTop: 10,
     paddingHorizontal: 20
   },

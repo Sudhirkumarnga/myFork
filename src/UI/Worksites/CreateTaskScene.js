@@ -1,4 +1,4 @@
-import React from "react"
+import React from 'react'
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   Dimensions,
   TouchableOpacity,
   Image
-} from "react-native"
+} from 'react-native'
 import {
   BaseScene,
   Header,
@@ -17,12 +17,12 @@ import {
   Forms,
   WorksiteForms,
   Button
-} from "../Common"
-import { Fonts, Colors } from "../../res"
-const { height, width } = Dimensions.get("window")
+} from '../Common'
+import { Fonts, Colors } from '../../res'
+const { height, width } = Dimensions.get('window')
 
 export default class CreateTaskScene extends BaseScene {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       isFormValid: false
@@ -31,11 +31,11 @@ export default class CreateTaskScene extends BaseScene {
     // this.isFormValid = this.isFormValid.bind(this)
   }
 
-  setForms(field) {
-    this.taskForm = WorksiteForms.fields("addTask")
+  setForms (field) {
+    this.taskForm = WorksiteForms.fields('addTask')
   }
 
-  renderTaskInfoInput() {
+  renderTaskInfoInput () {
     return this.taskForm.map(fields => {
       return (
         <PrimaryTextInput
@@ -48,32 +48,45 @@ export default class CreateTaskScene extends BaseScene {
     })
   }
 
-  renderFooterButtons() {
+  renderFooterButtons () {
     return (
       <View style={{ padding: 20 }}>
         <Button
           style={[styles.footerWhiteButton]}
           isWhiteBg
-          icon={"upload"}
-          title={this.ls("uploadMedia")}
+          iconStyle={{
+            width: 20,
+            height: 20,
+            tintColor: Colors.GREEN_COLOR,
+            resizeMode: 'contain'
+          }}
+          color={Colors.BUTTON_BG}
+          icon={'upload'}
+          title={this.ls('uploadMedia')}
         />
-        <Button
+        {/* <Button
           style={[styles.footerWhiteButton]}
-          title={this.ls("edit")}
-          icon={"edit"}
+          title={this.ls('edit')}
+          icon={'edit'}
           isWhiteBg
-          textStyle={{ color: Colors.BUTTON_BG }}
-        />
-        <Button style={styles.footerButton} title={this.ls("create")} />
+          iconStyle={{
+            width: 20,
+            height: 20,
+            tintColor: Colors.GREEN_COLOR,
+            resizeMode: 'contain'
+          }}
+          color={Colors.BUTTON_BG}
+        /> */}
+        <Button style={styles.footerButton} title={this.ls('create')} />
       </View>
     )
   }
 
-  renderContent() {
+  renderContent () {
     return (
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.childContainer}>
-          <Text style={styles.title}>{this.ls("worksiteNumber")}</Text>
+          <Text style={styles.title}>{this.ls('worksiteNumber')}</Text>
           {this.renderTaskInfoInput()}
           {this.renderFooterButtons()}
         </View>
@@ -81,14 +94,14 @@ export default class CreateTaskScene extends BaseScene {
     )
   }
 
-  render() {
+  render () {
     return (
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : null}
+        behavior={Platform.OS === 'ios' ? 'padding' : null}
       >
         <View style={styles.container}>
-          <Header title={this.ls("createTask")} leftButton />
+          <Header title={this.ls('createTask')} leftButton />
           {this.renderContent()}
         </View>
       </KeyboardAvoidingView>
@@ -98,7 +111,8 @@ export default class CreateTaskScene extends BaseScene {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    width: '100%',
+    height: '100%',
     backgroundColor: Colors.WHITE
   },
   title: {
@@ -110,18 +124,19 @@ const styles = StyleSheet.create({
     flex: 1
   },
   footerButton: {
-    marginTop: "5%"
+    marginTop: '5%',
+    width:'100%'
   },
   description: {
     ...Fonts.poppinsRegular(14),
     color: Colors.TEXT_COLOR,
-    textAlign: "left",
+    textAlign: 'left',
     marginTop: 20,
     lineHeight: 24
   },
   footerWhiteButton: {
-    marginTop: "5%",
-    width: "100%",
+    marginTop: '5%',
+    width: '100%',
     borderWidth: 1,
     borderColor: Colors.BUTTON_BG
   }
