@@ -1,4 +1,4 @@
-from django.contrib.auth import get_user_model
+home/api/v1/urls.pyfrom django.contrib.auth import get_user_model
 from django.http import HttpRequest
 from django.utils.translation import ugettext_lazy as _
 from allauth.account import app_settings as allauth_settings
@@ -8,6 +8,7 @@ from allauth.account.adapter import get_adapter
 from allauth.account.utils import setup_user_email
 from rest_framework import serializers
 from rest_auth.serializers import PasswordResetSerializer
+from users.models import User_OTP
 from business.models import (
     Business,
     BusinessAddress
@@ -15,7 +16,8 @@ from business.models import (
 from home.services import(
     create_business_and_business_address,
     create_organization_employee,
-    create_employee
+    create_employee,
+    generate_user_otp
 ) 
 
 User = get_user_model()
@@ -65,22 +67,40 @@ class SignupSerializer(serializers.ModelSerializer):
                 return data
             else:
                 raise serializers.ValidationError(_("Invalid Origanization Code"))
+        return data
 
     def create(self, validated_data):
-        user = User(
-            email=validated_data.get('email'),
-            name=validated_data.get('name'),
-            username=generate_unique_username([
-                validated_data.get('name'),
-                validated_data.get('email'),
-                'user'
-            ]),
-            is_read_terms = validated_data.get('is_read_terms'),
-        )
+
+        if validated_data.__contains__('business_code'):
+            user = User(
+                email=validated_data.get('email'),
+                name=validated_data.get('name'),
+                username=generate_unique_username([
+                    validated_data.get('name'),
+                    validated_data.get('email'),
+                    'user'
+                ]),
+                phone = validated_data.get('phone'),
+                is_read_terms = validated_data.get('is_read_terms'),
+                role = 'Employee'
+            )
+        else:
+            user = User(
+                email=validated_data.get('email'),
+                name=validated_data.get('name'),
+                username=generate_unique_username([
+                    validated_data.get('name'),
+                    validated_data.get('email'),
+                    'user'
+                ]),
+                is_read_terms = validated_data.get('is_read_terms'),
+                role = 'Organization Admin'
+            )
         user.set_password(validated_data.get('password'))
         user.save()
         request = self._get_request()
         setup_user_email(request, user, [])
+        generate_user_otp(user)
         
         if validated_data.__contains__("business_code"):
             create_organization_employee(user, validated_data)
@@ -94,10 +114,30 @@ class SignupSerializer(serializers.ModelSerializer):
         return super().save()
 
 
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    new_password1 = serializers.CharField(max_length=128)
+    new_password2 = serializers.CharField(max_length=128)
+    otp = serializers.CharField(max_length=6)
+
+    def validate(self, attrs):
+        if attrs['new_password1'] != attrs['new_password2']:
+            raise serializers.ValidationError(_("password1 and password2 didn't match"))
+        if not User_OTP.objects.filter(otp=attrs['otp'], is_expire=False).exists():
+            raise serializers.ValidationError(_("OTP is invalide or Expired"))
+        return attrs
+
+    def save(self, validated_data):
+        user = User_OTP.objects.get(otp=validated_data['otp']).user
+        user.set_password(validated_data['new_password1'])
+        user.save()
+        return user
+        
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email', 'name']
+        fields = ['id', 'email', 'name', 'phone', 'role', 'is_read_terms']
 
 
 class PasswordSerializer(PasswordResetSerializer):

@@ -1,4 +1,13 @@
 from django.utils.crypto import get_random_string
+import random
+from users.models import User_OTP
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from smart_workhorse_33965.settings import EMAIL_HOST_USER
+from django.contrib.sites.models import Site
+
+current_site = Site.objects.get_current()
+
 from business.models import (
     Business,
     BusinessAddress,
@@ -34,4 +43,49 @@ def create_organization_employee(user,data):
         phone= data['phone'],
         first_name=data['name'],
         is_owner=False
+    )
+
+def generate_user_otp(user):
+    otp = format(random.randint(0, 999999), '04d')
+    user_otp = User_OTP.objects.filter(user=user)
+    if user_otp:
+        user_otp.update(otp=otp,is_expire=False)
+    else:
+        user_otp = User_OTP.objects.create(user=user, otp=otp)
+
+    return otp
+
+def send_account_confirmation_email(user,otp):
+    msg_plain = render_to_string('email/account_confirmation_email.txt', {'user':user ,'otp': otp,'domain':current_site.domain})
+    msg_html = render_to_string('email/account_confirmation_email.html', {'user':user ,'otp': otp,'domain':current_site.domain})
+    send_mail(
+        'Account Confirmation Email',
+        msg_plain,
+        EMAIL_HOST_USER,
+        [user.email],
+        html_message=msg_html,
+    )
+
+def sent_password_reset_email(user,otp):
+    msg_plain = render_to_string('email/password_reset_email.txt', {'user':user ,'otp': otp,'domain':current_site.domain})
+    msg_html = render_to_string('email/password_reset_email.html', {'user':user ,'otp': otp,'domain':current_site.domain})
+
+    send_mail(
+        'Password Reset Email',
+        msg_plain,
+        EMAIL_HOST_USER,
+        [user.email],
+        html_message=msg_html,
+    )
+
+def send_new_otp(user,otp):
+    msg_plain = render_to_string('email/otp_email.txt', {'user':user ,'otp': otp,'domain':current_site.domain})
+    msg_html = render_to_string('email/otp_email.html', {'user':user ,'otp': otp,'domain':current_site.domain})
+
+    send_mail(
+        'Password Reset Email',
+        msg_plain,
+        EMAIL_HOST_USER,
+        [user.email],
+        html_message=msg_html,
     )

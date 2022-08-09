@@ -3,7 +3,8 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
-
+from users.constants import UserRole
+from home.models import TimeStampedModel
 class User(AbstractUser):
     # WARNING!
     """
@@ -23,6 +24,22 @@ class User(AbstractUser):
     name = models.CharField(_("Name of User"), blank=True, null=True, max_length=255)
     phone = PhoneNumberField(_("Phone Field"), blank=True, null=True)
     is_read_terms = models.BooleanField(_('Is Terms and Condition Read?'), default=False)
+    role = models.CharField(
+        _('Role of User'), max_length=255, blank=True, null=True,
+        choices=[(type.value, type.value) for type in UserRole]
+    )
 
     def get_absolute_url(self):
         return reverse("users:detail", kwargs={"username": self.username})
+
+class User_OTP(TimeStampedModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    otp = models.IntegerField()
+    is_expire = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = "User OTP"
+        verbose_name_plural = "User OTPs"
+
+    def __str__(self):
+        return f'{self.user}'
