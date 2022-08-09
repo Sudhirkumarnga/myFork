@@ -11,7 +11,8 @@ current_site = Site.objects.get_current()
 from business.models import (
     Business,
     BusinessAddress,
-    Employee
+    Employee,
+    EmergencyContact
 )
 
 def create_business_and_business_address(user, data):
@@ -35,14 +36,20 @@ def create_employee(business,user,data):
     )
 
 def create_organization_employee(user,data):
-    Employee.objects.create(
+    employee = Employee.objects.create(
         user=user,
         business=Business.objects.get(
             business_code=data['business_code']
         ),
         phone= data['phone'],
-        first_name=data['name'],
+        first_name=data['first_name'],
         is_owner=False
+    )
+    return employee
+
+def create_emergency_contact(employee):
+    EmergencyContact.objects.create(
+        employee=employee
     )
 
 def generate_user_otp(user):

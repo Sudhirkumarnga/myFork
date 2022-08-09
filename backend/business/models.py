@@ -104,6 +104,7 @@ class Employee(TimeStampedModel):
 class EmergencyContact(TimeStampedModel):
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
+    phone = PhoneNumberField(null=True, blank=True)
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name="emergency_contact")
     is_active = models.BooleanField(default=True)
 

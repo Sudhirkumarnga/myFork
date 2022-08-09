@@ -28,6 +28,7 @@ class User(AbstractUser):
         _('Role of User'), max_length=255, blank=True, null=True,
         choices=[(type.value, type.value) for type in UserRole]
     )
+    date_of_birth = models.DateField(null=True, blank=True)
 
     def get_absolute_url(self):
         return reverse("users:detail", kwargs={"username": self.username})

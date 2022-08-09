@@ -17,7 +17,8 @@ from home.services import(
     create_business_and_business_address,
     create_organization_employee,
     create_employee,
-    generate_user_otp
+    generate_user_otp,
+    create_emergency_contact
 ) 
 
 User = get_user_model()
@@ -30,7 +31,7 @@ class SignupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'name', 'email', 'password', 'phone', 'business_code', 'employee_types', 'is_read_terms')
+        fields = ('id', 'first_name', 'last_name', 'email', 'password', 'phone', 'business_code', 'employee_types', 'is_read_terms')
         extra_kwargs = {
             'password': {
                 'write_only': True,
@@ -74,7 +75,8 @@ class SignupSerializer(serializers.ModelSerializer):
         if validated_data.__contains__('business_code'):
             user = User(
                 email=validated_data.get('email'),
-                name=validated_data.get('name'),
+                first_name=validated_data.get('first_name'),
+                last_name=validated_data.get('last_name'),
                 username=generate_unique_username([
                     validated_data.get('name'),
                     validated_data.get('email'),
@@ -87,7 +89,8 @@ class SignupSerializer(serializers.ModelSerializer):
         else:
             user = User(
                 email=validated_data.get('email'),
-                name=validated_data.get('name'),
+                first_name=validated_data.get('first_name'),
+                last_name=validated_data.get('last_name'),
                 username=generate_unique_username([
                     validated_data.get('name'),
                     validated_data.get('email'),
@@ -103,7 +106,9 @@ class SignupSerializer(serializers.ModelSerializer):
         generate_user_otp(user)
         
         if validated_data.__contains__("business_code"):
-            create_organization_employee(user, validated_data)
+            employee = create_organization_employee(user, validated_data)
+            create_emergency_contact(employee)
+
         else:
             business = create_business_and_business_address(user,validated_data)
             employee = create_employee(business,user,validated_data)
