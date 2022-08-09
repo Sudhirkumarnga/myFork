@@ -115,6 +115,7 @@ class SignupSerializer(serializers.ModelSerializer):
 
 
 class PasswordResetConfirmSerializer(serializers.Serializer):
+    email = serializers.EmailField()
     new_password1 = serializers.CharField(max_length=128)
     new_password2 = serializers.CharField(max_length=128)
     otp = serializers.CharField(max_length=6)
@@ -122,15 +123,17 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
     def validate(self, attrs):
         if attrs['new_password1'] != attrs['new_password2']:
             raise serializers.ValidationError(_("password1 and password2 didn't match"))
-        if not User_OTP.objects.filter(otp=attrs['otp'], is_expire=False).exists():
+        if not User_OTP.objects.filter(user__email=attrs['email'], otp=attrs['otp'], is_expire=False).exists():
             raise serializers.ValidationError(_("OTP is invalide or Expired"))
         return attrs
 
     def save(self, validated_data):
-        user = User_OTP.objects.get(otp=validated_data['otp']).user
-        user.set_password(validated_data['new_password1'])
-        user.save()
-        return user
+        otp = User_OTP.objects.get(otp=validated_data['otp'])
+        otp.user.set_password(validated_data['new_password1'])
+        otp.user.save()
+        otp.is_expire=True
+        otp.save()
+        return otp.user
         
 
 
