@@ -28,8 +28,8 @@ def create_business_and_business_address(user, data):
 
 def create_employee(business,user,data):
     Employee.objects.create(
-        first_name = data['first_name'],
-        phone = data['phone'],
+        first_name = data.get("first_name", ""),
+        phone = data.get("phone", ""),
         user=user,
         business=business,
         is_owner=True
