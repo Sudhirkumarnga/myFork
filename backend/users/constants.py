@@ -1,4 +1,4 @@
-users/constants.pyfrom enum import Enum
+from enum import Enum
 
 
 class UserRole(Enum):
