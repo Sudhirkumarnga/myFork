@@ -49,7 +49,7 @@ class ProfileViewset(ModelViewSet):
         return ProfileSerializer()
 
     def get_serializer_context(self):
-        context = super(BusinessViewset, self).get_serializer_context()
+        context = super(ProfileViewset, self).get_serializer_context()
         context.update({"request": self.request})
         return context
 
