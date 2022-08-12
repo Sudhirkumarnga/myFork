@@ -59,7 +59,7 @@ class EmployeeViewset(ModelViewSet):
                     status=SmartWorkHorseStatus.Success.value,
                     response=serializer.data
                 ),
-                status=status.HTTP_201_CREATED,
+                status=status.HTTP_200_OK,
                 headers={},
             )
         except Exception as e:
@@ -90,7 +90,7 @@ class EmployeeViewset(ModelViewSet):
                         status=SmartWorkHorseStatus.Success.value,
                         response=serializer.data
                     ),
-                    status=status.HTTP_201_CREATED,
+                    status=status.HTTP_200_OK,
                     headers={},
                 )
         except Exception as e:
@@ -146,7 +146,7 @@ class EmployeeViewset(ModelViewSet):
                     status=SmartWorkHorseStatus.Success.value,
                     response=serializer.data
                 ),
-                status=status.HTTP_201_CREATED,
+                status=status.HTTP_200_OK,
                 headers={},
             )
         except Exception as e:
