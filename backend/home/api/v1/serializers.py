@@ -145,7 +145,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email', 'name', 'phone', 'role', 'is_read_terms']
+        fields = ['id', 'email', 'first_name', 'last_name', 'date_of_birth', 'phone', 'role', 'is_read_terms']
 
 
 class PasswordSerializer(PasswordResetSerializer):
