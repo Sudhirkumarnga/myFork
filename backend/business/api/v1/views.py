@@ -167,11 +167,11 @@ class ProfileView(APIView):
 
     def get(self, request, format=None):
         try:
-            queryset = self.queryset.filter(id=self.request.user.id)
-            if user.role == 'Organization Admin':
-                serializer = BusinessAdminProfileSerializer(queryset.first(), many=False)
-            if user.role == 'Employee':
-                serializer = BusinessEmployeeProfileSerializer(queryset.first(), many=False)
+            queryset = self.queryset.filter(id=self.request.user.id).first()
+            if queryset.role == 'Organization Admin':
+                serializer = BusinessAdminProfileSerializer(queryset, many=False)
+            if queryset.role == 'Employee':
+                serializer = BusinessEmployeeProfileSerializer(queryset, many=False)
             return Response(
                 SmartWorkHorseResponse.get_response(
                     success=True,
@@ -199,11 +199,11 @@ class ProfileView(APIView):
                 self.request.user,
                 request.data
             )
-            queryset = self.queryset.filter(id=self.request.user.id)
-            if user.role == 'Organization Admin':
-                serializer = BusinessAdminProfileSerializer(queryset.first(), many=False)
-            if user.role == 'Employee':
-                serializer = BusinessEmployeeProfileSerializer(queryset.first(), many=False)
+            queryset = self.queryset.filter(id=self.request.user.id).first()
+            if queryset.role == 'Organization Admin':
+                serializer = BusinessAdminProfileSerializer(queryset, many=False)
+            if queryset.role == 'Employee':
+                serializer = BusinessEmployeeProfileSerializer(queryset, many=False)
             
             return Response(
                 SmartWorkHorseResponse.get_response(

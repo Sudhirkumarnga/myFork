@@ -113,4 +113,4 @@ class EmergencyContact(TimeStampedModel):
         verbose_name_plural = "EmergencyContact"
 
     def __str__(self):
-        return f'{self.employee.first_name} - {self.employee.last_name}'
+        return f'{self.employee.user.first_name} - {self.employee.user.last_name}'

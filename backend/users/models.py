@@ -23,7 +23,7 @@ class User(AbstractUser):
     # around the globe.
     first_name = models.CharField(_('first name'), max_length=30, blank=True, null=True)
     last_name = models.CharField(_('last name'), max_length=150, blank=True,  null=True)
-    name = models.CharField(_("Name of User"), blank=True, null=True, max_length=255)
+    email = models.EmailField(_('email address'), blank=True, unique=True)
     phone = PhoneNumberField(_("Phone Field"), blank=True, null=True)
     is_read_terms = models.BooleanField(_('Is Terms and Condition Read?'), default=False)
     role = models.CharField(
