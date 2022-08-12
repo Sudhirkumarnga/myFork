@@ -78,7 +78,7 @@ class SignupSerializer(serializers.ModelSerializer):
                 first_name=validated_data.get('first_name'),
                 last_name=validated_data.get('last_name'),
                 username=generate_unique_username([
-                    validated_data.get('name'),
+                    validated_data.get('first_name'),
                     validated_data.get('email'),
                     'user'
                 ]),

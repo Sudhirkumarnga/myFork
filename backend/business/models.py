@@ -73,9 +73,6 @@ class BusinessAddress(TimeStampedModel):
         verbose_name = "Business Address"
         verbose_name_plural = "Business Address"
 
-    # def save(self, *args, **kwargs):
-    #   print(self.profile_image.__dir__())
-    #   super(BusinesProfile, self).save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.business.name}'
@@ -83,12 +80,14 @@ class BusinessAddress(TimeStampedModel):
 
 
 class Employee(TimeStampedModel):
-    first_name = models.CharField(max_length=20)
-    last_name = models.CharField(max_length=20)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    business = models.ForeignKey(Business, on_delete=models.CASCADE)
-    date_of_birth = models.DateField(null=True, blank=True)
-    phone = PhoneNumberField(null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    business = models.ForeignKey(Business, on_delete=models.CASCADE, null=True, blank=True)
+    mobile = PhoneNumberField(null=True, blank=True)
+    address_line_one = models.TextField(null=True, blank=True,)
+    address_line_two = models.TextField(null=True, blank=True)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, null=True, blank=True)
+    position = models.CharField(max_length=20, null=True, blank=True)
+    hourly_rate = models.IntegerField(default=0)
     is_owner = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 

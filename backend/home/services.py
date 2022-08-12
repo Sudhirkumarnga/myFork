@@ -53,7 +53,7 @@ def create_emergency_contact(employee):
     )
 
 def generate_user_otp(user):
-    otp = format(random.randint(0, 999999), '04d')
+    otp = format(random.randint(0, 9999), '04d')
     user_otp = User_OTP.objects.filter(user=user)
     if user_otp:
         user_otp.update(otp=otp,is_expire=False)
