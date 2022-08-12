@@ -175,7 +175,7 @@ class ProfileView(APIView):
             return Response(
                 SmartWorkHorseResponse.get_response(
                     success=True,
-                    message="Profile Successfully Created.",
+                    message="Profile Data Successfully returned.",
                     status=SmartWorkHorseStatus.Success.value,
                     response=serializer.data
                 ),
