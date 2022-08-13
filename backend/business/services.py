@@ -87,3 +87,9 @@ def send_email_to_employee(user,password):
         [user.email],
         fail_silently=False,
     )
+
+def get_user_profile_data(queryset):
+    if queryset.role == 'Organization Admin':
+        pass
+    if queryset.role == 'Employee':
+        pass

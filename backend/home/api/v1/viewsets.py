@@ -1,3 +1,4 @@
+from smart_workhorse_33965.response import SmartWorkHorseResponse, SmartWorkHorseStatus
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from allauth.account import app_settings as allauth_settings
 from rest_framework.viewsets import ModelViewSet, ViewSet
@@ -8,6 +9,7 @@ from allauth.account.models import EmailAddress
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from users.models import User_OTP, User
+from rest_auth.models import TokenModel
 from rest_auth.views import LoginView
 from django.conf import settings
 from rest_framework import status
@@ -54,26 +56,44 @@ class ValidateOTPView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        email = self.request.data.get('email', None)
-        otp = self.request.data.get('otp', None)
-        user_otp = User_OTP.objects.filter(
-            user__email=email,
-            otp=otp,
-            is_expire=False
-        )
-        if user_otp:
-            user_otp.update(is_expire=True)
-            email_address = EmailAddress.objects.get(user__email=email)
-            email_address.verified = True
-            email_address.save()
-            return Response(
-                {"detail": _("Your Account has been verified.")},
-                status=status.HTTP_200_OK
+        try:
+            email = self.request.data.get('email', None)
+            otp = self.request.data.get('otp', None)
+            user_otp = User_OTP.objects.filter(
+                user__email=email,
+                otp=otp,
+                is_expire=False
             )
-        else:
+            if user_otp:
+                user_otp.update(is_expire=True)
+                email_address = EmailAddress.objects.get(user__email=email)
+                email_address.verified = True
+                email_address.save()
+                token = TokenModel.objects.get(user__email=email)
+                return Response(
+                        SmartWorkHorseResponse.get_response(
+                            success=True,
+                            message="Your Account has been verified.",
+                            status=SmartWorkHorseStatus.Success.value,
+                            response={"token":token.key}
+                        ),
+                        status=status.HTTP_200_OK,
+                        headers={},
+                    )
+            else:
+                return Response(
+                    {"detail": _("OTP is Invalide or Expired")},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        except Exception as e:
             return Response(
-                {"detail": _("OTP is Invalide or Expired")},
-                status=status.HTTP_404_NOT_FOUND
+                SmartWorkHorseResponse.get_response(
+                    success=False,
+                    message="Something went wrong in validation OTP",
+                    status=SmartWorkHorseStatus.Error.value,
+                    error={str(e)},
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
 class LoginViewSet(LoginView):

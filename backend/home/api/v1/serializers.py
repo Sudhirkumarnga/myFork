@@ -123,25 +123,22 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
     email = serializers.EmailField()
     new_password1 = serializers.CharField(max_length=128)
     new_password2 = serializers.CharField(max_length=128)
-    otp = serializers.CharField(max_length=6)
 
     def validate(self, attrs):
         if attrs['new_password1'] != attrs['new_password2']:
             raise serializers.ValidationError(_("password1 and password2 didn't match"))
-        if not User_OTP.objects.filter(user__email=attrs['email'], otp=attrs['otp'], is_expire=False).exists():
-            raise serializers.ValidationError(_("OTP is invalide or Expired"))
+
+        if User_OTP.objects.filter(user__email=attrs['email'], is_expire=False).exists():
+            raise serializers.ValidationError(_("Please Validate Your OTP first."))
+        
         return attrs
 
     def save(self, validated_data):
-        otp = User_OTP.objects.get(otp=validated_data['otp'])
-        otp.user.set_password(validated_data['new_password1'])
-        otp.user.save()
-        otp.is_expire=True
-        otp.save()
-        return otp.user
+        user = User.objects.get(email=validated_data['email'])
+        user.set_password(validated_data['new_password1'])
+        user.save()
+        return user
         
-
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
