@@ -45,7 +45,7 @@ class BusinessSerializer(ModelSerializer):
 class EmployeePersonalInformationSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields=['first_name', 'last_name', 'date_of_birth']
+        fields=['first_name', 'last_name', 'gender', 'date_of_birth']
 
 class EmployeeAddressInformationSerializer(ModelSerializer):
     class Meta:
@@ -112,7 +112,7 @@ class EmployeeSerializer(ModelSerializer):
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'phone', 'date_of_birth']
+        fields = ['first_name', 'last_name', 'phone', 'gender', 'date_of_birth']
 
 class EmergencyContactSerializer(ModelSerializer):
     class Meta:

@@ -8,3 +8,12 @@ class UserRole(Enum):
     @classmethod
     def choices(cls):
         return tuple((i.name, i.value) for i in cls)
+
+class Gender(Enum):
+    MALE = "MALE"
+    FEMALE = "FEMALE"
+    GENDERLESS = "GENDERLESS"
+
+    @classmethod
+    def choices(cls):
+        return tuple((i.name, i.value) for i in cls)

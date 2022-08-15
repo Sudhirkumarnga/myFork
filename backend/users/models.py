@@ -3,7 +3,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
-from users.constants import UserRole
+from users.constants import UserRole, Gender
 from home.models import TimeStampedModel
 class User(AbstractUser):
     # WARNING!
@@ -29,6 +29,13 @@ class User(AbstractUser):
     role = models.CharField(
         _('Role of User'), max_length=255, blank=True, null=True,
         choices=[(type.value, type.value) for type in UserRole]
+    )
+    gender = models.CharField(
+        _('Gender of User'),
+        max_length=200,
+        choices=Gender.choices(),
+        null=True,
+        blank=True
     )
     date_of_birth = models.DateField(null=True, blank=True)
 

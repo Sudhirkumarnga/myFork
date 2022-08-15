@@ -66,7 +66,7 @@ class BusinessAddress(TimeStampedModel):
     address_line_one = models.TextField(null=True, blank=True)
     address_line_two = models.TextField(null=True, blank=True)
     city = models.ForeignKey(City, on_delete=models.CASCADE, null=True, blank=True)
-    country = models.ForeignKey(Country, on_delete=models.CASCADE, null=True, blank=True)
+    state = models.ForeignKey(Region, on_delete=models.CASCADE, null=True, blank=True)
     zipcode = models.CharField(_("ZipCode"), blank=True, null=True, max_length=255)
 
     class Meta:

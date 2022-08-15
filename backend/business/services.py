@@ -2,6 +2,8 @@ from django.core.mail import send_mail
 from allauth.utils import email_address_exists, generate_unique_username
 from smart_workhorse_33965.settings import EMAIL_HOST_USER
 from users.models import User
+import base64
+from django.core.files.base import ContentFile
 from business.models import (
     Business,
     Employee,
@@ -10,12 +12,21 @@ from business.models import (
     BusinessAddress,
 
 )
-import json
+
+def convert_image_from_bse64_to_blob(image):
+    imgstr = image.split(';base64,')
+    data = ContentFile(base64.b64decode(image), name='temp.jpg')
+    return data
+
 
 def update_profile(user,data):
     User.objects.filter(id=user.id).update(**data['personal_information'])
     if user.role == 'Organization Admin':
-        Business.objects.filter(user=user).update(**data['business_information'])
+        business = Business.objects.get(user=user)
+        business.profile_image = convert_image_from_bse64_to_blob(data['business_information']['profile_image'])
+        business.pay_frequency = data['business_information']['pay_frequency']
+        business.name = data['business_information']['pay_frequency']
+        business.save()
         BusinessAddress.objects.filter(business__user=user).update(**data['business_address'])
     else:
         EmergencyContact.objects.filter(employee__user=user).update(**data['emergency_contact'])

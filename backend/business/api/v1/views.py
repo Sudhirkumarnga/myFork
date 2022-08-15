@@ -194,7 +194,7 @@ class ProfileView(APIView):
             )
 
     def post(self, request):
-        try:
+        # try:
             update_profile(
                 self.request.user,
                 request.data
@@ -215,13 +215,13 @@ class ProfileView(APIView):
                 status=status.HTTP_201_CREATED,
                 headers={},
             )
-        except Exception as e:
-            return Response(
-                SmartWorkHorseResponse.get_response(
-                    success=False,
-                    message="Something went wrong in creating profile",
-                    status=SmartWorkHorseStatus.Error.value,
-                    error={str(e)},
-                ),
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        # except Exception as e:
+        #     return Response(
+        #         SmartWorkHorseResponse.get_response(
+        #             success=False,
+        #             message="Something went wrong in creating profile",
+        #             status=SmartWorkHorseStatus.Error.value,
+        #             error={str(e)},
+        #         ),
+        #         status=status.HTTP_400_BAD_REQUEST,
+        #     )

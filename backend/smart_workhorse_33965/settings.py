@@ -1,3 +1,4 @@
+# sourcery skip: de-morgan, remove-redundant-if, split-or-ifs, use-contextlib-suppress, use-named-expression
 """
 Django settings for smart_workhorse_33965 project.
 
@@ -71,6 +72,7 @@ LOCAL_APPS = [
     'users.apps.UsersConfig',
     "workside",
     'business',
+    'subscriptions'
 ]
 THIRD_PARTY_APPS = [
     'rest_framework',
@@ -88,6 +90,7 @@ THIRD_PARTY_APPS = [
     'django_filters',
     'corsheaders',
     'cities_light',
+    'tinymce',
 ]
 
 MODULES_APPS = get_modules()
@@ -308,3 +311,6 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 CITIES_LIGHT_APP_NAME = "business"
+
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

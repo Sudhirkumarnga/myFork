@@ -51,7 +51,7 @@ class SignupSerializer(serializers.ModelSerializer):
             request = request._request
         return request
 
-    def validate_email(self, email):
+    def validate_email(self, email):  # sourcery skip: merge-nested-ifs
         email = get_adapter().clean_email(email)
         if allauth_settings.UNIQUE_EMAIL:
             if email and email_address_exists(email):
