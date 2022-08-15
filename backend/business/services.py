@@ -25,7 +25,7 @@ def update_profile(user,data):
         business = Business.objects.get(user=user)
         business.profile_image = convert_image_from_bse64_to_blob(data['business_information']['profile_image'])
         business.pay_frequency = data['business_information']['pay_frequency']
-        business.name = data['business_information']['pay_frequency']
+        business.name = data['business_information']['name']
         business.save()
         BusinessAddress.objects.filter(business__user=user).update(**data['business_address'])
     else:
