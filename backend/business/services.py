@@ -15,7 +15,7 @@ from business.models import (
 
 def convert_image_from_bse64_to_blob(image):
     imgstr = image.split(';base64,')
-    data = ContentFile(base64.b64decode(image), name='temp.jpg')
+    data = ContentFile(base64.b64decode(image), name='profile_image.jpg')
     return data
 
 
@@ -36,6 +36,7 @@ def create_user_for_employee(data):
     user = User(
         first_name=data['personal_information']['first_name'],
         last_name=data['personal_information']['last_name'],
+        gender=data['personal_information']['gender'],
         date_of_birth=data['personal_information']['date_of_birth'],
         email=data['contact']['email'],
         phone = data['contact']['phone'],
@@ -56,6 +57,7 @@ def update_user_for_employee(data, instance):
     user = User.objects.get(id=instance.user.id)
     user.first_name=data['personal_information']['first_name']
     user.last_name=data['personal_information']['last_name']
+    user.gender = data['personal_information']['gender']
     user.date_of_birth=data['personal_information']['date_of_birth']
     user.email=data['contact']['email']
     user.phone = data['contact']['phone']
@@ -68,6 +70,7 @@ def create_employee(user,data, business_user):
     employee = Employee.objects.create(
         user=user,
         business= Business.objects.get(user=business_user),
+        profile_image = convert_image_from_bse64_to_blob(data['personal_information']['profile_image']),
         mobile = data['contact']['mobile'],
         address_line_one = data['address_information']['address_line_one'],
         address_line_two =data['address_information']['address_line_two'],
@@ -80,6 +83,7 @@ def create_employee(user,data, business_user):
 
 def update_employee(employee_user, data):
     employee = Employee.objects.get(user=employee_user)
+    employee.profile_image = convert_image_from_bse64_to_blob(data['personal_information']['profile_image'])
     employee.mobile = data['contact']['mobile']
     employee.address_line_one = data['address_information']['address_line_one']
     employee.address_line_two =data['address_information']['address_line_two']
@@ -98,9 +102,3 @@ def send_email_to_employee(user,password):
         [user.email],
         fail_silently=False,
     )
-
-def get_user_profile_data(queryset):
-    if queryset.role == 'Organization Admin':
-        pass
-    if queryset.role == 'Employee':
-        pass

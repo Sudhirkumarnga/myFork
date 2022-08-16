@@ -1,6 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 from django_countries.serializers import CountryFieldMixin
 from rest_framework import serializers
+from smart_workhorse_33965.settings import MEDIA_URL
 from users.models import User
 from business.models import (
     Business,
@@ -69,12 +70,12 @@ class EmployeeSerializer(ModelSerializer):
     work_information = serializers.SerializerMethodField()
     class Meta:
         model = Employee
-        fields = ['id','personal_information', 'contact', 'address_information', 'work_information']
+        fields = ['id', 'personal_information', 'contact', 'address_information', 'work_information']
     
-    def get_personal_information(self,obj):
-        return EmployeePersonalInformationSerializer(
-            obj.user,many=False
-        ).data
+    def get_personal_information(self, obj):
+        data = EmployeePersonalInformationSerializer(obj.user, many=False).data
+        data['profile_image'] = obj.profile_image.url or None
+        return data
 
     def get_contact(self,obj):
         data = EmployeeContactSerializer(

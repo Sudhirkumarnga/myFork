@@ -33,13 +33,14 @@ connect_default_signals(City)
 connect_default_signals(SubRegion)
 
 def user_directory_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT / user_<id>/<filename>
     return 'user/{0}/{1}'.format(instance.user.id, filename)
 
 
 def business_directory_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT / user_<id>/<filename>
     return 'business/{0}/{1}'.format(instance.id, filename)
+
+def employee_directory_path(instance, filename):
+    return 'employee/{0}/{1}'.format(instance.id, filename)
 
 class Business(TimeStampedModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -82,6 +83,7 @@ class BusinessAddress(TimeStampedModel):
 class Employee(TimeStampedModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     business = models.ForeignKey(Business, on_delete=models.CASCADE, null=True, blank=True)
+    profile_image = models.FileField(_('Profile Picture'), upload_to=employee_directory_path, null=True, blank=True)
     mobile = PhoneNumberField(null=True, blank=True)
     address_line_one = models.TextField(null=True, blank=True,)
     address_line_two = models.TextField(null=True, blank=True)
