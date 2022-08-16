@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from users.models import User
-from business.models import Employee, Business, Country, City
+from business.models import Employee, Business, Country, City, Region
 from business.api.v1.serializers import (
     BusinessSerializer,
     ProfileSerializer,
@@ -16,7 +16,8 @@ from business.api.v1.serializers import (
     BusinessEmployeeProfileSerializer,
     EmployeeSerializer, 
     CountrySerializer, 
-    CitySerializer
+    CitySerializer,
+    RegionSerializer
 ) 
 
 from business.services import (
@@ -33,6 +34,13 @@ class CityListApiView(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = CitySerializer
     queryset = City.objects.filter()
+    http_method_names = ['get']
+
+class RegionListAPIView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = RegionSerializer
+    queryset = Region.objects.filter()
+    http_method_names = ['get']
 
 class EmployeeViewset(ModelViewSet):
     serializer_class = EmployeeSerializer

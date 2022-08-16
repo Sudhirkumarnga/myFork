@@ -9,6 +9,7 @@ from business.models import (
     BusinessAddress, 
     Country, 
     City, 
+    Region,
     EmergencyContact
 )
 
@@ -28,6 +29,11 @@ class CountrySerializer(ModelSerializer):
 class CitySerializer(ModelSerializer):
     class Meta:
         model = City
+        fields = "__all__"
+
+class RegionSerializer(ModelSerializer):
+    class Meta:
+        model = Region
         fields = "__all__"
 
 class BusinessAddressSerializer(CountryFieldMixin,ModelSerializer):

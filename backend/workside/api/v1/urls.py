@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from workside.views import WorkSideViewSet, TaskViewSet
+from workside.api.v1.views import WorkSideViewSet, TaskViewSet
 
 router = DefaultRouter()
 
