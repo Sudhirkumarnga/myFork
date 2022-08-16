@@ -24,6 +24,7 @@ class WorkSide(TimeStampedModel):
     logo = models.FileField(_('Worksidet Logo'), upload_to=business_directory_path, null=True, blank=True)
     business = models.ForeignKey(Business, on_delete=models.CASCADE, null=True, blank=True)
     instruction_video = models.FileField(_('Profile Picture'), upload_to=business_directory_path, null=True, blank=True)
+    show_dtails = models.BooleanField(default=False) 
     is_active = models.BooleanField(default=True)
 
 
@@ -37,17 +38,14 @@ class WorkSide(TimeStampedModel):
 def workside_task_attachments_file_path(instance, filename):
     return 'business/{}/{}/{}/{}'.format(instance.business.id, instance.workside.name,instance.id, filename)
 
-class TaskAttachments(TimeStampedModel):
-    file = models.FileField(_('Task attachments'), upload_to=workside_task_attachments_file_path, null=True, blank=True)
-
 
 class Task(TimeStampedModel):
-    name = models.CharField(_("WorkSide Name"), blank=True, null=True, max_length=255)
-    description = models.TextField(_("WorkSide Description"), blank=True, null=True)
-    notes = models.TextField(_("WorkSide Description"), blank=True, null=True)
+    name = models.CharField(_("Task Name"), blank=True, null=True, max_length=255)
+    description = models.TextField(_("Task Description"), blank=True, null=True)
+    notes = models.TextField(_("Task Notes"), blank=True, null=True)
     priority =  models.CharField(_("Task Critically"), max_length=10, choices=Priority.choices(), null=True, blank=True)
     frequency_of_task = models.CharField(_("Frequency Of Task"), max_length=10, choices=Frequency.choices(), null=True, blank=True)
-    workside = models.ForeignKey(WorkSide, on_delete=models.CASCADE)
+    workside = models.ForeignKey(WorkSide, on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         verbose_name = "Task"
@@ -55,6 +53,18 @@ class Task(TimeStampedModel):
 
     def __str__(self):
         return f'{self.name}'
+
+class TaskAttachments(TimeStampedModel):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, null=True, blank=True)
+    file = models.FileField(_('Task attachments'), upload_to=workside_task_attachments_file_path, null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Task Attachment"
+        verbose_name_plural = "Task Attachments"
+
+    def __str__(self):
+        return f'{self.task.name}'
+
 
 # class Event(TimeStampedModel):
 #     name = models.CharField(_("WorkSide Name"), blank=True, null=True, max_length=255)
