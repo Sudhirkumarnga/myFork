@@ -51,6 +51,10 @@ class EmployeeViewset(ModelViewSet):
         IsOrganizationAdmin
     ]
 
+    def get_queryset(self):
+        queryset = self.queryset.filter(business__user=self.request.user)
+        return queryset
+
     def get_serializer_context(self):
         context = super(EmployeeViewset, self).get_serializer_context()
         context.update({"request": self.request})
