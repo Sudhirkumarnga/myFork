@@ -49,9 +49,17 @@ def create_task(validated_data):
         TaskAttachments.objects.create(task=task, file=convert_file_from_bse64_to_blob(val))
     return task
 
-def create_task_attachement(validated_data):
+def create_task_attachement(validated_data,request):
     task_attachement = TaskAttachments.objects.create(
-        task=Task.objects.get(id=validated_data['id']),
-        file=convert_file_from_bse64_to_blob(validated_data['file'])
+        task=validated_data['task'],
+        file=convert_file_from_bse64_to_blob(request.data['file'])
     )
     return task_attachement
+
+def update_serializer_data(serializer_data):
+    for data in serializer_data:
+        try:
+            data['file'] = TaskAttachments.objects.get(id=data['id']).file.url
+        except Exception:
+            data['file'] = None
+    return serializer_data

@@ -90,5 +90,6 @@ class TaskAttachmentSerializer(ModelSerializer):
         fields = ('id','task')
     
     def create(self, validated_data):
-        task_attachement = create_task_attachement(validated_data)
+        request = self.context['request']
+        task_attachement = create_task_attachement(validated_data,request)
         return task_attachement

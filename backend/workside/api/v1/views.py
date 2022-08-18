@@ -9,6 +9,10 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import ListAPIView
 from workside.models import *
 from workside.api.v1.serializers import WorksiteSerializer, TaskSerializer, TaskAttachmentSerializer
+from workside.services import (
+    update_serializer_data
+)
+
 
 class WorkSiteViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated, IsOrganizationAdmin]
@@ -93,18 +97,26 @@ class TaskAttachmentViewSet(ModelViewSet):
     queryset = TaskAttachments.objects.filter()
     http_method_names = ['get','post','delete']
 
+    def get_serializer_context(self):
+        context = super(TaskAttachmentViewSet, self).get_serializer_context()
+        context.update({"request": self.request})
+        return context
+
     def retrieve(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
             serializer = self.get_serializer(instance)
             serializer_data = serializer.data
-            serializer_data['file'] = instance.file.url
+            try:
+                serializer_data['file'] = instance.file.url
+            except Exception:
+                serializer_data['file'] = None
             return Response(
                 SmartWorkHorseResponse.get_response(
                     success=True,
                     message="Task Attachement Data Successfully returned.",
                     status=SmartWorkHorseStatus.Success.value,
-                    response=serializer.data
+                    response=serializer_data
                 ),
                 status=status.HTTP_200_OK,
                 headers={},
@@ -126,13 +138,11 @@ class TaskAttachmentViewSet(ModelViewSet):
             page = self.paginate_queryset(queryset)
             if page is not None:
                 serializer = self.get_serializer(page, many=True)
-                serializer_data = serializer.data
-                serializer_data['file'] = queryset.file.url
+                serializer_data = update_serializer_data(serializer.data)
                 return self.get_paginated_response(serializer_data)
 
             serializer = self.get_serializer(queryset, many=True)
-            serializer_data = serializer.data
-            serializer_data['file'] = queryset.file.url
+            serializer_data = update_serializer_data(serializer.data)
             return Response(
                     SmartWorkHorseResponse.get_response(
                         success=True,
