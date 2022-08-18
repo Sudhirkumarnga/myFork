@@ -93,6 +93,67 @@ class TaskAttachmentViewSet(ModelViewSet):
     queryset = TaskAttachments.objects.filter()
     http_method_names = ['get','post','delete']
 
+    def retrieve(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            serializer = self.get_serializer(instance)
+            serializer_data = serializer.data
+            serializer_data['file'] = instance.file.url
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=True,
+                    message="Task Attachement Data Successfully returned.",
+                    status=SmartWorkHorseStatus.Success.value,
+                    response=serializer.data
+                ),
+                status=status.HTTP_200_OK,
+                headers={},
+            )
+        except Exception as e:
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=False,
+                    message="Something went wrong in Task Attachement data.",
+                    status=SmartWorkHorseStatus.Error.value,
+                    error={str(e)},
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+    def list(self, request, *args, **kwargs):
+        try:            
+            queryset = self.filter_queryset(self.get_queryset())
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                serializer_data = serializer.data
+                serializer_data['file'] = queryset.file.url
+                return self.get_paginated_response(serializer_data)
+
+            serializer = self.get_serializer(queryset, many=True)
+            serializer_data = serializer.data
+            serializer_data['file'] = queryset.file.url
+            return Response(
+                    SmartWorkHorseResponse.get_response(
+                        success=True,
+                        message="Task Attachement Data Successfully returned.",
+                        status=SmartWorkHorseStatus.Success.value,
+                        response=serializer_data
+                    ),
+                    status=status.HTTP_200_OK,
+                    headers={},
+                )
+        except Exception as e:
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=False,
+                    message="Something went wrong in Task Attachement data.",
+                    status=SmartWorkHorseStatus.Error.value,
+                    error={str(e)},
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
     def create(self, request, *args, **kwargs):
         try:
             serializer = self.get_serializer(data=request.data)
@@ -100,7 +161,7 @@ class TaskAttachmentViewSet(ModelViewSet):
             self.perform_create(serializer)
             queryset = TaskAttachments.objects.get(id=serializer.data['id'])
             serializer_data = serializer.data
-            serializer_data['log'] = queryset.file.url
+            serializer_data['file'] = queryset.file.url
             return Response(
                 SmartWorkHorseResponse.get_response(
                     success=True,
