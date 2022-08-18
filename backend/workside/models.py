@@ -38,7 +38,7 @@ class WorkSite(TimeStampedModel):
         return f'{self.name}'
 
 def workside_task_attachments_file_path(instance, filename):
-    return 'business/{}/{}/{}/{}'.format(instance.business.id, instance.workside.name,instance.id, filename)
+    return 'business/{}/{}/{}/{}'.format(instance.task.worksite.business.id, instance.task.worksite.name,instance.id, filename)
 
 
 class Task(TimeStampedModel):
