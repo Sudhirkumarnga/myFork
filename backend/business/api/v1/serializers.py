@@ -80,7 +80,10 @@ class EmployeeSerializer(ModelSerializer):
     
     def get_personal_information(self, obj):
         data = EmployeePersonalInformationSerializer(obj.user, many=False).data
-        data['profile_image'] = obj.profile_image.url or None
+        try:
+            data['profile_image'] = obj.profile_image.url
+        except Exception:
+            data['profile_image'] = None
         return data
 
     def get_contact(self,obj):
