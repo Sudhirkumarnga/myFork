@@ -32,7 +32,7 @@ class WorkSiteViewSet(ModelViewSet):
             self.perform_create(serializer)
             queryset = WorkSite.objects.get(id=serializer.data['id'])
             serializer_data = serializer.data
-            serializer_data['log'] = queryset.logo.url
+            serializer_data['logo'] = queryset.logo.url
             serializer_data['instruction_video'] = queryset.instruction_video.url
             return Response(
                 SmartWorkHorseResponse.get_response(
