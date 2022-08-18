@@ -92,3 +92,33 @@ class TaskAttachmentViewSet(ModelViewSet):
     serializer_class = TaskAttachmentSerializer
     queryset = TaskAttachments.objects.filter()
     http_method_names = ['get','post','delete']
+
+    def create(self, request, *args, **kwargs):
+        try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            queryset = TaskAttachments.objects.get(id=serializer.data['id'])
+            serializer_data = serializer.data
+            serializer_data['log'] = queryset.file.url
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=True,
+                    message="Task Attachemnet Successfully Created.",
+                    status=SmartWorkHorseStatus.Success.value,
+                    response=serializer_data
+                ),
+                status=status.HTTP_201_CREATED,
+                headers={},
+            )
+        except Exception as e:
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=False,
+                    message="Something went wrong in creating Task Attachemnet",
+                    status=SmartWorkHorseStatus.Error.value,
+                    error={str(e)},
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+

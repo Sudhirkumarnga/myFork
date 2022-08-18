@@ -87,7 +87,7 @@ class TaskSerializer(ModelSerializer):
 class TaskAttachmentSerializer(ModelSerializer):
     class Meta:
         model = TaskAttachments
-        fields = "__all__"
+        fields = ('id','task')
     
     def create(self, validated_data):
         task_attachement = create_task_attachement(validated_data)
