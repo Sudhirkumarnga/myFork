@@ -52,7 +52,7 @@ class WorksiteSerializer(ModelSerializer):
 
     def get_tasks(self, obj):
         return TaskSerializerforWorksite(
-            Task.objects.filter(workside=obj),
+            Task.objects.filter(worksite=obj),
             many=True
         ).data
 
