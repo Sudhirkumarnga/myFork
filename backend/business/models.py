@@ -18,19 +18,24 @@ User = get_user_model()
 class Country(AbstractCountry):
     pass
 
+
 class SubRegion(AbstractSubRegion):
     pass
+
 
 class Region(AbstractRegion):
     pass
 
+
 class City(AbstractCity):
     timezone = models.CharField(max_length=40)
+
 
 connect_default_signals(Country)
 connect_default_signals(Region)
 connect_default_signals(City)
 connect_default_signals(SubRegion)
+
 
 def user_directory_path(instance, filename):
     return 'user/{0}/{1}'.format(instance.user.id, filename)
@@ -39,8 +44,10 @@ def user_directory_path(instance, filename):
 def business_directory_path(instance, filename):
     return 'business/{0}/{1}'.format(instance.id, filename)
 
+
 def employee_directory_path(instance, filename):
     return 'employee/{0}/{1}'.format(instance.id, filename)
+
 
 class Business(TimeStampedModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -74,10 +81,8 @@ class BusinessAddress(TimeStampedModel):
         verbose_name = "Business Address"
         verbose_name_plural = "Business Address"
 
-
     def __str__(self):
         return f'{self.business.name}'
-
 
 
 class Employee(TimeStampedModel):
@@ -85,14 +90,13 @@ class Employee(TimeStampedModel):
     business = models.ForeignKey(Business, on_delete=models.CASCADE, null=True, blank=True)
     profile_image = models.FileField(_('Profile Picture'), upload_to=employee_directory_path, null=True, blank=True)
     mobile = PhoneNumberField(null=True, blank=True)
-    address_line_one = models.TextField(null=True, blank=True,)
+    address_line_one = models.TextField(null=True, blank=True, )
     address_line_two = models.TextField(null=True, blank=True)
     city = models.ForeignKey(City, on_delete=models.CASCADE, null=True, blank=True)
     position = models.CharField(max_length=20, null=True, blank=True)
     hourly_rate = models.IntegerField(default=0)
     is_owner = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-
 
     class Meta:
         verbose_name = "Employee"
@@ -108,7 +112,6 @@ class EmergencyContact(TimeStampedModel):
     phone = PhoneNumberField(null=True, blank=True)
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name="emergency_contact")
     is_active = models.BooleanField(default=True)
-
 
     class Meta:
         verbose_name = "EmergencyContact"

@@ -6,9 +6,15 @@ from smart_workhorse_33965.response import SmartWorkHorseResponse, SmartWorkHors
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from smart_workhorse_33965.permissions import IsOrganizationAdmin
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.generics import ListAPIView
+from rest_framework.decorators import action
 from workside.models import *
-from workside.api.v1.serializers import WorksiteSerializer, TaskSerializer, TaskAttachmentSerializer
+from workside.api.v1.serializers import (
+    WorksiteSerializer,
+    TaskSerializer,
+    TaskAttachmentSerializer,
+    FrequencyTaskSerializer,
+    EventSerializer
+)
 from workside.services import (
     update_serializer_data
 )
@@ -18,7 +24,7 @@ class WorkSiteViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated, IsOrganizationAdmin]
     serializer_class = WorksiteSerializer
     queryset = WorkSite.objects.filter()
-    http_method_names = ['get','post', 'put', 'patch', 'delete']
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
 
     def get_serializer_context(self):
         context = super(WorkSiteViewSet, self).get_serializer_context()
@@ -89,13 +95,35 @@ class TaskViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated, IsOrganizationAdmin]
     serializer_class = TaskSerializer
     queryset = Task.objects.filter()
-    http_method_names = ['get','post', 'put', 'patch', 'delete']
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+
+    def get_queryset(self):
+        queryset = self.queryset.filter(worksite__business__user=self.request.user)
+        return queryset
+
+    @action(detail=False, methods=["GET"])
+    def task_by_frequency(self, request, *args, **kwargs):
+        # try:
+        business = Business.objects.get(user=self.request.user)
+        serializer = FrequencyTaskSerializer(business, many=False)
+
+        return Response(
+            SmartWorkHorseResponse.get_response(
+                success=True,
+                message="Task Attachement Data Successfully returned.",
+                status=SmartWorkHorseStatus.Success.value,
+                response=serializer.data
+            ),
+            status=status.HTTP_200_OK,
+            headers={},
+        )
+
 
 class TaskAttachmentViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated, IsOrganizationAdmin]
     serializer_class = TaskAttachmentSerializer
     queryset = TaskAttachments.objects.filter()
-    http_method_names = ['get','post','delete']
+    http_method_names = ['get', 'post', 'delete']
 
     def get_serializer_context(self):
         context = super(TaskAttachmentViewSet, self).get_serializer_context()
@@ -133,7 +161,7 @@ class TaskAttachmentViewSet(ModelViewSet):
             )
 
     def list(self, request, *args, **kwargs):
-        try:            
+        try:
             queryset = self.filter_queryset(self.get_queryset())
             page = self.paginate_queryset(queryset)
             if page is not None:
@@ -144,15 +172,15 @@ class TaskAttachmentViewSet(ModelViewSet):
             serializer = self.get_serializer(queryset, many=True)
             serializer_data = update_serializer_data(serializer.data)
             return Response(
-                    SmartWorkHorseResponse.get_response(
-                        success=True,
-                        message="Task Attachement Data Successfully returned.",
-                        status=SmartWorkHorseStatus.Success.value,
-                        response=serializer_data
-                    ),
-                    status=status.HTTP_200_OK,
-                    headers={},
-                )
+                SmartWorkHorseResponse.get_response(
+                    success=True,
+                    message="Task Attachement Data Successfully returned.",
+                    status=SmartWorkHorseStatus.Success.value,
+                    response=serializer_data
+                ),
+                status=status.HTTP_200_OK,
+                headers={},
+            )
         except Exception as e:
             return Response(
                 SmartWorkHorseResponse.get_response(
@@ -193,3 +221,13 @@ class TaskAttachmentViewSet(ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+
+class EventView(ModelViewSet):
+    queryset = Event.objects.filter()
+    serializer_class = EventSerializer
+    permission_classes = [IsAuthenticated, IsOrganizationAdmin]
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+
+    def get_queryset(self):
+        queryset = self.queryset.filter(worksite__business__user=self.request.user)
+        return queryset
