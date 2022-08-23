@@ -7,7 +7,8 @@ import {
   RequestLeaveScene,
   HomeScene,
   EmployeeListScene,
-  AllWorksiteScene
+  AllWorksiteScene,
+  Scheduler
 } from '../UI'
 import { Fonts, Colors } from '../res'
 import Images from '../res/Images'
@@ -78,7 +79,7 @@ export const TabBar = props => {
       />
       <Tab.Screen
         name='Scheduler'
-        component={HomeScene}
+        component={Scheduler}
         options={{
           tabBarIcon: ({ focussed, color }) =>
             defaultOptions(focussed, color, 'scheduler')

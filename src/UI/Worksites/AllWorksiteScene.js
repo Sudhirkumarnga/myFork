@@ -1,38 +1,73 @@
-import React from 'react'
+import React, { useCallback, useState } from 'react'
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator
 } from 'react-native'
-import { BaseScene, Header, Button, Fab } from '../Common'
+import { Header, Fab } from '../Common'
 import { Colors, Fonts } from '../../res'
+import Strings from '../../res/Strings'
+import { useFocusEffect } from '@react-navigation/native'
+import Toast from 'react-native-simple-toast'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { getAllWorksites } from '../../api/business'
 
-export default class AllWorksiteScene extends BaseScene {
-  constructor (props) {
-    super(props)
-    this.state = {
-      isVisible: 'false'
+export default function AllWorksiteScene ({ navigation }) {
+  const [state, setState] = useState({
+    loading: false,
+    allWorksites: []
+  })
+  const { loading, allWorksites } = state
+
+  const handleChange = (key, value) => {
+    setState(pre => ({ ...pre, [key]: value }))
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      _getAllWorksites()
+    }, [])
+  )
+
+  const _getAllWorksites = async () => {
+    try {
+      handleChange('loading', true)
+      const token = await AsyncStorage.getItem('token')
+      const res = await getAllWorksites(token)
+      console.warn('getAllWorksites', res?.data)
+      handleChange('loading', false)
+      handleChange('allWorksites', res?.data?.results)
+    } catch (error) {
+      handleChange('loading', false)
+      console.warn('err', error?.response?.data)
+      const showWError = Object.values(error.response?.data?.error)
+      if (showWError.length > 0) {
+        Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
+      } else {
+        Toast.show(`Error: ${JSON.stringify(error)}`)
+      }
     }
   }
-
-  renderButton () {
-    return <Button style={styles.footerButton} title={this.ls('subscribe')} />
-  }
-
-  renderContent () {
+  console.warn('allWorksites', allWorksites)
+  const renderContent = () => {
     return (
       <ScrollView style={styles.childContainer}>
-        <Text style={styles.title}>{this.ls('listWorksites')}</Text>
-        {[1, 2, 3, 1, 2, 3, 1, 2, 3].map(item => (
+        <Text style={styles.title}>{Strings.listWorksites}</Text>
+        {allWorksites?.map(item => (
           <View style={styles.cellContainer}>
             <View>
-              <Text style={styles.cellTitle}>Worksite no 1</Text>
-              <Text style={styles.description}>Worksite location:</Text>
+              <Text style={styles.cellTitle}>
+                {item?.personal_information?.name}
+              </Text>
+              <Text style={styles.description}>
+                {item?.personal_information?.location}
+              </Text>
             </View>
             <TouchableOpacity
-              onPress={() => this.props.navigation.navigate('worksiteDetail')}
+              onPress={() => navigation.navigate('worksiteDetail', { item })}
               style={{ justifyContent: 'flex-end' }}
             >
               <Text
@@ -50,19 +85,25 @@ export default class AllWorksiteScene extends BaseScene {
     )
   }
 
-  render () {
+  if (loading) {
     return (
-      <View style={styles.container}>
-        <Header
-          title={this.ls('worksites')}
-          onLeftPress={() => this.props.navigation.goBack()}
-          leftButton
-        />
-        {this.renderContent()}
-        <Fab onPress={() => this.props.navigation.navigate('addWorksite')} />
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator size={'large'} color={Colors.BACKGROUND_BG} />
       </View>
     )
   }
+
+  return (
+    <View style={styles.container}>
+      <Header
+        title={Strings.worksites}
+        onLeftPress={() => navigation.goBack()}
+        leftButton
+      />
+      {renderContent()}
+      <Fab onPress={() => navigation.navigate('addWorksite')} />
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({

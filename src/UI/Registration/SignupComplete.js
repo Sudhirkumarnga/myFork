@@ -49,11 +49,13 @@ export default class SignupComplete extends BaseScene {
       const res = await signupUser(payload)
       this.handleChange('loading', false, true)
       console.warn('signupUser', res?.data)
-      setUser(res?.data?.user)
-      await AsyncStorage.setItem('token', res?.data?.token)
-      await AsyncStorage.setItem('user', JSON.stringify(res?.data?.user))
-      this.props.navigation.navigate('businessProfileCreation')
-      Toast.show('Signed up Successfully!')
+      // await AsyncStorage.setItem('token', res?.data?.response?.token)
+      // if (res?.data?.user) {
+      //   setUser(res?.data?.user)
+      //   await AsyncStorage.setItem('user', res?.data?.user)
+      // }
+      this.props.navigation.navigate('VerifyAccount', { email: values?.email })
+      Toast.show('Signed up Successfully, Please verify your account!')
     } catch (error) {
       console.warn('error', error)
       this.handleChange('loading', false, true)

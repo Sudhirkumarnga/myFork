@@ -11,6 +11,7 @@ import ProfileScene from "./ProfileScene"
 import ChooseEnvScene from "./ChooseEnvScene"
 import BusinessProfileScene from "./BusinessProfileScene"
 import SignupComplete from "./SignupComplete"
+import VerifyAccount from "./VerifyAccount"
 module.exports = {
   LoginScene,
   SignUpScene,
@@ -24,5 +25,6 @@ module.exports = {
   ProfileScene,
   ChooseEnvScene,
   BusinessProfileScene,
-  SignupComplete
+  SignupComplete,
+  VerifyAccount
 }

@@ -25,10 +25,12 @@ import {
   SignupComplete,
   EmployeesView,
   MessageChat,
-  GroupMessageScene
+  GroupMessageScene,
+  VerifyAccount
 } from "../UI"
 import { drawerNavigator } from "./DrawerNavigation"
 import { TabBar } from "./TabBar"
+import AuthLoading from "../UI/AuthLoading"
 const Stack = createStackNavigator()
 
 export const AuthNavigator = props => {
@@ -39,10 +41,12 @@ export const AuthNavigator = props => {
       headerMode="none"
     >
       <Stack.Screen name={"splash"} component={SplashScene} />
+      <Stack.Screen name={"AuthLoading"} component={AuthLoading} />
       <Stack.Screen name={"chooseEnv"} component={ChooseEnvScene} />
 
       <Stack.Screen name={"registration"} component={RegistrationScene} />
       <Stack.Screen name={"signupComplete"} component={SignupComplete} />
+      <Stack.Screen name={"VerifyAccount"} component={VerifyAccount} />
       <Stack.Screen name={"login"} component={LoginScene} />
       <Stack.Screen name={"tokenScene"} component={TokenScene} />
       <Stack.Screen name={"forgotPwd"} component={ForgotPasswordScene} />

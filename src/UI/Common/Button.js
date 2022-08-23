@@ -20,7 +20,9 @@ class Button extends BaseComponent {
           this.props.style,
           {
             opacity: this.props.disabled ? 0.7 : 1,
-            backgroundColor: this.props.isWhiteBg
+            backgroundColor: this.props.backgroundColor
+              ? this.props.backgroundColor
+              : this.props.isWhiteBg
               ? Colors.WHITE
               : Colors.BUTTON_BG
           }

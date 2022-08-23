@@ -1,4 +1,6 @@
-import React from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useFocusEffect } from '@react-navigation/native'
+import React, { useCallback, useState } from 'react'
 import {
   ScrollView,
   View,
@@ -6,36 +8,74 @@ import {
   StyleSheet,
   FlatList,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator
 } from 'react-native'
+import Toast from 'react-native-simple-toast'
+import { getAllEmployee } from '../../api/business'
 import { Fonts, Colors } from '../../res'
 import Sample from '../../res/Images/common/sample.png'
 
 export default function EmployeeListScene ({ navigation }) {
+  const [state, setState] = useState({
+    loading: false,
+    allEmployee: []
+  })
+  const { loading, allEmployee } = state
+
+  const handleChange = (key, value) => {
+    setState(pre => ({ ...pre, [key]: value }))
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      _getAllEmployee()
+    }, [])
+  )
+  // console.warn('allEmployee',allEmployee);
+  const _getAllEmployee = async () => {
+    try {
+      handleChange('loading', true)
+      const token = await AsyncStorage.getItem('token')
+      const res = await getAllEmployee(token)
+      console.warn('getAllEmployee', res?.data)
+      handleChange('loading', false)
+      handleChange('allEmployee', res?.data?.results)
+    } catch (error) {
+      handleChange('loading', false)
+      console.warn('err', error?.response?.data)
+      const showWError = Object.values(error.response?.data?.error)
+      if (showWError.length > 0) {
+        Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
+      } else {
+        Toast.show(`Error: ${JSON.stringify(error)}`)
+      }
+    }
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.hourly}>Hourly rate</Text>
+      {loading && (
+        <View style={{ marginBottom: 10, width: '100%', alignItems: 'center' }}>
+          <ActivityIndicator color={Colors.BACKGROUND_BG} size={'small'} />
+        </View>
+      )}
       <FlatList
         scrollEnabled={false}
         style={{ width: '100%' }}
-        data={[
-          { id: 1 },
-          { id: 2 },
-          { id: 2 },
-          { id: 2 },
-          { id: 1 },
-          { id: 2 },
-          { id: 2 },
-          { id: 2 }
-        ]}
+        data={allEmployee}
         renderItem={({ item, index }) => (
           <TouchableOpacity
-            onPress={() => navigation.navigate('employeesView')}
+            onPress={() => navigation.navigate('employeesView', { item })}
             style={styles.listContainer}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Image
-                source={Sample}
+                source={
+                  item?.personal_information?.profile_image
+                    ? { uri: item?.personal_information?.profile_image }
+                    : Sample
+                }
                 style={{
                   width: 50,
                   height: 50,
@@ -44,9 +84,13 @@ export default function EmployeeListScene ({ navigation }) {
                 }}
               />
               <View>
-                <Text style={styles.title}>John Doe</Text>
-                <Text style={styles.job}>Housekeeper</Text>
-                <Text style={styles.location}>Location:</Text>
+                <Text style={styles.title}>
+                  {item?.personal_information?.first_name}
+                </Text>
+                <Text style={styles.job}>
+                  {item?.work_information?.position}
+                </Text>
+                {/* <Text style={styles.location}>{item?.}</Text> */}
               </View>
             </View>
             <View
@@ -56,7 +100,9 @@ export default function EmployeeListScene ({ navigation }) {
                 height: '100%'
               }}
             >
-              <Text style={styles.title}>$10/hr</Text>
+              <Text style={styles.title}>
+                ${item?.work_information?.hourly_rate}/hr
+              </Text>
               <Text style={styles.message}>Message</Text>
             </View>
           </TouchableOpacity>

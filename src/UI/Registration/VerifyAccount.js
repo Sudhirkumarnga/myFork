@@ -13,6 +13,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import Toast from 'react-native-simple-toast'
 import { resetEmail, verifyEmail } from '../../api/auth'
 import OTPInputView from '@twotalltotems/react-native-otp-input'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export default class TokenScene extends BaseScene {
   constructor (props) {
@@ -36,18 +37,15 @@ export default class TokenScene extends BaseScene {
         email,
         otp: this.state.code
       }
-      console.warn('payload', payload)
       const res = await verifyEmail(payload)
-      console.warn('verifyEmail', res)
+      console.warn('verifyEmail', res?.data)
       this.handleChange('loading', false)
-      this.props.navigation.navigate('resetPwd', {
-        email
-      })
+      Toast.show('Your account has been verified!')
+      await AsyncStorage.setItem('token', res?.data?.response?.token)
+      this.props.navigation.navigate('businessProfileCreation')
       // setUser(res?.data?.user)
       // await AsyncStorage.setItem('token', res?.data?.token)
-      Toast.show('Your email has been verified!')
     } catch (error) {
-      console.warn('error',error?.response?.data);
       this.handleChange('loading', false)
       Toast.show(`Error: Invalid OTP!`)
     }
@@ -73,7 +71,6 @@ export default class TokenScene extends BaseScene {
       Toast.show(`Error: ${error.message}`)
     }
   }
-  
 
   renderTextInput () {
     return (

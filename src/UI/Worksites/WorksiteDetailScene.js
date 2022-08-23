@@ -1,43 +1,65 @@
-import React from 'react'
-import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native'
-import { BaseScene, Header, Button } from '../Common'
+import React, { useState } from 'react'
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Dimensions,
+  TouchableOpacity
+} from 'react-native'
+import { Header, Button } from '../Common'
 import { Colors, Fonts } from '../../res'
 import PrimaryTextInput from '../Common/PrimaryTextInput'
-const { width } = Dimensions.get('window')
+import Strings from '../../res/Strings'
 
-export default class WorksiteDetailScene extends BaseScene {
-  constructor (props) {
-    super(props)
-    this.state = {
-      info: [
-        { title: 'Worksite Name:', description: 'Worksite number 1' },
-        { title: 'Worksite Location:', description: 'Worksite Location' },
-        { title: 'Worksite Location:', description: 'Worksite Location' },
-        { title: 'Description:', description: 'Worksite description' },
-        { title: 'Worksite Location:', description: 'Worksite Location' },
-        {
-          title: 'Notes:',
-          description:
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magnaaliqua.'
-        },
-        { title: 'Monthly rate:', description: 'Monthly rate info' },
-        { title: 'Cleaning rate by day:', description: 'Day selected' },
-        { title: 'Desired time:', description: 'Desired time:' }
-      ]
-    }
-  }
+export default function WorksiteDetailScene ({ navigation, route }) {
+  const worksiteData = route?.params?.item
+  const [state, setState] = useState({
+    info: [
+      {
+        title: 'Worksite Name:',
+        description: worksiteData?.personal_information?.name
+      },
+      {
+        title: 'Worksite Location:',
+        description: worksiteData?.personal_information?.location
+      },
+      {
+        title: 'Description:',
+        description: worksiteData?.personal_information?.description
+      },
+      {
+        title: 'Notes:',
+        description: worksiteData?.personal_information?.notes
+      },
+      {
+        title: 'Monthly rate:',
+        description: '$ ' + worksiteData?.personal_information?.monthly_rates
+      },
+      {
+        title: 'Cleaning rate by day:',
+        description: worksiteData?.personal_information?.clear_frequency_by_day
+      },
+      {
+        title: 'Desired time:',
+        description: worksiteData?.personal_information?.desired_time
+      }
+    ]
+  })
 
-  renderButtons () {
+  const { info } = state
+
+  const renderButtons = () => {
     return (
       <View style={{ width: '100%', alignItems: 'center', marginBottom: 20 }}>
         <Button
-          onPress={() => this.props.navigation.navigate('createTask')}
+          onPress={() => navigation.navigate('createTask', { worksiteData })}
           style={styles.footerButton}
-          title={this.ls('createTask')}
+          title={Strings.createTask}
         />
         <Button
           style={[styles.footerWhiteButton]}
-          title={this.ls('edit')}
+          title={Strings.edit}
           icon={'edit'}
           isWhiteBg
           iconStyle={{
@@ -59,28 +81,28 @@ export default class WorksiteDetailScene extends BaseScene {
             tintColor: Colors.GREEN_COLOR,
             resizeMode: 'contain'
           }}
-          title={this.ls('deleteWorksite')}
+          title={Strings.deleteWorksite}
         />
       </View>
     )
   }
 
-  renderWorksiteInfo () {
+  const renderWorksiteInfo = () => {
     return (
       <View style={styles.childContainer}>
-        <Text style={styles.title}>{this.ls('worksiteInfo')}</Text>
-        {this.state.info.map((item, index) => {
+        <Text style={styles.title}>{Strings.worksiteInfo}</Text>
+        {info.map((item, index) => {
           return (
-            <View style={styles.cellContainer}>
+            <View key={index} style={styles.cellContainer}>
               <Text style={styles.description}>{item.title}</Text>
               <Text style={styles.cellTitle}>{item.description}</Text>
-              {item.title.includes('day') && (
+              {/* {item.title.includes('day') && (
                 <PrimaryTextInput
                   style={{ width: '120%', alignItems: 'flex-end' }}
                   dropdown
                   items={[{ value: 'Sunday', label: 'Sunday' }]}
                 />
-              )}
+              )} */}
             </View>
           )
         })}
@@ -88,41 +110,81 @@ export default class WorksiteDetailScene extends BaseScene {
     )
   }
 
-  renderContactInfo () {
+  const renderContactInfo = () => {
     return (
       <View style={styles.childContainer}>
-        <Text style={styles.title}>{this.ls('contactInfo')}</Text>
+        <Text style={styles.title}>{Strings.contactInfo}</Text>
         <View style={styles.cellContainer}>
           <Text style={styles.description}>{'Name'}</Text>
-          <Text style={styles.cellTitle}>{'John doe'}</Text>
+          <Text style={styles.cellTitle}>
+            {worksiteData?.contact_person?.contact_person_name}
+          </Text>
+        </View>
+        <View style={styles.cellContainer}>
+          <Text style={styles.description}>{'Phone number:'}</Text>
+          <Text style={styles.cellTitle}>
+            {worksiteData?.contact_person?.contact_phone_number}
+          </Text>
+        </View>
+        <Text style={styles.title}>Tasks</Text>
+        <View
+          style={[
+            {
+              width: '110%',
+              borderBottomWidth: 1,
+              borderBottomColor: Colors.MESSAGEB_BOX_LIGHT,
+              paddingBottom: 5,
+              flexDirection: 'row',
+              justifyContent: 'space-between'
+            }
+          ]}
+        >
+          <View>
+            <Text style={styles.cellTitle}>task 1</Text>
+          </View>
+          <TouchableOpacity
+            style={{ justifyContent: 'flex-end' }}
+            // onPress={() => navigation.navigate('worksiteDetail', { item })}
+          >
+            <Text
+              style={[
+                styles.cellTitle,
+                { color: Colors.BLUR_TEXT, ...Fonts.poppinsRegular(13) }
+              ]}
+            >
+              View Details
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
     )
   }
 
-  renderContent () {
+  const renderContent = () => {
     return (
       <ScrollView
         style={{ width: '100%', height: '100%' }}
         contentContainerStyle={{ alignItems: 'center' }}
       >
         <View style={styles.childContainer}>
-          {this.renderWorksiteInfo()}
-          {this.renderContactInfo()}
-          {this.renderButtons()}
+          {renderWorksiteInfo()}
+          {renderContactInfo()}
+          {renderButtons()}
         </View>
       </ScrollView>
     )
   }
 
-  render () {
-    return (
-      <View style={styles.container}>
-        <Header title={this.ls('worksites')} leftButton />
-        {this.renderContent()}
-      </View>
-    )
-  }
+  return (
+    <View style={styles.container}>
+      <Header
+        onLeftPress={() => navigation.goBack()}
+        title={Strings.worksites}
+        leftButton
+      />
+      {renderContent()}
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({

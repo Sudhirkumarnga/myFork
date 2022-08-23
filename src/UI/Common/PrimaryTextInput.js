@@ -74,7 +74,7 @@ class PrimaryTextInput extends Component {
   borderColor () {
     return this.state.isFocused
       ? this.state.text
-        ? this.state.isValid
+        ? this.state.isValid && !this.props.isPassInValid
           ? Colors.VALID_TEXT_INPUT
           : Colors.INVALID_TEXT_INPUT
         : Colors.FOCUSSED_TEXT_INPUT

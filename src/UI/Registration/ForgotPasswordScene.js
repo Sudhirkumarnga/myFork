@@ -1,16 +1,18 @@
-import React, { Component } from 'react'
+import React from 'react'
 import {
   View,
   Text,
   StyleSheet,
   ImageBackground,
   Image,
-  Animated,
   Dimensions,
   TouchableOpacity
 } from 'react-native'
-import { BaseScene, PrimaryTextInput, Button, Forms, Header } from '../Common'
+import { BaseScene, PrimaryTextInput, Button, Forms } from '../Common'
 import { Fonts, Colors } from '../../res'
+import { resetEmail } from '../../api/auth'
+import Toast from 'react-native-simple-toast'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 const screenWidth = Dimensions.get('window').width
 
@@ -18,7 +20,9 @@ export default class ForgotPasswordScene extends BaseScene {
   constructor (props) {
     super(props)
     this.state = {
-      isFormValid: false
+      isFormValid: false,
+      email: '',
+      loading: false
     }
     this.setForms()
   }
@@ -27,12 +31,35 @@ export default class ForgotPasswordScene extends BaseScene {
     this.forms = Forms.fields('login')
   }
 
+  handleReset = async () => {
+    try {
+      this.handleChange('loading', true, true)
+      const payload = {
+        email: this.state.email
+      }
+      const res = await resetEmail(payload)
+      this.handleChange('loading', false, true)
+      this.props.navigation.navigate('tokenScene', { email: this.state.email })
+      Toast.show(`Email has been sent to ${this.state.email}`)
+    } catch (error) {
+      console.warn('error', error)
+      this.handleChange('loading', false, true)
+      const errorText = Object.values(error?.response?.data)
+      Toast.show(`Error: ${errorText[0]}`)
+    }
+  }
+
+  handleChange = (key, value, isValid) => {
+    this.setState(pre => ({ ...pre, [key]: value, isFormValid: isValid }))
+  }
+
   renderTextInput () {
     return (
       <View>
         <PrimaryTextInput
-          onChangeText={text => this.isFormValid(text, 'password')}
-          ref={o => (this.password = o)}
+          onChangeText={(text, isValid) =>
+            this.handleChange('email', text, isValid)
+          }
           label={this.ls('emailLabel')}
           style={{ width: screenWidth }}
         />
@@ -43,7 +70,9 @@ export default class ForgotPasswordScene extends BaseScene {
   renderFooterButton () {
     return (
       <Button
-        onPress={() => this.props.navigation.navigate('tokenScene')}
+        onPress={this.handleReset}
+        loading={this.state.loading}
+        disabled={!this.state.email}
         title={this.ls('submit')}
         style={styles.footerButton}
       />
@@ -67,14 +96,16 @@ export default class ForgotPasswordScene extends BaseScene {
 
   renderContent () {
     return (
-      <View style={styles.childContainer}>
+      <KeyboardAwareScrollView
+        style={styles.childContainer}
+        contentContainerStyle={{ alignItems: 'center' }}
+      >
         <Text style={styles.title}>{this.ls('forgotPassword')}</Text>
         <Text style={styles.description}>{this.ls('enterEmail')}</Text>
-        <View style={{ height: '10%' }} />
         {this.renderTextInput()}
         {this.renderFooterButton()}
         {this.renderCancelButton()}
-      </View>
+      </KeyboardAwareScrollView>
     )
   }
 
@@ -110,7 +141,6 @@ const styles = StyleSheet.create({
   },
   childContainer: {
     flex: 1,
-    alignItems: 'center',
     backgroundColor: Colors.WHITE,
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,

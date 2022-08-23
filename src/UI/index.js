@@ -8,6 +8,7 @@ import Settings from "./Settings"
 import Payment from "./Payment"
 import TimeOff from "./TimeOff"
 import Messages from "./Messages"
+import Scheduler from "./Scheduler"
 
 module.exports = {
   ...Registration,
@@ -19,5 +20,6 @@ module.exports = {
   ...Settings,
   ...Payment,
   ...TimeOff,
-  ...Messages
+  ...Messages,
+  ...Scheduler
 }

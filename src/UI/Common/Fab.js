@@ -9,7 +9,7 @@ export default function Fab ({ onPress }) {
       style={{
         position: 'absolute',
         bottom: 0,
-        width: '95%',
+        width: '100%',
         alignItems: 'center'
       }}
     >

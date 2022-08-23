@@ -1,4 +1,4 @@
-import React from "react"
+import React from 'react'
 import {
   View,
   Text,
@@ -6,55 +6,67 @@ import {
   FlatList,
   Image,
   TouchableOpacity
-} from "react-native"
-import { BaseScene, Header } from "../Common"
-import { Fonts, Colors } from "../../res"
+} from 'react-native'
+import { BaseScene, Header } from '../Common'
+import { Fonts, Colors } from '../../res'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import AppContext from '../../Utils/Context'
 
 export default class SettingScene extends BaseScene {
-  constructor(props) {
+  static contextType = AppContext
+  constructor (props) {
     super(props)
     this.state = {
       data: [
         {
-          icon: "lock",
-          screen: "changePassword",
-          title: "Change Password"
+          icon: 'lock',
+          screen: 'changePassword',
+          title: 'Change Password'
         },
         {
-          icon: "lock",
-          screen: "paymentScene",
-          title: "Payments"
+          icon: 'lock',
+          screen: 'paymentScene',
+          title: 'Payments'
         },
         {
-          icon: "terms",
-          screen: "termsPrivacy",
-          title: "Terms & Conditions"
+          icon: 'terms',
+          screen: 'termsPrivacy',
+          title: 'Terms & Conditions'
         },
         {
-          icon: "privacy",
-          screen: "privacyPolicy",
-          title: "Privacy Policy"
+          icon: 'privacy',
+          screen: 'privacyPolicy',
+          title: 'Privacy Policy'
         },
         {
-          icon: "chat",
-          screen: "feedbackScene",
-          title: "Support/Send Feedback"
+          icon: 'chat',
+          screen: 'feedbackScene',
+          title: 'Support/Send Feedback'
         },
         {
-          icon: "logout",
-          screen: "SettingScene",
-          title: "Logout"
+          icon: 'logout',
+          screen: 'SettingScene',
+          title: 'Logout'
         },
         {
-          icon: "delete",
-          screen: "SettingScene",
-          title: "Delete account"
+          icon: 'delete',
+          screen: 'SettingScene',
+          title: 'Delete account'
         }
       ]
     }
   }
 
-  renderContent() {
+  logout = async () => {
+    const { setUser } = this.context
+    const navigation = this.props.navigation
+    setUser(null)
+    await AsyncStorage.removeItem('token')
+    await AsyncStorage.removeItem('user')
+    navigation.navigate('AuthLoading')
+  }
+
+  renderContent () {
     return (
       <FlatList
         data={this.state.data}
@@ -62,16 +74,20 @@ export default class SettingScene extends BaseScene {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={{
-              flexDirection: "row",
-              alignItems: "center",
+              flexDirection: 'row',
+              alignItems: 'center',
               padding: 10,
               marginVertical: 5
             }}
-            onPress={() => this.props.navigation.navigate(item.screen)}
+            onPress={() =>
+              item.title === 'Logout'
+                ? this.logout()
+                : this.props.navigation.navigate(item.screen)
+            }
           >
             <Image
               {...this.images(item.icon)}
-              style={{ height: 20, width: 20, resizeMode: "contain" }}
+              style={{ height: 20, width: 20, resizeMode: 'contain' }}
             />
             <Text style={styles.text}>{item.title}</Text>
           </TouchableOpacity>
@@ -80,11 +96,11 @@ export default class SettingScene extends BaseScene {
     )
   }
 
-  render() {
+  render () {
     return (
       <View style={styles.container}>
         <Header
-          title={this.ls("settings")}
+          title={this.ls('settings')}
           leftButton
           onLeftPress={() => this.props.navigation.goBack()}
         />
@@ -109,12 +125,12 @@ const styles = StyleSheet.create({
     padding: 20
   },
   footerButton: {
-    marginTop: "15%"
+    marginTop: '15%'
   },
   description: {
     ...Fonts.poppinsRegular(14),
     color: Colors.TEXT_COLOR,
-    textAlign: "left",
+    textAlign: 'left',
     marginTop: 20,
     lineHeight: 24
   }

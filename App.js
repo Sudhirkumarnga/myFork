@@ -5,9 +5,11 @@ import { AuthNavigator } from './src/Navigation/AppNavigation'
 import SplashScreen from 'react-native-splash-screen'
 import './src/protos'
 import AppContext from './src/Utils/Context'
+import { MenuProvider } from 'react-native-popup-menu'
 
 const App = () => {
   const [user, setUser] = useState(null)
+  const [adminProfile, setAdminProfile] = useState(null)
   useEffect(() => {
     setTimeout(() => {
       SplashScreen.hide()
@@ -18,12 +20,16 @@ const App = () => {
     <AppContext.Provider
       value={{
         user,
-        setUser
+        setUser,
+        adminProfile,
+        setAdminProfile
       }}
     >
-      <NavigationContainer>
-        <AuthNavigator />
-      </NavigationContainer>
+      <MenuProvider>
+        <NavigationContainer>
+          <AuthNavigator />
+        </NavigationContainer>
+      </MenuProvider>
     </AppContext.Provider>
   )
 }

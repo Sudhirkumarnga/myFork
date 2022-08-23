@@ -5,19 +5,19 @@ export const signupUser = payload => {
 }
 
 export const loginUser = payload => {
-  return API.post('api/v1/users/login/', payload)
+  return API.post('api/v1/auth/login/', payload)
 }
 
 export const resetEmail = payload => {
-  return API.post('api/v1/users/reset/', payload)
+  return API.post('api/v1/auth/reset_password/', payload)
 }
 
 export const verifyEmail = payload => {
-  return API.post('api/v1/users/verify/', payload)
+  return API.post('api/v1/auth/validateOTP/', payload)
 }
 
 export const setPassword = (payload, token) => {
-  return API.post('api/v1/users/password/', payload, token)
+  return API.post('api/v1/auth/confirm_reset_password/', payload, token)
 }
 
 export const changePassword = (payload, token) => {
@@ -44,8 +44,12 @@ export const forgotpassword = payload => {
   return API.post('api/v1/users/otp/', payload)
 }
 
-export const getProfile = (id, token) => {
-  return API.get(`api/v1/users/${id}/`, token)
+export const getProfile = token => {
+  return API.get(`api/v1/profile/`, token)
+}
+
+export const createAdminProfile = (payload, token) => {
+  return API.post(`api/v1/profile/`, payload, token)
 }
 
 export const getMyReviews = token => {

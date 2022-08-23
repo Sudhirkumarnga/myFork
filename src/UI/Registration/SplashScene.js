@@ -7,7 +7,7 @@ import { SvgXml } from 'react-native-svg'
 export default class SplashScene extends BaseScene {
   componentDidMount () {
     setTimeout(() => {
-      this.props.navigation.navigate('chooseEnv')
+      this.props.navigation.navigate('AuthLoading')
     }, 3000)
   }
   render () {

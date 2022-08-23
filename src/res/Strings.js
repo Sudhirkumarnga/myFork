@@ -62,6 +62,7 @@ const forms = {
   desiredTime: "Desired Time",
   numWorkers: "Number of workers needed",
   supplies: "Supplies needed",
+  name: "Name",
   taskName: "Task Name",
   criticality: "Criticality",
   taskFreq: "Frequency of task",
@@ -71,7 +72,7 @@ const forms = {
 }
 
 const employee = {
-  addressInfo: "Address Information",
+  addressInfo: "Business Address",
   workInfo: "Work Information",
   contact: "Contact",
   addEmployee: "Add Employee",

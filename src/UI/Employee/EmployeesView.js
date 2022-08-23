@@ -10,8 +10,10 @@ import {
 import { Fonts, Colors } from '../../res'
 import Sample from '../../res/Images/common/sample.png'
 import { Header, Button } from '../Common'
+import moment from 'moment'
 
-export default function EmployeesView ({ navigation }) {
+export default function EmployeesView ({ navigation, route }) {
+  const item = route?.params?.item
   return (
     <View style={styles.container}>
       <Header
@@ -24,31 +26,44 @@ export default function EmployeesView ({ navigation }) {
         contentContainerStyle={{ alignItems: 'center' }}
         style={{ width: '90%' }}
       >
-        <Image source={Sample} style={styles.picture} />
-        <Text style={styles.hourly}>John Doe</Text>
+        <Image
+          source={
+            item?.personal_information?.profile_image
+              ? { uri: item?.personal_information?.profile_image }
+              : Sample
+          }
+          style={styles.picture}
+        />
+        <Text style={styles.hourly}>
+          {item?.personal_information?.first_name}
+        </Text>
         <View style={styles.textView}>
           <Text style={styles.job}>Date of birth:</Text>
-          <Text style={styles.title}>6/16/1985</Text>
+          <Text style={styles.title}>
+            {moment(item?.personal_information?.date_of_birth).format(
+              'MM/DD/YYYY'
+            )}
+          </Text>
         </View>
         <View style={styles.textView}>
           <Text style={styles.job}>Email Address:</Text>
-          <Text style={styles.title}>johndoe@gmail.com</Text>
+          <Text style={styles.title}>{item?.contact?.email}</Text>
         </View>
         <View style={styles.textView}>
           <Text style={styles.job}>Phone Number:</Text>
-          <Text style={styles.title}>+1122334455</Text>
+          <Text style={styles.title}>{item?.contact?.phone}</Text>
         </View>
         <View style={styles.textView}>
           <Text style={styles.job}>Address:</Text>
-          <Text style={styles.title}>Street number 1. New York </Text>
+          <Text style={styles.title}>{item?.address_information?.address_line_one} </Text>
         </View>
         <View style={styles.textView}>
           <Text style={styles.job}>Position:</Text>
-          <Text style={styles.title}>Cleaner</Text>
+          <Text style={styles.title}>{item?.work_information?.position}</Text>
         </View>
         <View style={styles.textView}>
           <Text style={styles.job}>Hourly Rate:</Text>
-          <Text style={styles.title}>$10/hr</Text>
+          <Text style={styles.title}>${item?.work_information?.hourly_rate}/hr</Text>
         </View>
         <Button
           style={[styles.footerWhiteButton]}
@@ -65,7 +80,7 @@ export default function EmployeesView ({ navigation }) {
         />
         <Button
           style={[styles.footerWhiteButton]}
-          onPress={()=>navigation.navigate('addEmployee')}
+          onPress={() => navigation.navigate('addEmployee')}
           title={'Edit'}
           icon={'edit'}
           iconStyle={{

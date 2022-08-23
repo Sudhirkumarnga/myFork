@@ -11,6 +11,7 @@ export default class LoginScene extends BaseScene {
     this.state = {
       isFormValid: false,
       env: '',
+      isPassInValid: false,
       forms: Forms.fields('signUp')
     }
     this.isFormValid = this.isFormValid.bind(this)
@@ -42,19 +43,31 @@ export default class LoginScene extends BaseScene {
     return true
   }
 
+  checkPass = value => {
+    const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/
+    if (regex.test(value)) {
+      this.handleChange('isPassInValid', false)
+    } else {
+      this.handleChange('isPassInValid', true)
+    }
+  }
+
   onSubmit = () => {
-    const { first_name, last_name, email, password, mobile } = this.state
+    const { first_name, last_name, email, password, phone } = this.state
     const payload = {
       name: first_name + ' ' + last_name,
       email,
       password,
-      phone: mobile
+      phone
     }
     console.log(payload)
     this.props.navigation.navigate('signupComplete', { values: payload })
   }
 
   handleChange = (key, value, isValid) => {
+    if (key === 'password') {
+      this.checkPass(value)
+    }
     this.setState(pre => ({ ...pre, [key]: value, isFormValid: isValid }))
   }
 
@@ -63,6 +76,7 @@ export default class LoginScene extends BaseScene {
       return (
         <PrimaryTextInput
           {...fields}
+          isPassInValid={this.state.isPassInValid}
           ref={o => (this[fields.key] = o)}
           key={fields.key}
           onChangeText={(text, isValid) =>
@@ -84,7 +98,8 @@ export default class LoginScene extends BaseScene {
           !this.state.last_name ||
           !this.state.email ||
           !this.state.password ||
-          !this.state.mobile
+          !this.state.phone ||
+          this.state.isPassInValid
         }
         style={styles.footerButton}
       />
@@ -92,7 +107,6 @@ export default class LoginScene extends BaseScene {
   }
 
   render () {
-    console.warn('this.state', this.state)
     return (
       <View style={styles.container}>
         <KeyboardAwareScrollView
@@ -104,6 +118,20 @@ export default class LoginScene extends BaseScene {
           <Text style={styles.title}>{this.ls('signUp')}</Text>
           {/* <View style={{ height: "5%" }} /> */}
           {this.renderTextInput()}
+          {this.state.isPassInValid && (
+            <Text
+              style={{
+                color: Colors.INVALID_TEXT_INPUT,
+                ...Fonts.poppinsRegular(12),
+                width: '90%',
+                marginLeft: '5%'
+              }}
+            >
+              Password must be atleast 8 characters which contain at least one
+              lowercase letter, one uppercase letter, one numeric digit, and one
+              special character
+            </Text>
+          )}
           {/* {this.renderTermsView()} */}
           {this.renderFooterButton()}
         </KeyboardAwareScrollView>

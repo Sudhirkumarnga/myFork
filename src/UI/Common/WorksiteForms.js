@@ -1,128 +1,162 @@
-import { Colors, Images, Strings } from "../../res"
+import { Colors, Images, Strings } from '../../res'
 
 const fields = {
   worksiteName: {
-    key: "worksiteName",
+    key: 'name',
     dateType: false,
     label: Strings.worksiteName,
     placeholder: Strings.firstNameLabel,
     regex: /^[a-zA-Z- .' \\s ]*$/,
-    textInputProps: { autoCapitalize: "words" }
+    textInputProps: { autoCapitalize: 'words' }
   },
   worksiteLocation: {
-    key: "worksiteLocation",
+    key: 'location',
     dateType: false,
     label: Strings.worksiteLocation,
-    placeholder: "",
+    placeholder: '',
     regex: /^[a-zA-Z- .' \\s ]*$/,
-    textInputProps: { autoCapitalize: "words" }
+    textInputProps: { autoCapitalize: 'words' }
   },
   description: {
-    key: "description",
+    key: 'description',
     dateType: false,
     label: Strings.description,
     placeholder: Strings.description
   },
   monthlyRate: {
-    key: "monthlyRate",
+    key: 'monthly_rates',
     dateType: false,
     label: Strings.monthlyRate,
-    placeholder: Strings.monthlyRate
+    placeholder: Strings.monthlyRate,
+    textInputProps: { keyboardType: 'phone-pad' }
   },
   notes: {
-    key: "email",
+    key: 'notes',
     dateType: false,
     label: Strings.notes,
     placeholder: Strings.notes
   },
   cleaningFreq: {
-    key: "cleaningFreq",
+    key: 'clear_frequency_by_day',
     dateType: false,
     label: Strings.cleaningFreq,
-    placeholder: "",
+    placeholder: '',
     dropdown: true,
     items: [
-      { label: "Sunday", value: "Sunday" },
-      { label: "Monday", value: "Monday" },
-      { label: "Tuesday", value: "Tuesday" },
-      { label: "Wednesday", value: "Wednesday" },
-      { label: "Thursday", value: "Thursday" },
-      { label: "Friday", value: "Friday" },
-      { label: "Saturday", value: "Saturday" }
+      { label: 'Sunday', value: 'Sunday' },
+      { label: 'Monday', value: 'Monday' },
+      { label: 'Tuesday', value: 'Tuesday' },
+      { label: 'Wednesday', value: 'Wednesday' },
+      { label: 'Thursday', value: 'Thursday' },
+      { label: 'Friday', value: 'Friday' },
+      { label: 'Saturday', value: 'Saturday' }
     ]
   },
   desiredTime: {
-    key: "desiredTime",
+    key: 'desired_time',
     label: Strings.desiredTime,
     dateType: false,
-    placeholder: "",
+    placeholder: '',
     textInputProps: {}
   },
   numWorkers: {
-    key: "numWorkers",
+    key: 'number_of_workers_needed',
     label: Strings.numWorkers,
-    placeholder: "",
-    regex: null
+    placeholder: '',
+    regex: null,
+    textInputProps: { keyboardType: 'phone-pad' }
   },
   supplies: {
-    key: "supplies",
+    key: 'supplies_needed',
     dateType: false,
     label: Strings.supplies,
-    placeholder: "",
+    placeholder: '',
     regex: null,
-    items: [
-      { label: "Male", value: "Male" },
-      { label: "Female", value: "Female" }
-    ],
-    dropdown: true
+    textInputProps: { keyboardType: 'phone-pad' }
   },
   taskName: {
-    key: "taskName",
+    key: 'name',
     dateType: false,
     label: Strings.taskName,
     placeholder: Strings.taskName,
     regex: /^[a-zA-Z- .' \\s ]*$/,
-    textInputProps: { autoCapitalize: "words" }
+    textInputProps: { autoCapitalize: 'words' }
   },
   criticality: {
-    key: "criticality",
+    key: 'priority',
     dateType: false,
     label: Strings.criticality,
     placeholder: Strings.criticality,
-    regex: /^[a-zA-Z- .' \\s ]*$/,
-    textInputProps: { autoCapitalize: "words" }
+    dropdown: true,
+    items: [
+      { label: 'LOW', value: 'LOW' },
+      { label: 'MEDIUM', value: 'MEDIUM' },
+      { label: 'HIGHT', value: 'HIGHT' }
+    ]
   },
   taskFreq: {
-    key: "taskFreq",
+    key: 'frequency_of_task',
     dateType: false,
     label: Strings.taskFreq,
     placeholder: Strings.taskFreq,
+    dropdown: true,
+    items: [
+      { label: 'WEEKLY', value: 'WEEKLY' },
+      { label: 'MONTHLY', value: 'MONTHLY' },
+      { label: 'YEARLY', value: 'YEARLY' }
+    ]
+  },
+  contactName: {
+    key: 'contact_person_name',
+    dateType: false,
+    label: Strings.name,
+    placeholder: Strings.name,
     regex: /^[a-zA-Z- .' \\s ]*$/,
-    textInputProps: { autoCapitalize: "words" }
+    textInputProps: { autoCapitalize: 'words' }
+  },
+  phone: {
+    code: {
+      key: 'countrycode',
+      label: 'Country Code',
+      placeholder: '',
+      regex: /^(\+\d{1,4})$/,
+      textInputProps: { keyboardType: 'phone-pad' }
+    },
+    countryCodeRequired: true,
+    key: 'contact_phone_number',
+    dateType: false,
+    label: Strings.phoneLabel,
+    placeholder: '',
+    regex: /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/,
+    phoneNumberValidation: true,
+    textInputProps: { keyboardType: 'phone-pad' }
   }
 }
 
 let formDetails = {
   addWorksite: {
     show: [
-      "worksiteName",
-      "worksiteLocation",
-      "description",
-      "notes",
-      "monthlyRate",
-      "cleaningFreq",
-      "desiredTime",
-      "numWorkers",
-      "supplies"
+      'worksiteName',
+      'worksiteLocation',
+      'description',
+      'notes',
+      'monthlyRate',
+      'cleaningFreq',
+      'desiredTime',
+      'numWorkers',
+      'supplies'
     ]
   },
+  worksiteContact: {
+    show: ['contactName', 'phone']
+  },
   addTask: {
-    show: ["taskName", "description", "notes", "criticality", "taskFreq"]
+    show: ['taskName', 'description', 'notes', 'criticality', 'taskFreq']
   }
 }
 
 export default class WorksiteForms {
-  static fields(key, updateFields = {}, customFormDetails = null) {
+  static fields (key, updateFields = {}, customFormDetails = null) {
     const form = this.getDetails(key)
     const allFields = form.show.map((k, index) => {
       let nextKey = null
@@ -136,10 +170,10 @@ export default class WorksiteForms {
     })
     return allFields
   }
-  static getFields(key = null) {
+  static getFields (key = null) {
     return key ? fields[key] : fields
   }
-  static getDetails(key = null) {
+  static getDetails (key = null) {
     return key ? formDetails[key] : formDetails
   }
 }
