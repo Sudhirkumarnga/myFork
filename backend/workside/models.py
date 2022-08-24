@@ -1,12 +1,20 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
 from business.models import Business
 from home.models import TimeStampedModel
-from workside.enums import Weekday, Priority, Frequency, EventFrequency, EventStatus
 from phonenumber_field.modelfields import PhoneNumberField
 from business.models import Employee
-
+from workside.enums import (
+    Weekday,
+    Priority,
+    Frequency,
+    EventFrequency,
+    EventStatus,
+    EventPublishingReminder
+)
+from workside.services import (
+    calculate_reminder_date
+)
 
 def business_directory_path(instance, filename):
     return 'business/{}/{}/{}'.format(instance.business.id, instance.name, filename)
@@ -86,8 +94,19 @@ class Event(TimeStampedModel):
     schedule_inspection = models.BooleanField(_("Schedule Inspection"), default=False)
     employees = models.ManyToManyField(Employee)
     selected_tasks = models.ManyToManyField(Task)
-    event_status = models.CharField(_("Event Status"), max_length=200, choices=EventStatus.choices(), null=True,
-                                    blank=True)
+    event_status = models.CharField(
+        _("Event Status"),
+        max_length=200,
+        choices=EventStatus.choices(),
+        null=True,blank=True
+    )
+    publishing_reminder = models.CharField(
+        _("Reminder for publishing draft event"),
+        max_length=200,
+        choices=EventPublishingReminder.choices(),
+        null=True, blank=True
+    )
+    reminder_date = models.DateField(null=True, blank=True)
 
     class Meta:
         verbose_name = "Event"
@@ -95,3 +114,12 @@ class Event(TimeStampedModel):
 
     def __str__(self):
         return f'{self.worksite}'
+
+    def save(self, *args, **kwargs):
+        super(Event, self).save(*args, **kwargs)
+        if self.event_status == "DRAFT":
+            self.reminder_date = calculate_reminder_date(
+                self.id,
+                self.publishing_reminder,
+                self.start_time
+            )

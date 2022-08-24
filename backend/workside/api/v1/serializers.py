@@ -166,7 +166,7 @@ class EventSerializer(ModelSerializer):
             "id", "worksite", "start_time", "end_time",
             "frequency", "description", "notes", "reminder",
             "schedule_inspection", "event_status", "employees",
-            "tasks", "selected_tasks"
+            "publishing_reminder", "tasks", "selected_tasks"
         )
 
     def get_tasks(self, obj):

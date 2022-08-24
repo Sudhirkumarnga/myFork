@@ -1,10 +1,7 @@
-from bulk_update_or_create import BulkUpdateOrCreateQuerySet
-from ckeditor.fields import RichTextField
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
-from django_countries.fields import CountryField
 from home.models import TimeStampedModel
 from cities_light.abstract_models import (AbstractCity, AbstractRegion,
                                           AbstractCountry, AbstractSubRegion)

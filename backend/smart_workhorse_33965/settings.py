@@ -91,6 +91,8 @@ THIRD_PARTY_APPS = [
     'corsheaders',
     'cities_light',
     'tinymce',
+    'django_celery_beat',
+    'django_celery_results',
 ]
 
 MODULES_APPS = get_modules()
@@ -314,3 +316,10 @@ CITIES_LIGHT_APP_NAME = "business"
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+CELERY_RESULT_BACKEND = "django-db"
+BROKER_URL = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
