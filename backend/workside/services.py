@@ -38,7 +38,7 @@ def update_worksite(user, data, instance):
     if 'logo' in data:
         worksite.logo = convert_file_from_bse64_to_blob(data['logo'])
     if 'instruction_video' in data:
-        instruction_video = convert_file_from_bse64_to_blob(data['instruction_video'])
+        worksite.instruction_video = convert_file_from_bse64_to_blob(data['instruction_video'])
     worksite.save()
 
 def create_task(validated_data):
