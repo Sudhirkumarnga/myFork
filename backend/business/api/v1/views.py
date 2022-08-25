@@ -45,7 +45,7 @@ class RegionListAPIView(ListAPIView):
 class EmployeeViewset(ModelViewSet):
     serializer_class = EmployeeSerializer
     queryset = Employee.objects.filter(is_owner=False)
-    http_method_names = ['get', 'post', 'put', 'patch']
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     permission_classes = [
         IsAuthenticated, 
         IsOrganizationAdmin
