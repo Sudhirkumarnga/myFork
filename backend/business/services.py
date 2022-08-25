@@ -54,12 +54,25 @@ def create_user_for_employee(data):
 def update_user_for_employee(data, instance):
     password = User.objects.make_random_password()
     user = User.objects.get(id=instance.user.id)
-    user.first_name=data['personal_information']['first_name']
-    user.last_name=data['personal_information']['last_name']
-    user.gender = data['personal_information']['gender']
-    user.date_of_birth=data['personal_information']['date_of_birth']
-    user.email=data['contact']['email']
-    user.phone = data['contact']['phone']
+
+    if 'first_name' in data['personal_information']:
+        user.first_name=data['personal_information']['first_name']
+
+    if 'last_name' in data['personal_information']:
+        user.last_name=data['personal_information']['last_name']
+
+    if 'gender' in data['personal_information']:
+        user.gender = data['personal_information']['gender']
+
+    if 'date_of_birth' in data['personal_information']:
+        user.date_of_birth=data['personal_information']['date_of_birth']
+
+    if 'email' in data['contact']:
+        user.email=data['contact']['email']
+
+    if 'phone' in data['contact']:
+        user.phone = data['contact']['phone']
+
     user.set_password(password)
     user.save()
     return user, password
@@ -82,15 +95,28 @@ def create_employee(user,data, business_user):
 
 def update_employee(employee_user, data):
     employee = Employee.objects.get(user=employee_user)
-    if 'profile_image' in data['personal_information']['profile_image']:
+    if 'profile_image' in data['personal_information']:
         employee.profile_image = convert_image_from_bse64_to_blob(data['personal_information']['profile_image'])
-    employee.mobile = data['contact']['mobile']
-    employee.address_line_one = data['address_information']['address_line_one']
-    employee.address_line_two =data['address_information']['address_line_two']
-    employee.city = City.objects.get(id=data['address_information']['city'])
-    employee.position = data['work_information']['position']
-    employee.hourly_rate = data['work_information']['hourly_rate']
+
+    if 'mobile' in data['contact']:
+        employee.mobile = data['contact']['mobile']
+
+    if 'address_line_one' in data['address_information']:
+        employee.address_line_one = data['address_information']['address_line_one']
+
+    if 'address_line_two' in data['address_information']:
+        employee.address_line_two = data['address_information']['address_line_two']
+
+    if 'city' in data['address_information']:
+        employee.city = City.objects.get(id=data['address_information']['city'])
+
+    if 'position' in data['work_information']:
+        employee.position = data['work_information']['position']
+
+    if 'hourly_rate' in data['work_information']:
+        employee.hourly_rate = data['work_information']['hourly_rate']
     employee.save()
+
     return employee
 
 

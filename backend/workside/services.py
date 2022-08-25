@@ -9,7 +9,6 @@ from business.models import (
 
 
 def convert_file_from_bse64_to_blob(file):
-    imgstr = file.split(';base64,')
     data = ContentFile(base64.b64decode(file), name='file.jpg')
     return data
 
@@ -31,12 +30,16 @@ def update_worksite(user, data, instance):
     worksite.update(
         **data['worksite_information'],
         **data['contact_person'],
-        show_dtails=data['show_dtails'],
-        logo=convert_file_from_bse64_to_blob(data['logo']),
-        instruction_video=convert_file_from_bse64_to_blob(data['instruction_video']),
         business=Business.objects.get(user=user)
     )
-
+    worksite = models.WorkSite.objects.get(id=instance.id)
+    if 'show_dtails' in data:
+        worksite.show_dtails = data['show_dtails']
+    if 'logo' in data:
+        worksite.logo = convert_file_from_bse64_to_blob(data['logo'])
+    if 'instruction_video' in data:
+        instruction_video = convert_file_from_bse64_to_blob(data['instruction_video'])
+    worksite.save()
 
 def create_task(validated_data):
     task = models.Task.objects.create(
