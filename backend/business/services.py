@@ -14,7 +14,6 @@ from business.models import (
 )
 
 def convert_image_from_bse64_to_blob(image):
-    imgstr = image.split(';base64,')
     data = ContentFile(base64.b64decode(image), name='profile_image.jpg')
     return data
 
@@ -83,7 +82,8 @@ def create_employee(user,data, business_user):
 
 def update_employee(employee_user, data):
     employee = Employee.objects.get(user=employee_user)
-    employee.profile_image = convert_image_from_bse64_to_blob(data['personal_information']['profile_image'])
+    if 'profile_image' in data['personal_information']['profile_image']:
+        employee.profile_image = convert_image_from_bse64_to_blob(data['personal_information']['profile_image'])
     employee.mobile = data['contact']['mobile']
     employee.address_line_one = data['address_information']['address_line_one']
     employee.address_line_two =data['address_information']['address_line_two']
