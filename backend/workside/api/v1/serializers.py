@@ -177,11 +177,13 @@ class EventSerializer(ModelSerializer):
 
 class SchedularSerializer(ModelSerializer):
     worksite_name = serializers.CharField(read_only=True)
+
     class Meta:
         model = Event
-        fields = ('id','worksite_name','start_time','end_time')
+        fields = ('id', 'worksite_name', 'start_time', 'end_time')
 
     def to_representation(self, data):
         data = super(SchedularSerializer, self).to_representation(data)
         data['worksite_name'] = Event.objects.get(id=data['id']).worksite.name
+        data['logo'] = Event.objects.get(id=data['id']).worksite.business.profile_image.url
         return data
