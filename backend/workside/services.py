@@ -1,5 +1,7 @@
 import base64
 import datetime
+import calendar
+from datetime import date
 from django.core.files.base import ContentFile
 from workside import models
 from workside.tasks import event_publishing_reminder_task
@@ -41,6 +43,7 @@ def update_worksite(user, data, instance):
         worksite.instruction_video = convert_file_from_bse64_to_blob(data['instruction_video'])
     worksite.save()
 
+
 def create_task(validated_data):
     task = models.Task.objects.create(
         worksite=validated_data['worksite'],
@@ -75,7 +78,7 @@ def update_serializer_data(serializer_data):
 def calculate_reminder_date(event_id, publishing_reminder, start_time):
     if publishing_reminder == "ONE_DAY":
         reminder_date = start_time - datetime.timedelta(days=1)
-        event_publishing_reminder_task.apply_async((event_id,reminder_date), eta=reminder_date)
+        event_publishing_reminder_task.apply_async((event_id, reminder_date), eta=reminder_date)
     if publishing_reminder == "TWO_DAYS":
         reminder_date = start_time - datetime.timedelta(days=2)
     if publishing_reminder == "ONE_WEEK":
@@ -85,3 +88,37 @@ def calculate_reminder_date(event_id, publishing_reminder, start_time):
     if publishing_reminder == "ONE_MONTH":
         reminder_date = start_time - datetime.timedelta(days=30)
     return reminder_date
+
+
+def get_filtered_queryset(request,queryset):
+    month = request.query_params.get('month', None)
+    year = request.query_params.get('year', None)
+    week_view = request.query_params.get('week_view', None)
+    day_view = request.query_params.get('day_view', None)
+    month_view = request.query_params.get('month_view', None)
+
+    if month:
+        queryset = queryset.filter(start_time__month=month)
+
+    if year:
+        queryset = queryset.filter(start_time__year=year)
+
+    if week_view:
+        week_day = datetime.datetime.now().isocalendar()[2]
+        start_date = datetime.datetime.now() - datetime.timedelta(days=week_day)
+        dates = [str((start_date + datetime.timedelta(days=i)).date()) for i in range(7)]
+        queryset = queryset.filter(start_time__range=[dates[0], dates[-1]])
+
+    if day_view:
+        today_date = datetime.datetime.now()
+        queryset = queryset.filter(start_time__date=today_date)
+
+    if month_view:
+        month = datetime.datetime.now().month
+        year = datetime.datetime.now().year
+        number_of_days = calendar.monthrange(year, month)[1]
+        first_date = date(year, month, 1)
+        last_date = date(year, month, number_of_days)
+        queryset = queryset.filter(start_time__range=[first_date, last_date])
+
+    return queryset

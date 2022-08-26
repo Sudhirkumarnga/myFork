@@ -1,11 +1,10 @@
-from django.shortcuts import render
 from rest_framework import status
-
 from rest_framework.response import Response
 from smart_workhorse_33965.response import SmartWorkHorseResponse, SmartWorkHorseStatus
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from smart_workhorse_33965.permissions import IsOrganizationAdmin
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.views import APIView
 from rest_framework.decorators import action
 from workside.models import *
 from workside.api.v1.serializers import (
@@ -13,10 +12,12 @@ from workside.api.v1.serializers import (
     TaskSerializer,
     TaskAttachmentSerializer,
     FrequencyTaskSerializer,
-    EventSerializer
+    EventSerializer,
+    SchedularSerializer
 )
 from workside.services import (
-    update_serializer_data
+    update_serializer_data,
+    get_filtered_queryset
 )
 
 
@@ -231,3 +232,27 @@ class EventView(ModelViewSet):
     def get_queryset(self):
         queryset = self.queryset.filter(worksite__business__user=self.request.user)
         return queryset
+
+
+class SchedularView(APIView):
+    queryset = Event.objects.filter()
+    permission_classes = [IsAuthenticated, IsOrganizationAdmin]
+    http_method_names = ['get', 'post', 'put', 'patch']
+
+    def get(self, request):
+        queryset = self.queryset.filter(worksite__business__user=self.request.user)
+        queryset = get_filtered_queryset(request,queryset)
+        serializer = SchedularSerializer(queryset, many=True)
+        return Response(
+            SmartWorkHorseResponse.get_response(
+                success=True,
+                message="All Schedules successfully returned.",
+                status=SmartWorkHorseStatus.Success.value,
+                response=serializer.data
+            ),
+            status=status.HTTP_201_CREATED,
+            headers={},
+        )
+
+    def post(self):
+        pass

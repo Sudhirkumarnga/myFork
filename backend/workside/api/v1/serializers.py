@@ -1,6 +1,5 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
-from business.models import Business, Employee, BusinessAddress, Country, City
 from workside.models import *
 from workside.services import (
     create_worksite,
@@ -174,3 +173,15 @@ class EventSerializer(ModelSerializer):
             obj.worksite.business,
             many=False
         ).data
+
+
+class SchedularSerializer(ModelSerializer):
+    worksite_name = serializers.CharField(read_only=True)
+    class Meta:
+        model = Event
+        fields = ('id','worksite_name','start_time','end_time')
+
+    def to_representation(self, data):
+        data = super(SchedularSerializer, self).to_representation(data)
+        data['worksite_name'] = Event.objects.get(id=data['id']).worksite.name
+        return data
