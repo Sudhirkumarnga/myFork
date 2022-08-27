@@ -275,8 +275,13 @@ class SchedularView(APIView):
                 event.save()
 
             return Response(
-                data='All Events Successfully published',
-                status=status.HTTP_200_OK
+                SmartWorkHorseResponse.get_response(
+                    success=True,
+                    message="All Schedules successfully Published.",
+                    status=SmartWorkHorseStatus.Success.value,
+                ),
+                status=status.HTTP_201_CREATED,
+                headers={},
             )
         except Exception as e:
             return Response(
