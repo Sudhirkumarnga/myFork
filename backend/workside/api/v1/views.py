@@ -240,19 +240,51 @@ class SchedularView(APIView):
     http_method_names = ['get', 'post', 'put', 'patch']
 
     def get(self, request):
-        queryset = self.queryset.filter(worksite__business__user=self.request.user)
-        queryset = get_filtered_queryset(request,queryset)
-        serializer = SchedularSerializer(queryset, many=True)
-        return Response(
-            SmartWorkHorseResponse.get_response(
-                success=True,
-                message="All Schedules successfully returned.",
-                status=SmartWorkHorseStatus.Success.value,
-                response=serializer.data
-            ),
-            status=status.HTTP_201_CREATED,
-            headers={},
-        )
+        try:
+            queryset = self.queryset.filter(worksite__business__user=self.request.user)
+            queryset = get_filtered_queryset(request, queryset)
+            serializer = SchedularSerializer(queryset, many=True)
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=True,
+                    message="All Schedules successfully returned.",
+                    status=SmartWorkHorseStatus.Success.value,
+                    response=serializer.data
+                ),
+                status=status.HTTP_201_CREATED,
+                headers={},
+            )
+        except Exception as e:
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=False,
+                    message="Something went wrong.",
+                    status=SmartWorkHorseStatus.Error.value,
+                    error={str(e)},
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-    def post(self):
-        pass
+    def post(self, request):
+        try:
+            queryset = self.queryset.filter(
+                id__in=request.data['events']
+            )
+            for event in queryset:
+                event.event_status = "PUBLISHED"
+                event.save()
+
+            return Response(
+                data='All Events Successfully published',
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=False,
+                    message="Something went wrong.",
+                    status=SmartWorkHorseStatus.Error.value,
+                    error={str(e)},
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
