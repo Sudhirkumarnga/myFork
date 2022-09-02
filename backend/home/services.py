@@ -41,7 +41,7 @@ def create_organization_employee(user,data):
         business=Business.objects.get(
             business_code=data['business_code']
         ),
-        phone= data['phone'],
+        mobile= data['phone'],
         first_name=data['first_name'],
         is_owner=False
     )
