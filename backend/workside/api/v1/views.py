@@ -241,6 +241,11 @@ class EventView(ModelViewSet):
         queryset = self.queryset.filter(worksite__business__user=self.request.user)
         return queryset
 
+    def get_serializer_context(self):
+        context = super(EventView, self).get_serializer_context()
+        context.update({"request": self.request})
+        return context
+
 
 class SchedularView(APIView):
     queryset = Event.objects.filter()

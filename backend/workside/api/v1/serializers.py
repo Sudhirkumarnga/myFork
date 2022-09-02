@@ -182,10 +182,14 @@ class EventSerializer(ModelSerializer):
         )
 
     def validate(self, data):
+        request = self.context['request']
+        print(request.user)
         event = Event.objects.filter(
             start_time__lte= data['start_time'],
-            end_time__gte= data['end_time']
+            end_time__gte= data['end_time'],
+            worksite__business__user=request.user
         )
+        print(event)
         if event.exists():
             raise serializers.ValidationError(_("Event is already created between these time range."))
         return data
