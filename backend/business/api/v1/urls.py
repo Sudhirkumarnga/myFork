@@ -1,11 +1,20 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from business.api.v1.views import EmployeeViewset, CityListApiView, CountryListApiView,ProfileView, RegionListAPIView
+from business.api.v1.views import (
+    EmployeeViewset,
+    CityListApiView,
+    CountryListApiView,
+    ProfileView,
+    RegionListAPIView,
+    LeaveRequestView
+)
 
 
 router = DefaultRouter()
 
 router.register("employee", EmployeeViewset, basename="employee")
+router.register("leave_request", LeaveRequestView, basename="leave_request")
+
 # router.register("profile", ProfileViewset, basename="profile")
 
 urlpatterns = [

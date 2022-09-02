@@ -5,7 +5,9 @@ from workside.api.v1.views import (
     TaskViewSet,
     TaskAttachmentViewSet,
     EventView,
-    SchedularView
+    SchedularView,
+    WorksiteListView,
+    UpcomingShiftView
 )
 
 router = DefaultRouter()
@@ -17,5 +19,7 @@ router.register("event", EventView, basename="event")
 
 
 urlpatterns = [
-    path("schedular/", SchedularView.as_view(), name='schedular')
+    path("schedular/", SchedularView.as_view(), name='schedular'),
+    path("worksites/", WorksiteListView.as_view(), name='worksites'),
+    path("upcoming_shift/", UpcomingShiftView.as_view(), name='upcoming_shift'),
 ] + router.urls

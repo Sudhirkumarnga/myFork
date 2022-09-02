@@ -6,6 +6,7 @@ from smart_workhorse_33965.permissions import IsOrganizationAdmin
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.decorators import action
+from django.db.models import Q
 from workside.models import *
 from workside.api.v1.serializers import (
     WorksiteSerializer,
@@ -13,12 +14,15 @@ from workside.api.v1.serializers import (
     TaskAttachmentSerializer,
     FrequencyTaskSerializer,
     EventSerializer,
-    SchedularSerializer
+    SchedularSerializer,
+    WorksiteListSerializer,
+    AttendanceEventSerializer
 )
 from workside.services import (
     update_serializer_data,
     get_filtered_queryset
 )
+from datetime import datetime
 
 
 class WorkSiteViewSet(ModelViewSet):
@@ -31,6 +35,10 @@ class WorkSiteViewSet(ModelViewSet):
         context = super(WorkSiteViewSet, self).get_serializer_context()
         context.update({"request": self.request})
         return context
+
+    def get_queryset(self):
+        queryset = self.queryset.filter(business__user=self.request.user)
+        return queryset
 
     def create(self, request, *args, **kwargs):
         try:
@@ -138,12 +146,12 @@ class TaskAttachmentViewSet(ModelViewSet):
             serializer_data = serializer.data
             try:
                 serializer_data['file'] = instance.file.url
-            except Exception:
+            except:
                 serializer_data['file'] = None
             return Response(
                 SmartWorkHorseResponse.get_response(
                     success=True,
-                    message="Task Attachement Data Successfully returned.",
+                    message="Task Attachment Data Successfully returned.",
                     status=SmartWorkHorseStatus.Success.value,
                     response=serializer_data
                 ),
@@ -154,7 +162,7 @@ class TaskAttachmentViewSet(ModelViewSet):
             return Response(
                 SmartWorkHorseResponse.get_response(
                     success=False,
-                    message="Something went wrong in Task Attachement data.",
+                    message="Something went wrong in Task Attachment data.",
                     status=SmartWorkHorseStatus.Error.value,
                     error={str(e)},
                 ),
@@ -175,7 +183,7 @@ class TaskAttachmentViewSet(ModelViewSet):
             return Response(
                 SmartWorkHorseResponse.get_response(
                     success=True,
-                    message="Task Attachement Data Successfully returned.",
+                    message="Task Attachment Data Successfully returned.",
                     status=SmartWorkHorseStatus.Success.value,
                     response=serializer_data
                 ),
@@ -186,7 +194,7 @@ class TaskAttachmentViewSet(ModelViewSet):
             return Response(
                 SmartWorkHorseResponse.get_response(
                     success=False,
-                    message="Something went wrong in Task Attachement data.",
+                    message="Something went wrong in Task Attachment data.",
                     status=SmartWorkHorseStatus.Error.value,
                     error={str(e)},
                 ),
@@ -204,7 +212,7 @@ class TaskAttachmentViewSet(ModelViewSet):
             return Response(
                 SmartWorkHorseResponse.get_response(
                     success=True,
-                    message="Task Attachemnet Successfully Created.",
+                    message="Task Attachment Successfully Created.",
                     status=SmartWorkHorseStatus.Success.value,
                     response=serializer_data
                 ),
@@ -215,7 +223,7 @@ class TaskAttachmentViewSet(ModelViewSet):
             return Response(
                 SmartWorkHorseResponse.get_response(
                     success=False,
-                    message="Something went wrong in creating Task Attachemnet",
+                    message="Something went wrong in creating Task Attachment",
                     status=SmartWorkHorseStatus.Error.value,
                     error={str(e)},
                 ),
@@ -293,3 +301,56 @@ class SchedularView(APIView):
                 ),
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+
+class WorksiteListView(APIView):
+    queryset = Event.objects.filter()
+    permission_classes = [IsAuthenticated]
+    http_method_names = ['get']
+
+    def get(self, request):
+        try:
+            employee = Employee.objects.filter(user=self.request.user)
+            queryset = self.queryset.filter(employees__in=employee)
+            serializer = WorksiteListSerializer(queryset, many=True)
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=True,
+                    message="All Schedules successfully returned.",
+                    status=SmartWorkHorseStatus.Success.value,
+                    response=serializer.data
+                ),
+                status=status.HTTP_201_CREATED,
+                headers={},
+            )
+        except Exception as e:
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=False,
+                    message="Something went wrong.",
+                    status=SmartWorkHorseStatus.Error.value,
+                    error={str(e)},
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
+class UpcomingShiftView(APIView):
+    queryset = Event.objects.filter()
+    permission_classes = [IsAuthenticated]
+
+
+    def get(self, request):
+        employee = Employee.objects.filter(user=self.request.user)
+        queryset = self.queryset.filter(
+            ~Q(event_status='DRAFT'),
+            start_time__lte=datetime.now(),
+            end_time__gte=datetime.now(),
+            employees__in=employee,
+        )
+        serializer = AttendanceEventSerializer(
+            queryset.first(),
+            many=False,
+            context={'request': request}
+        )
+        return Response(serializer.data)

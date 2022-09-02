@@ -7,7 +7,7 @@ from cities_light.abstract_models import (AbstractCity, AbstractRegion,
                                           AbstractCountry, AbstractSubRegion)
 from cities_light.receivers import connect_default_signals
 
-from business.constants import BusinessPayFrequency
+from business.constants import BusinessPayFrequency, AttendanceStatus, RequestStatus, RequestType
 
 User = get_user_model()
 
@@ -113,6 +113,61 @@ class EmergencyContact(TimeStampedModel):
     class Meta:
         verbose_name = "EmergencyContact"
         verbose_name_plural = "EmergencyContact"
+
+    def __str__(self):
+        return f'{self.employee.user.first_name} - {self.employee.user.last_name}'
+
+
+class Attendance(TimeStampedModel):
+    status = models.CharField(
+        _("Attendance Status"),
+        max_length=200,
+        choices=AttendanceStatus.choices(),
+        null=True, blank=True
+    )
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True, blank=True)
+    event = models.ForeignKey('workside.Event', on_delete=models.CASCADE, null=True, blank=True)
+    completed_tasks = models.ManyToManyField('workside.Task', blank=True)
+    notes = models.CharField(max_length=2000, null=True, blank=True)
+    notes_media = models.FileField(_('Attendance Note Media'), upload_to=employee_directory_path, null=True, blank=True)
+    feedback = models.CharField(max_length=2000, null=True, blank=True)
+    feedback_media = models.FileField(_('Feedback Media'), upload_to=employee_directory_path, null=True, blank=True)
+    urgent = models.BooleanField(default=False)
+    clock_in_time = models.DateTimeField(null=True, blank=True)
+    clock_out_time = models.DateTimeField(null=True, blank=True)
+    total_hours = models.DecimalField(max_digits=200, decimal_places=1, null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Attendance"
+        verbose_name_plural = "Attendance"
+
+    def __str__(self):
+        return f'{self.employee.user.first_name} - {self.employee.user.last_name}'
+
+
+class LeaveRequest(TimeStampedModel):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True, blank=True)
+    title = models.CharField(max_length=200, null=True, blank=True)
+    request_type = models.CharField(
+        _("Request Type"),
+        max_length=200,
+        choices=RequestType.choices(),
+        null=True, blank=True
+    )
+    from_date = models.DateField(null=True, blank=True)
+    to_date = models.DateField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    status = models.CharField(
+        _("Request Status"),
+        max_length=200,
+        choices=RequestStatus.choices(),
+        default='PENDING'
+    )
+    admin_note = models.TextField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Leave Request"
+        verbose_name_plural = "Leave Requests"
 
     def __str__(self):
         return f'{self.employee.user.first_name} - {self.employee.user.last_name}'

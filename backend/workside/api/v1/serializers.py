@@ -7,6 +7,7 @@ from workside.services import (
     create_task,
     create_task_attachment
 )
+from business.models import Attendance
 
 
 class TaskSerializerforWorksite(ModelSerializer):
@@ -40,19 +41,22 @@ class WorksiteSerializer(ModelSerializer):
         model = WorkSite
         fields = ('id', 'business', 'personal_information', 'contact_person', 'is_active', 'show_dtails', 'tasks')
 
-    def get_personal_information(self, obj):
+    @staticmethod
+    def get_personal_information(obj):
         return WorksitePersonalInformationSerializer(
             obj,
             many=False
         ).data
 
-    def get_contact_person(self, obj):
+    @staticmethod
+    def get_contact_person(obj):
         return WorkSiteContactPersonSerializer(
             obj,
             many=False
         ).data
 
-    def get_tasks(self, obj):
+    @staticmethod
+    def get_tasks(obj):
         return TaskSerializerforWorksite(
             Task.objects.filter(worksite=obj),
             many=True
@@ -78,7 +82,8 @@ class TaskSerializer(ModelSerializer):
         fields = (
             'id', 'worksite', 'name', 'description', 'notes', 'criticality', 'frequency_of_task', 'files', 'task_media')
 
-    def get_task_media(self, obj):
+    @staticmethod
+    def get_task_media(obj):
         return TaskAttachmentSerializer(
             TaskAttachments.objects.filter(task=obj),
             many=True
@@ -102,43 +107,50 @@ class FrequencyTaskSerializer(ModelSerializer):
         model = Business
         fields = ("every_time", "weekly", "semi_weekly", "monthly", "quarterly", "semi_annually", "custom")
 
-    def get_every_time(self, obj):
+    @staticmethod
+    def get_every_time(obj):
         return TaskSerializer(
             Task.objects.filter(worksite__business=obj, frequency_of_task="EVERY_TIME"),
             many=True
         ).data
 
-    def get_weekly(self, obj):
+    @staticmethod
+    def get_weekly(obj):
         return TaskSerializer(
             Task.objects.filter(worksite__business=obj, frequency_of_task="WEEKLY"),
             many=True
         ).data
 
-    def get_semi_weekly(self, obj):
+    @staticmethod
+    def get_semi_weekly(obj):
         return TaskSerializer(
             Task.objects.filter(worksite__business=obj, frequency_of_task="SEMI_WEEKLY"),
             many=True
         ).data
 
-    def get_monthly(self, obj):
+    @staticmethod
+    def get_monthly(obj):
         return TaskSerializer(
             Task.objects.filter(worksite__business=obj, frequency_of_task="MONTHLY"),
             many=True
         ).data
 
-    def get_quarterly(self, obj):
+    @staticmethod
+    def get_quarterly(obj):
         return TaskSerializer(
             Task.objects.filter(worksite__business=obj, frequency_of_task="QUARTERLY"),
             many=True
         ).data
 
-    def get_semi_annually(self, obj):
+    @staticmethod
+    def get_semi_annually(obj):
         return TaskSerializer(
             Task.objects.filter(worksite__business=obj, frequency_of_task="SEMI_ANNUALLY"),
             many=True
         ).data
 
-    def get_custom(self, obj):
+    @staticmethod
+    def get_custom(obj):
         return TaskSerializer(
             Task.objects.filter(worksite__business=obj, frequency_of_task="CUSTOM"),
             many=True
@@ -152,8 +164,8 @@ class TaskAttachmentSerializer(ModelSerializer):
 
     def create(self, validated_data):
         request = self.context['request']
-        task_attachement = create_task_attachment(validated_data, request)
-        return task_attachement
+        task_attachment = create_task_attachment(validated_data, request)
+        return task_attachment
 
 
 class EventSerializer(ModelSerializer):
@@ -168,7 +180,8 @@ class EventSerializer(ModelSerializer):
             "publishing_reminder", "tasks", "selected_tasks"
         )
 
-    def get_tasks(self, obj):
+    @staticmethod
+    def get_tasks(obj):
         return FrequencyTaskSerializer(
             obj.worksite.business,
             many=False
@@ -187,3 +200,132 @@ class SchedularSerializer(ModelSerializer):
         data['worksite_name'] = Event.objects.get(id=data['id']).worksite.name
         data['logo'] = Event.objects.get(id=data['id']).worksite.business.profile_image.url
         return data
+
+
+class WorksiteListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WorkSite
+        fields = ('id', 'name', 'location', 'logo',)
+
+
+class EventAssignedEmployeeSerializer(serializers.ModelSerializer):
+    employee = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Event
+        fields = ('employee',)
+
+    @staticmethod
+    def get_employee(obj):
+        return EmployeeSerializer(
+            obj.employees.all(),
+            many=True
+        ).data
+
+
+class AttendanceWorksiteSerializer(serializers.ModelSerializer):
+    tasks = serializers.SerializerMethodField()
+    assigned_employee = serializers.SerializerMethodField()
+
+    class Meta:
+        model = WorkSite
+        fields = ('name', 'location', 'notes', 'instruction_video', 'tasks', 'assigned_employee')
+
+    @staticmethod
+    def get_tasks(obj):
+        return TaskSerializerforWorksite(
+            Task.objects.filter(worksite=obj),
+            many=True
+        ).data
+
+    @staticmethod
+    def get_assigned_employee(obj):
+        queryset = Event.objects.get(worksite=obj)
+        return EventAssignedEmployeeSerializer(
+            queryset,
+            many=False
+        ).data['employee']
+
+
+class EmployeeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee
+        fields = ('id', 'profile_image',)
+
+    def to_representation(self, data):
+        data = super(EmployeeSerializer, self).to_representation(data)
+        data['name'] = Employee.objects.get(id=data['id']).user.get_full_name()
+        return data
+
+
+class AttendanceActiveEmployeeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attendance
+        fields = ('employee',)
+
+    def to_representation(self, data):
+        data = super(AttendanceActiveEmployeeSerializer, self).to_representation(data)
+        employees = []
+        attendances = Attendance.objects.filter(event__employees__in=[data['employee']], status='CLOCK_IN')
+        if attendances.exists():
+            for attendance in attendances:
+                employees.append(EmployeeSerializer(attendance.employee).data)
+        data['employee'] = employees
+        return data
+
+
+class AttendanceEventSerializer(serializers.ModelSerializer):
+    worksite = serializers.SerializerMethodField()
+    active_employees = serializers.SerializerMethodField()
+    total_hours = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Event
+        fields = ('id', 'worksite', 'active_employees', 'total_hours')
+
+
+    def to_representation(self, data):
+        request = self.context['request']
+        data = super(AttendanceEventSerializer, self).to_representation(data)
+        attendance =  Attendance.objects.filter(employee__user=request.user, event__id=data['id'])
+        if attendance.exists():
+            if attendance.first().status == 'CLOCK_IN':
+                data['status'] = "CLOCK_OUT"
+            else:
+                data['status'] = "CLOCK_IN"
+        else:
+            data['status'] = "CLOCK_IN"
+        return data
+
+    @staticmethod
+    def get_worksite(obj):
+        try:
+            return AttendanceWorksiteSerializer(
+                obj.worksite,
+                many=False
+            ).data
+        except Exception as e:
+            print(e)
+
+    @staticmethod
+    def get_active_employees(obj):
+        attendance = Attendance.objects.filter(event=obj)
+        if attendance.exists():
+            return AttendanceActiveEmployeeSerializer(
+                attendance.first(),
+                many=False
+            ).data['employee']
+        else:
+            return []
+
+    def get_total_hours(self, obj):
+        request = self.context['request']
+        all_attendance = Attendance.objects.filter(employee__user=request.user, status="CLOCK_OUT")
+        if all_attendance.exists():
+            attendance_hours = 0
+            for attendance in all_attendance:
+                attendance_hours += attendance.clock_out_time - attendance.clock_in_time
+        else:
+            attendance_hours = 0
+
+        return attendance_hours

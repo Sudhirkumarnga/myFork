@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from rest_framework.filters import SearchFilter, OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from smart_workhorse_33965.permissions import IsOrganizationAdmin
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -8,21 +9,21 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from users.models import User
-from business.models import Employee, Business, Country, City, Region
+from business.models import Employee, Country, City, Region, LeaveRequest
 from business.api.v1.serializers import (
-    BusinessSerializer,
-    ProfileSerializer,
     BusinessAdminProfileSerializer,
     BusinessEmployeeProfileSerializer,
-    EmployeeSerializer, 
-    CountrySerializer, 
+    EmployeeSerializer,
+    CountrySerializer,
     CitySerializer,
-    RegionSerializer
-) 
+    RegionSerializer,
+    LeaveRequestSerializer
+)
 
 from business.services import (
     update_profile
 )
+
 
 class CountryListApiView(ListAPIView):
     permission_classes = [IsAuthenticated]
@@ -30,11 +31,13 @@ class CountryListApiView(ListAPIView):
     queryset = Country.objects.filter()
     http_method_names = ['get']
 
+
 class CityListApiView(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = CitySerializer
     queryset = City.objects.filter()
     http_method_names = ['get']
+
 
 class RegionListAPIView(ListAPIView):
     permission_classes = [IsAuthenticated]
@@ -42,12 +45,13 @@ class RegionListAPIView(ListAPIView):
     queryset = Region.objects.filter()
     http_method_names = ['get']
 
+
 class EmployeeViewset(ModelViewSet):
     serializer_class = EmployeeSerializer
     queryset = Employee.objects.filter(is_owner=False)
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     permission_classes = [
-        IsAuthenticated, 
+        IsAuthenticated,
         IsOrganizationAdmin
     ]
 
@@ -59,7 +63,7 @@ class EmployeeViewset(ModelViewSet):
         context = super(EmployeeViewset, self).get_serializer_context()
         context.update({"request": self.request})
         return context
-    
+
     def retrieve(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
@@ -96,15 +100,15 @@ class EmployeeViewset(ModelViewSet):
 
             serializer = self.get_serializer(queryset, many=True)
             return Response(
-                    SmartWorkHorseResponse.get_response(
-                        success=True,
-                        message="Employees Data Successfully returned.",
-                        status=SmartWorkHorseStatus.Success.value,
-                        response=serializer.data
-                    ),
-                    status=status.HTTP_200_OK,
-                    headers={},
-                )
+                SmartWorkHorseResponse.get_response(
+                    success=True,
+                    message="Employees Data Successfully returned.",
+                    status=SmartWorkHorseStatus.Success.value,
+                    response=serializer.data
+                ),
+                status=status.HTTP_200_OK,
+                headers={},
+            )
         except Exception as e:
             return Response(
                 SmartWorkHorseResponse.get_response(
@@ -172,9 +176,10 @@ class EmployeeViewset(ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+
 class ProfileView(APIView):
-    queryset  = User.objects.filter()
-    http_method_names = ['get', 'post'] 
+    queryset = User.objects.filter()
+    http_method_names = ['get', 'post']
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
@@ -216,7 +221,7 @@ class ProfileView(APIView):
                 serializer = BusinessAdminProfileSerializer(queryset, many=False)
             if queryset.role == 'Employee':
                 serializer = BusinessEmployeeProfileSerializer(queryset, many=False)
-            
+
             return Response(
                 SmartWorkHorseResponse.get_response(
                     success=True,
@@ -237,3 +242,24 @@ class ProfileView(APIView):
                 ),
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+
+class LeaveRequestView(ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = LeaveRequestSerializer
+    queryset = LeaveRequest.objects.filter()
+    http_method_names = ['get', 'post', 'put']
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['request_type','status', 'from_date', 'to_date', 'employee']
+
+    def get_serializer_context(self):
+        context = super(LeaveRequestView, self).get_serializer_context()
+        context.update({"request": self.request})
+        return context
+
+    def get_queryset(self):
+        if self.request.user.role == 'Employee':
+            queryset = self.queryset.filter(employee__user=self.request.user)
+        else:
+            queryset = self.queryset.filter(employee__business__user=self.request.user)
+        return  queryset
