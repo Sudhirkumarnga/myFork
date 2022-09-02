@@ -204,8 +204,15 @@ class SchedularSerializer(ModelSerializer):
 
 class WorksiteListSerializer(serializers.ModelSerializer):
     class Meta:
-        model = WorkSite
-        fields = ('id', 'name', 'location', 'logo',)
+        model = Event
+        fields = ('id',)
+
+    def to_representation(self, data):
+        data = super(WorksiteListSerializer, self).to_representation(data)
+        data['worksite_name'] = Event.objects.get(id=data['id']).worksite.name
+        data['location'] = Event.objects.get(id=data['id']).worksite.location
+        data['logo'] = Event.objects.get(id=data['id']).worksite.business.profile_image.url
+        return data
 
 
 class EventAssignedEmployeeSerializer(serializers.ModelSerializer):
@@ -283,11 +290,10 @@ class AttendanceEventSerializer(serializers.ModelSerializer):
         model = Event
         fields = ('id', 'worksite', 'active_employees', 'total_hours')
 
-
     def to_representation(self, data):
         request = self.context['request']
         data = super(AttendanceEventSerializer, self).to_representation(data)
-        attendance =  Attendance.objects.filter(employee__user=request.user, event__id=data['id'])
+        attendance = Attendance.objects.filter(employee__user=request.user, event__id=data['id'])
         if attendance.exists():
             if attendance.first().status == 'CLOCK_IN':
                 data['status'] = "CLOCK_OUT"
