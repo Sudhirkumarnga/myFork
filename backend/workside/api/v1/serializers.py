@@ -8,6 +8,7 @@ from workside.services import (
     create_task_attachment
 )
 from business.models import Attendance
+from django.utils.translation import ugettext_lazy as _
 
 
 class TaskSerializerforWorksite(ModelSerializer):
@@ -180,6 +181,15 @@ class EventSerializer(ModelSerializer):
             "publishing_reminder", "tasks", "selected_tasks"
         )
 
+    def validate(self, data):
+        event = Event.objects.filter(
+            start_time__lte= data['start_time'],
+            end_time__gte= data['end_time']
+        )
+        if event.exists():
+            raise serializers.ValidationError(_("Event is already created between these time range."))
+        return data
+
     @staticmethod
     def get_tasks(obj):
         return FrequencyTaskSerializer(
@@ -333,5 +343,4 @@ class AttendanceEventSerializer(serializers.ModelSerializer):
                 attendance_hours += attendance.clock_out_time - attendance.clock_in_time
         else:
             attendance_hours = 0
-
         return attendance_hours

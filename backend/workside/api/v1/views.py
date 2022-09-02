@@ -309,7 +309,7 @@ class WorksiteListView(APIView):
     http_method_names = ['get']
 
     def get(self, request):
-        # try:
+        try:
             employee = Employee.objects.filter(user=self.request.user)
             queryset = self.queryset.filter(employees__in=employee)
             serializer = WorksiteListSerializer(queryset, many=True)
@@ -323,22 +323,21 @@ class WorksiteListView(APIView):
                 status=status.HTTP_201_CREATED,
                 headers={},
             )
-        # except Exception as e:
-        #     return Response(
-        #         SmartWorkHorseResponse.get_response(
-        #             success=False,
-        #             message="Something went wrong.",
-        #             status=SmartWorkHorseStatus.Error.value,
-        #             error={str(e)},
-        #         ),
-        #         status=status.HTTP_400_BAD_REQUEST,
-        #     )
+        except Exception as e:
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=False,
+                    message="Something went wrong.",
+                    status=SmartWorkHorseStatus.Error.value,
+                    error={str(e)},
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 class UpcomingShiftView(APIView):
     queryset = Event.objects.filter()
     permission_classes = [IsAuthenticated]
-
 
     def get(self, request):
         employee = Employee.objects.filter(user=self.request.user)
