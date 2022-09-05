@@ -16,6 +16,7 @@ from workside.services import (
     calculate_reminder_date
 )
 
+
 def business_directory_path(instance, filename):
     return 'business/{}/{}/{}'.format(instance.business.id, instance.name, filename)
 
@@ -98,7 +99,7 @@ class Event(TimeStampedModel):
         _("Event Status"),
         max_length=200,
         choices=EventStatus.choices(),
-        null=True,blank=True
+        null=True, blank=True
     )
     publishing_reminder = models.CharField(
         _("Reminder for publishing draft event"),

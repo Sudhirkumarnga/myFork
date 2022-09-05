@@ -23,6 +23,8 @@ from workside.services import (
     get_filtered_queryset
 )
 from datetime import datetime
+from rest_framework.filters import SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 class WorkSiteViewSet(ModelViewSet):
@@ -105,6 +107,8 @@ class TaskViewSet(ModelViewSet):
     serializer_class = TaskSerializer
     queryset = Task.objects.filter()
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['worksite']
 
     def get_queryset(self):
         queryset = self.queryset.filter(worksite__business__user=self.request.user)
@@ -358,3 +362,7 @@ class UpcomingShiftView(APIView):
             context={'request': request}
         )
         return Response(serializer.data)
+
+
+
+

@@ -13,12 +13,13 @@ from business.models import (
 
 )
 
+
 def convert_image_from_bse64_to_blob(image):
-    data = ContentFile(base64.b64decode(image), name='profile_image.jpg')
+    data = ContentFile(base64.b64decode(image), name='file.jpg')
     return data
 
 
-def update_profile(user,data):
+def update_profile(user, data):
     User.objects.filter(id=user.id).update(**data['personal_information'])
     if user.role == 'Organization Admin':
         business = Business.objects.get(user=user)
@@ -30,6 +31,7 @@ def update_profile(user,data):
     else:
         EmergencyContact.objects.filter(employee__user=user).update(**data['emergency_contact'])
 
+
 def create_user_for_employee(data):
     password = User.objects.make_random_password()
     user = User(
@@ -38,8 +40,8 @@ def create_user_for_employee(data):
         gender=data['personal_information']['gender'],
         date_of_birth=data['personal_information']['date_of_birth'],
         email=data['contact']['email'],
-        phone = data['contact']['phone'],
-        role = "Employee",
+        phone=data['contact']['phone'],
+        role="Employee",
         username=generate_unique_username([
             data['personal_information']['first_name'],
             data['contact']['email'],
@@ -67,7 +69,7 @@ def update_user_for_employee(data, instance):
 
     if 'contact' in data:
         if 'email' in data['contact']:
-            user.email=data['contact']['email']
+            user.email = data['contact']['email']
         if 'phone' in data['contact']:
             user.phone = data['contact']['phone']
 
@@ -76,14 +78,14 @@ def update_user_for_employee(data, instance):
     return user, password
 
 
-def create_employee(user,data, business_user):
+def create_employee(user, data, business_user):
     employee = Employee.objects.create(
         user=user,
         business=Business.objects.get(user=business_user),
         profile_image=convert_image_from_bse64_to_blob(data['personal_information']['profile_image']),
         mobile=data['contact']['mobile'],
         address_line_one=data['address_information']['address_line_one'],
-        address_line_two =data['address_information']['address_line_two'],
+        address_line_two=data['address_information']['address_line_two'],
         city=City.objects.get(id=data['address_information']['city']),
         position=data['work_information']['position'],
         hourly_rate=data['work_information']['hourly_rate']
@@ -120,7 +122,7 @@ def update_employee(employee_user, data):
     return employee
 
 
-def send_email_to_employee(user,password):
+def send_email_to_employee(user, password):
     send_mail(
         "Smart WorkHorse Login Credentials",
         f"Your Login credentials are:\nEmail: {user.email}\nPassword: {password}",

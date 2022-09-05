@@ -10,7 +10,7 @@ from cities_light.receivers import connect_default_signals
 from business.constants import BusinessPayFrequency, AttendanceStatus, RequestStatus, RequestType
 
 User = get_user_model()
-
+from decimal import Decimal
 
 class Country(AbstractCountry):
     pass
@@ -102,6 +102,13 @@ class Employee(TimeStampedModel):
     def __str__(self):
         return f'{self.user.email}'
 
+    def get_total_pay_amount(self):
+        latest_attendance = Attendance.objects.filter(
+            employee=self.id,
+        ).latest()
+        total_pay = latest_attendance.total_hours * self.hourly_rate
+        return total_pay
+
 
 class EmergencyContact(TimeStampedModel):
     first_name = models.CharField(max_length=20)
@@ -135,11 +142,16 @@ class Attendance(TimeStampedModel):
     urgent = models.BooleanField(default=False)
     clock_in_time = models.DateTimeField(null=True, blank=True)
     clock_out_time = models.DateTimeField(null=True, blank=True)
-    total_hours = models.DecimalField(max_digits=200, decimal_places=1, null=True, blank=True)
+    total_hours = models.DecimalField(max_digits=200, decimal_places=1, default=0)
 
     class Meta:
         verbose_name = "Attendance"
         verbose_name_plural = "Attendance"
+
+    def save(self, *args, **kwargs):
+        if self.status == "CLOCK_OUT":
+            self.total_hours += Decimal(((self.clock_out_time - self.clock_in_time).total_seconds() / 3600))
+        super(Attendance, self).save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.employee.user.first_name} - {self.employee.user.last_name}'

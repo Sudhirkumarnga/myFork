@@ -1,7 +1,10 @@
 from rest_framework.serializers import ModelSerializer
 from django_countries.serializers import CountryFieldMixin
+from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from users.models import User
+from datetime import datetime
+from workside.models import Event
 from business.models import (
     Business,
     Employee,
@@ -87,7 +90,8 @@ class EmployeeSerializer(ModelSerializer):
         model = Employee
         fields = ['id', 'personal_information', 'contact', 'address_information', 'work_information']
 
-    def get_personal_information(self, obj):
+    @staticmethod
+    def get_personal_information(obj):
         data = EmployeePersonalInformationSerializer(obj.user, many=False).data
         try:
             data['profile_image'] = obj.profile_image.url
@@ -95,7 +99,8 @@ class EmployeeSerializer(ModelSerializer):
             data['profile_image'] = None
         return data
 
-    def get_contact(self, obj):
+    @staticmethod
+    def get_contact(obj):
         data = EmployeeContactSerializer(
             obj.user,
             many=False
@@ -103,12 +108,14 @@ class EmployeeSerializer(ModelSerializer):
         data['mobile'] = str(obj.mobile)
         return data
 
-    def get_address_information(self, obj):
+    @staticmethod
+    def get_address_information(obj):
         return EmployeeAddressInformationSerializer(
             obj, many=False
         ).data
 
-    def get_work_information(self, obj):
+    @staticmethod
+    def get_work_information(obj):
         return EmployeeWorkInformationSerializer(
             obj,
             many=False
@@ -150,19 +157,22 @@ class BusinessAdminProfileSerializer(ModelSerializer):
         model = User
         fields = ['business_information', 'personal_information', 'business_address']
 
-    def get_business_information(self, obj):
+    @staticmethod
+    def get_business_information(obj):
         return BusinessSerializer(
             Business.objects.get(user=obj),
             many=False
         ).data
 
-    def get_personal_information(self, obj):
+    @staticmethod
+    def get_personal_information(obj):
         return UserSerializer(
             obj,
             many=False
         ).data
 
-    def get_business_address(self, obj):
+    @staticmethod
+    def get_business_address(obj):
         return BusinessAddressSerializer(
             BusinessAddress.objects.get(business__user=obj),
             many=False
@@ -177,13 +187,15 @@ class BusinessEmployeeProfileSerializer(ModelSerializer):
         model = User
         fields = ['personal_information', 'emergency_contact']
 
-    def get_personal_information(self, obj):
+    @staticmethod
+    def get_personal_information(obj):
         return UserSerializer(
             obj,
             many=False
         ).data
 
-    def get_emergency_contact(self, obj):
+    @staticmethod
+    def get_emergency_contact(obj):
         return EmergencyContactSerializer(
             EmergencyContact.objects.get(employee__user=obj),
             many=False
@@ -226,3 +238,29 @@ class LeaveRequestSerializer(ModelSerializer):
             **validated_data
         )
         return leave_request
+
+
+class AttendanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attendance
+        exclude = ('created_at', 'updated_at')
+
+    def validate(self, data):
+        request = self.context['request']
+        if data['status'].__contains__('CLOCK_IN'):
+            event = Event.objects.filter(
+                start_time__gte=datetime.now(),
+                employees__in=[Employee.objects.get(user=request.user).id]
+            )
+            if not event.exists():
+                raise serializers.ValidationError(_("Event Time not started"))
+        return data
+
+    def create(self, validated_data):
+        request = self.context['request']
+        validated_data['employee'] = Employee.objects.get(user=request.user)
+        validated_data['clock_in_time'] = datetime.now()
+        attendance = Attendance.objects.create(
+            **validated_data
+        )
+        return attendance

@@ -1,15 +1,17 @@
-from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from smart_workhorse_33965.permissions import IsOrganizationAdmin
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 from smart_workhorse_33965.response import SmartWorkHorseResponse, SmartWorkHorseStatus
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from users.models import User
-from business.models import Employee, Country, City, Region, LeaveRequest
+from datetime import  datetime
+from business.services import convert_image_from_bse64_to_blob
+from business.models import Employee, Country, City, Region, LeaveRequest, Attendance
 from business.api.v1.serializers import (
     BusinessAdminProfileSerializer,
     BusinessEmployeeProfileSerializer,
@@ -17,7 +19,8 @@ from business.api.v1.serializers import (
     CountrySerializer,
     CitySerializer,
     RegionSerializer,
-    LeaveRequestSerializer
+    LeaveRequestSerializer,
+    AttendanceSerializer
 )
 
 from business.services import (
@@ -250,7 +253,7 @@ class LeaveRequestView(ModelViewSet):
     queryset = LeaveRequest.objects.filter()
     http_method_names = ['get', 'post', 'put']
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ['request_type','status', 'from_date', 'to_date', 'employee']
+    filterset_fields = ['request_type', 'status', 'from_date', 'to_date', 'employee']
 
     def get_serializer_context(self):
         context = super(LeaveRequestView, self).get_serializer_context()
@@ -262,4 +265,36 @@ class LeaveRequestView(ModelViewSet):
             queryset = self.queryset.filter(employee__user=self.request.user)
         else:
             queryset = self.queryset.filter(employee__business__user=self.request.user)
-        return  queryset
+        return queryset
+
+
+class AttendanceView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = AttendanceSerializer(
+            data=request.data, many=False,
+            context={"request": request}
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request):
+        data = request.data
+        if data['status'].__contains__('CLOCK_OUT'):
+            data['clock_out_time'] = datetime.now()
+        if 'feedback_media' in data:
+            data['feedback_media'] = convert_image_from_bse64_to_blob(data['feedback_media'])
+        if 'notes_media' in data:
+            data['notes_media'] = convert_image_from_bse64_to_blob(data['feedback_media'])
+        serializer = AttendanceSerializer(
+            Attendance.objects.get(event__id=request.data['event']),
+            data=data,
+            context={'request': request}
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

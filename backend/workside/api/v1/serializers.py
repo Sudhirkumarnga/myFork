@@ -183,13 +183,11 @@ class EventSerializer(ModelSerializer):
 
     def validate(self, data):
         request = self.context['request']
-        print(request.user)
         event = Event.objects.filter(
             start_time__lte= data['start_time'],
             end_time__gte= data['end_time'],
             worksite__business__user=request.user
         )
-        print(event)
         if event.exists():
             raise serializers.ValidationError(_("Event is already created between these time range."))
         return data
@@ -250,7 +248,7 @@ class AttendanceWorksiteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = WorkSite
-        fields = ('name', 'location', 'notes', 'instruction_video', 'tasks', 'assigned_employee')
+        fields = ('id', 'name', 'location', 'notes', 'instruction_video', 'tasks', 'assigned_employee')
 
     @staticmethod
     def get_tasks(obj):
@@ -261,7 +259,7 @@ class AttendanceWorksiteSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_assigned_employee(obj):
-        queryset = Event.objects.get(worksite=obj)
+        queryset = Event.objects.filter(worksite=obj).first()
         return EventAssignedEmployeeSerializer(
             queryset,
             many=False
