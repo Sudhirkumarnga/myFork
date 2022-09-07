@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from users.models import User
-from datetime import  datetime
+from datetime import datetime
 from business.services import convert_image_from_bse64_to_blob
 from business.models import Employee, Country, City, Region, LeaveRequest, Attendance
 from business.api.v1.serializers import (
@@ -20,7 +20,8 @@ from business.api.v1.serializers import (
     CitySerializer,
     RegionSerializer,
     LeaveRequestSerializer,
-    AttendanceSerializer
+    AttendanceSerializer,
+    EarningSerializer
 )
 
 from business.services import (
@@ -298,3 +299,14 @@ class AttendanceView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class EarningsView(APIView):
+    queryset = Employee.objects.filter()
+    permission_classes = [IsAuthenticated, IsOrganizationAdmin]
+
+    def get(self, request):
+        queryset = self.queryset.filter(business__user=request.user.id)
+        serializer = EarningSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+

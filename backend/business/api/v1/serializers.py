@@ -250,8 +250,10 @@ class AttendanceSerializer(serializers.ModelSerializer):
         if data['status'].__contains__('CLOCK_IN'):
             event = Event.objects.filter(
                 start_time__gte=datetime.now(),
+                end_time__gte=datetime.now(),
                 employees__in=[Employee.objects.get(user=request.user).id]
             )
+            print(event)
             if not event.exists():
                 raise serializers.ValidationError(_("Event Time not started"))
         return data
@@ -264,3 +266,20 @@ class AttendanceSerializer(serializers.ModelSerializer):
             **validated_data
         )
         return attendance
+
+
+class EarningSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee
+        fields = ('id', 'profile_image', 'position', 'hourly_rate')
+
+    def to_representation(self, data):
+        data = super(EarningSerializer, self).to_representation(data)
+        employee = Employee.objects.get(id=data['id'])
+        data['name'] = employee.user.get_full_name()
+        try:
+            data['total_hours'] = Attendance.objects.filter(employee=employee.id).last().total_hours
+        except:
+            data['total_hours'] = 0
+        data['earning'] = employee.get_total_pay_amount()
+        return data

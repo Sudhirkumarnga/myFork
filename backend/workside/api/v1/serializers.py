@@ -205,7 +205,7 @@ class SchedularSerializer(ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ('id', 'worksite_name', 'start_time', 'end_time')
+        fields = ('id', 'worksite_name', 'employees', 'selected_tasks', 'start_time', 'end_time')
 
     def to_representation(self, data):
         data = super(SchedularSerializer, self).to_representation(data)

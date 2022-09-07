@@ -103,10 +103,13 @@ class Employee(TimeStampedModel):
         return f'{self.user.email}'
 
     def get_total_pay_amount(self):
-        latest_attendance = Attendance.objects.filter(
-            employee=self.id,
-        ).latest()
-        total_pay = latest_attendance.total_hours * self.hourly_rate
+        try:
+            latest_attendance = Attendance.objects.filter(
+                employee=self.id,
+            ).last()
+            total_pay = latest_attendance.total_hours * self.hourly_rate
+        except:
+            total_pay = 0
         return total_pay
 
 
