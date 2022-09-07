@@ -9,7 +9,7 @@ from workside.services import (
 )
 from business.models import Attendance
 from django.utils.translation import ugettext_lazy as _
-
+from django.db.models import Q
 
 class TaskSerializerforWorksite(ModelSerializer):
     class Meta:
@@ -183,11 +183,19 @@ class EventSerializer(ModelSerializer):
 
     def validate(self, data):
         request = self.context['request']
-        event = Event.objects.filter(
-            start_time__lte= data['start_time'],
-            end_time__gte= data['end_time'],
-            worksite__business__user=request.user
-        )
+        if self.instance:
+            event = Event.objects.filter(
+                ~Q(id=self.instance.id),
+                start_time__lte=data['start_time'],
+                end_time__gte=data['end_time'],
+                worksite__business__user=request.user
+            )
+        else:
+            event = Event.objects.filter(
+                start_time__lte= data['start_time'],
+                end_time__gte= data['end_time'],
+                worksite__business__user=request.user
+            )
         if event.exists():
             raise serializers.ValidationError(_("Event is already created between these time range."))
         return data
