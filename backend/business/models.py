@@ -146,6 +146,7 @@ class Attendance(TimeStampedModel):
     clock_in_time = models.DateTimeField(null=True, blank=True)
     clock_out_time = models.DateTimeField(null=True, blank=True)
     total_hours = models.DecimalField(max_digits=200, decimal_places=1, default=0)
+    is_approved = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Attendance"
@@ -153,7 +154,9 @@ class Attendance(TimeStampedModel):
 
     def save(self, *args, **kwargs):
         if self.status == "CLOCK_OUT":
-            self.total_hours += Decimal(((self.clock_out_time - self.clock_in_time).total_seconds() / 3600))
+            attendance = Attendance.objects.filter(employee=self.employee).last()
+            difference = Decimal(((self.clock_out_time - self.clock_in_time).total_seconds() / 3600))
+            self.total_hours = attendance.total_hours + difference
         super(Attendance, self).save(*args, **kwargs)
 
     def __str__(self):

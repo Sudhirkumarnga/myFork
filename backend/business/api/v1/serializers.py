@@ -243,19 +243,26 @@ class LeaveRequestSerializer(ModelSerializer):
 class AttendanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attendance
-        exclude = ('created_at', 'updated_at')
+        exclude = ('updated_at',)
+
+    def to_representation(self, data):
+        data = super(AttendanceSerializer, self).to_representation(data)
+        request = self.context['request']
+        if request.user.role != "Organization Admin":
+            del data['created_at']
+        return data
 
     def validate(self, data):
         request = self.context['request']
-        if data['status'].__contains__('CLOCK_IN'):
-            event = Event.objects.filter(
-                start_time__gte=datetime.now(),
-                end_time__gte=datetime.now(),
-                employees__in=[Employee.objects.get(user=request.user).id]
-            )
-            print(event)
-            if not event.exists():
-                raise serializers.ValidationError(_("Event Time not started"))
+        if not request.user.role == "Organization Admin":
+            if data['status'].__contains__('CLOCK_IN'):
+                event = Event.objects.filter(
+                    start_time__lte=datetime.now(),
+                    end_time__gte=datetime.now(),
+                    employees__in=[Employee.objects.get(user=request.user).id]
+                )
+                if not event.exists():
+                    raise serializers.ValidationError(_("Event Time not started or you're not allowed to clockin."))
         return data
 
     def create(self, validated_data):

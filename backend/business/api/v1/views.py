@@ -9,7 +9,6 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from users.models import User
-from datetime import datetime
 from business.services import convert_image_from_bse64_to_blob
 from business.models import Employee, Country, City, Region, LeaveRequest, Attendance
 from business.api.v1.serializers import (
@@ -271,6 +270,22 @@ class LeaveRequestView(ModelViewSet):
 
 class AttendanceView(APIView):
     permission_classes = [IsAuthenticated]
+    queryset = Attendance.objects.filter()
+
+    def get(self, request):
+        if request.user.role == "Organization Admin":
+            queryset = self.queryset.filter(
+                event__worksite__business__user=request.user
+            )
+            status = self.request.query_params.get('status', None)
+            if status:
+                queryset = queryset.filter(is_approved=status)
+        serializer = AttendanceSerializer(
+            queryset,
+            many=True,
+            context={'request': request}
+        )
+        return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
         serializer = AttendanceSerializer(
@@ -284,15 +299,20 @@ class AttendanceView(APIView):
 
     def put(self, request):
         data = request.data
-        if data['status'].__contains__('CLOCK_OUT'):
-            data['clock_out_time'] = datetime.now()
+        attendance_id = self.request.query_params.get('attendance_id', None)
+        if attendance_id:
+            queryset = self.queryset.filter(id=attendance_id).first()
+        else:
+            queryset = self.queryset.filter(event__id=request.data['event']).last()
+
         if 'feedback_media' in data:
             data['feedback_media'] = convert_image_from_bse64_to_blob(data['feedback_media'])
         if 'notes_media' in data:
             data['notes_media'] = convert_image_from_bse64_to_blob(data['feedback_media'])
+
         serializer = AttendanceSerializer(
-            Attendance.objects.get(event__id=request.data['event']),
-            data=data,
+            queryset,
+            data=request.data,
             context={'request': request}
         )
         if serializer.is_valid():
@@ -309,4 +329,3 @@ class EarningsView(APIView):
         queryset = self.queryset.filter(business__user=request.user.id)
         serializer = EarningSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
