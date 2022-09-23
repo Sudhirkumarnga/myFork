@@ -15,25 +15,32 @@ import Strings from '../../res/Strings'
 import ImagePicker from 'react-native-image-crop-picker'
 import Toast from 'react-native-simple-toast'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { createEmployee } from '../../api/business'
+import { createEmployee, updateEmployee } from '../../api/business'
 import moment from 'moment'
 
-export default function AddEmployeeScene ({ navigation }) {
+export default function AddEmployeeScene ({ navigation, route }) {
+  const item = route?.params?.item
+  console.warn('item', item)
   // State
   const [state, setState] = useState({
     name: '',
     pay_frequency: '',
-    first_name: '',
-    last_name: '',
-    phone: '',
-    date_of_birth: '',
-    address_line_one: '',
-    address_line_two: '',
-    city: '',
+    first_name: item?.personal_information?.first_name || '',
+    last_name: item?.personal_information?.last_name || '',
+    phone: item?.contact?.phone || '',
+    mobile: item?.contact?.mobile || '',
+    email: item?.contact?.email || '',
+    date_of_birth: item?.personal_information?.date_of_birth || '',
+    address_line_one: item?.address_information?.address_line_one || '',
+    address_line_two: item?.address_information?.address_line_two || '',
+    city: item?.address_information?.city || '',
     country: '',
     zipcode: '',
-    profile_image: '',
-    photo: null,
+    photo: item?.personal_information?.profile_image || '',
+    profile_image: item?.personal_information?.profile_image || '',
+    position: item?.work_information?.position || '',
+    price: item?.work_information?.hourly_rate?.toString() || '',
+    gender: item?.personal_information?.gender || '',
     loading: false
   })
 
@@ -119,10 +126,11 @@ export default function AddEmployeeScene ({ navigation }) {
           hourly_rate: Number(price)
         }
       }
-      console.warn('token', token)
-      console.warn('formData', formData)
-      const res = await createEmployee(formData, token)
-      console.warn('createAdminProfile', res?.data)
+      if (item) {
+        await updateEmployee(item?.id, formData, token)
+      } else {
+        await createEmployee(formData, token)
+      }
       handleChange('loading', false)
       navigation.navigate('home')
       Toast.show(`Employee has been added!`)
@@ -143,6 +151,7 @@ export default function AddEmployeeScene ({ navigation }) {
       return (
         <PrimaryTextInput
           {...fields}
+          text={state[fields.key]}
           // ref={o => (this[fields.key] = o)}
           key={fields.key}
           onChangeText={(text, isValid) => handleChange(fields.key, text)}
@@ -156,6 +165,7 @@ export default function AddEmployeeScene ({ navigation }) {
       return (
         <PrimaryTextInput
           {...fields}
+          text={state[fields.key]}
           // ref={o => (this[fields.key] = o)}
           key={fields.key}
           onChangeText={(text, isValid) => handleChange(fields.key, text)}
@@ -169,6 +179,7 @@ export default function AddEmployeeScene ({ navigation }) {
       return (
         <PrimaryTextInput
           {...fields}
+          text={state[fields.key]}
           // ref={o => (this[fields.key] = o)}
           key={fields.key}
           onChangeText={(text, isValid) => handleChange(fields.key, text)}
@@ -182,6 +193,7 @@ export default function AddEmployeeScene ({ navigation }) {
       return (
         <PrimaryTextInput
           {...fields}
+          text={state[fields.key]}
           // ref={o => (this[fields.key] = o)}
           key={fields.key}
           onChangeText={(text, isValid) => handleChange(fields.key, text)}
@@ -193,7 +205,7 @@ export default function AddEmployeeScene ({ navigation }) {
   const renderFooterButton = () => {
     return (
       <Button
-        title={Strings.submit}
+        title={item ? Strings.update : Strings.submit}
         style={styles.footerButton}
         loading={loading}
         onPress={handleSubmit}
@@ -241,7 +253,7 @@ export default function AddEmployeeScene ({ navigation }) {
         <Header
           leftButton
           onLeftPress={() => navigation.goBack()}
-          title={Strings.addEmployee}
+          title={item ? Strings.updateEmployee : Strings.addEmployee}
         />
         {renderContent()}
       </View>

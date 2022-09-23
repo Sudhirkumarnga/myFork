@@ -106,7 +106,7 @@ class PrimaryTextInput extends Component {
           confirmBtnText={'Confirm'}
           cancelBtnText={'Cancel'}
           format=' MM/DD/YYYY'
-          maxDate={new Date()}
+          maxDate={this.props.maxDate || new Date()}
           customStyles={{
             dateInput: [
               styles.inputStyle,
@@ -219,7 +219,7 @@ class PrimaryTextInput extends Component {
         onBlur={() => this.onBlur()}
         maxLength={this.props.maxLength}
         onChangeText={text => this.onChangeText(text)}
-        value={this.state.text}
+        value={this.state.text || this.props.text}
         secureTextEntry={
           !this.state.isPwdVisible && !!this.props.onPasswordValidationCheck
         }

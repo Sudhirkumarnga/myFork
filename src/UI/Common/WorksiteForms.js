@@ -83,7 +83,7 @@ const fields = {
     textInputProps: { autoCapitalize: 'words' }
   },
   criticality: {
-    key: 'priority',
+    key: 'criticality',
     dateType: false,
     label: Strings.criticality,
     placeholder: Strings.criticality,
@@ -91,7 +91,7 @@ const fields = {
     items: [
       { label: 'LOW', value: 'LOW' },
       { label: 'MEDIUM', value: 'MEDIUM' },
-      { label: 'HIGHT', value: 'HIGHT' }
+      { label: 'HIGH', value: 'HIGH' }
     ]
   },
   taskFreq: {

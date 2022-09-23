@@ -26,7 +26,8 @@ import {
   EmployeesView,
   MessageChat,
   GroupMessageScene,
-  VerifyAccount
+  VerifyAccount,
+  AddEvents
 } from "../UI"
 import { drawerNavigator } from "./DrawerNavigation"
 import { TabBar } from "./TabBar"
@@ -67,6 +68,7 @@ export const AuthNavigator = props => {
       <Stack.Screen name={"worksiteDetail"} component={WorksiteDetailScene} />
       <Stack.Screen name={"addWorksite"} component={AddWorksiteScene} />
       <Stack.Screen name={"createTask"} component={CreateTaskScene} />
+      <Stack.Screen name={"addEvents"} component={AddEvents} />
       <Stack.Screen name={"MessageChat"} component={MessageChat} />
       <Stack.Screen name={"GroupMessageScene"} component={GroupMessageScene} />
 

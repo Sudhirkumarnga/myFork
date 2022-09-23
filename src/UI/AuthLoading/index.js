@@ -11,8 +11,8 @@ function AuthLoading ({ navigation }) {
   const context = useContext(AppContext)
   const {
     setUser,
-    setAdminProfile
-    // _getProfile,
+    setAdminProfile,
+    _getAllSchedules
     // _getOrders,
     // _getJourneys,
     // _getMyAddresses
@@ -22,7 +22,7 @@ function AuthLoading ({ navigation }) {
     try {
       const token = await AsyncStorage.getItem('token')
       const res = await getProfile(token)
-      console.warn('res?.data?.response',res?.data?.response);
+      console.warn('res?.data?.response', res?.data?.response)
       if (res?.data?.response) {
         setAdminProfile(res?.data?.response)
       }
@@ -32,8 +32,8 @@ function AuthLoading ({ navigation }) {
         navigation.navigate('home')
       }
     } catch (error) {
-      console.warn('error', error)
-      this.handleChange('loading', false, true)
+      // console.warn('error', error)
+      // this.handleChange('loading', false, true)
       const errorText = Object.values(error?.response?.data)
       Toast.show(`Error: ${errorText[0]}`)
     }
@@ -50,6 +50,7 @@ function AuthLoading ({ navigation }) {
     // const user = await AsyncStorage.getItem('user')
     if (userUID) {
       _getProfile()
+      _getAllSchedules()
       // const userData = JSON.parse(user)
       // setUser(userData)
       // _getProfile()

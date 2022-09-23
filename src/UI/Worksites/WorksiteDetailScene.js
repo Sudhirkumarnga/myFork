@@ -11,10 +11,13 @@ import { Header, Button } from '../Common'
 import { Colors, Fonts } from '../../res'
 import PrimaryTextInput from '../Common/PrimaryTextInput'
 import Strings from '../../res/Strings'
-
+import Toast from 'react-native-simple-toast'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { deleteWorksite } from '../../api/business'
 export default function WorksiteDetailScene ({ navigation, route }) {
   const worksiteData = route?.params?.item
   const [state, setState] = useState({
+    loading: false,
     info: [
       {
         title: 'Worksite Name:',
@@ -47,7 +50,31 @@ export default function WorksiteDetailScene ({ navigation, route }) {
     ]
   })
 
-  const { info } = state
+  const { info, loading } = state
+
+  const handleChange = (name, value) => {
+    setState(pre => ({ ...pre, [name]: value }))
+  }
+
+  const handleSubmit = async () => {
+    try {
+      handleChange('loading', true)
+      const token = await AsyncStorage.getItem('token')
+      await deleteWorksite(worksiteData?.id, token)
+      handleChange('loading', false)
+      navigation.goBack()
+      Toast.show(`Worksite has been deleted!`)
+    } catch (error) {
+      handleChange('loading', false)
+      console.warn('err', error?.response?.data)
+      const showWError = Object.values(error.response?.data?.error)
+      if (showWError.length > 0) {
+        Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
+      } else {
+        Toast.show(`Error: ${JSON.stringify(error)}`)
+      }
+    }
+  }
 
   const renderButtons = () => {
     return (
@@ -59,6 +86,7 @@ export default function WorksiteDetailScene ({ navigation, route }) {
         />
         <Button
           style={[styles.footerWhiteButton]}
+          onPress={() => navigation.navigate('addWorksite', { worksiteData })}
           title={Strings.edit}
           icon={'edit'}
           isWhiteBg
@@ -74,6 +102,8 @@ export default function WorksiteDetailScene ({ navigation, route }) {
           style={[styles.footerWhiteButton]}
           isWhiteBg
           icon={'delete'}
+          loading={loading}
+          onPress={handleSubmit}
           color={Colors.BUTTON_BG}
           iconStyle={{
             width: 20,
@@ -127,35 +157,38 @@ export default function WorksiteDetailScene ({ navigation, route }) {
           </Text>
         </View>
         <Text style={styles.title}>Tasks</Text>
-        <View
-          style={[
-            {
-              width: '110%',
-              borderBottomWidth: 1,
-              borderBottomColor: Colors.MESSAGEB_BOX_LIGHT,
-              paddingBottom: 5,
-              flexDirection: 'row',
-              justifyContent: 'space-between'
-            }
-          ]}
-        >
-          <View>
-            <Text style={styles.cellTitle}>task 1</Text>
-          </View>
-          <TouchableOpacity
-            style={{ justifyContent: 'flex-end' }}
-            // onPress={() => navigation.navigate('worksiteDetail', { item })}
+        {worksiteData?.tasks?.map((task, index) => (
+          <View
+            style={[
+              {
+                width: '110%',
+                borderBottomWidth: 1,
+                borderBottomColor: Colors.MESSAGEB_BOX_LIGHT,
+                paddingBottom: 5,
+                marginBottom: 10,
+                flexDirection: 'row',
+                justifyContent: 'space-between'
+              }
+            ]}
           >
-            <Text
-              style={[
-                styles.cellTitle,
-                { color: Colors.BLUR_TEXT, ...Fonts.poppinsRegular(13) }
-              ]}
+            <View>
+              <Text style={styles.cellTitle}>{task?.name}</Text>
+            </View>
+            <TouchableOpacity
+              style={{ justifyContent: 'flex-end' }}
+              // onPress={() => navigation.navigate('worksiteDetail', { item })}
             >
-              View Details
-            </Text>
-          </TouchableOpacity>
-        </View>
+              <Text
+                style={[
+                  styles.cellTitle,
+                  { color: Colors.BLUR_TEXT, ...Fonts.poppinsRegular(13) }
+                ]}
+              >
+                View Details
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ))}
       </View>
     )
   }

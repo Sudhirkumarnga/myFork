@@ -8,34 +8,43 @@ import {
   TouchableOpacity,
   Image
 } from 'react-native'
-import { Header, PrimaryTextInput, Forms, Button } from '../Common'
+import { Header, PrimaryTextInput, Button } from '../Common'
 import { Fonts, Colors, Images } from '../../res'
 import Strings from '../../res/Strings'
 import WorksiteForms from '../Common/WorksiteForms'
 import ImagePicker from 'react-native-image-crop-picker'
-import { createWorksite } from '../../api/business'
+import { createWorksite, updateWorksite } from '../../api/business'
 import Toast from 'react-native-simple-toast'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import RNFS from 'react-native-fs';
+import RNFS from 'react-native-fs'
 
-export default function AddWorksiteScene ({ navigation }) {
+export default function AddWorksiteScene ({ navigation, route }) {
+  const worksiteData = route?.params?.worksiteData
+  console.warn('worksiteData', worksiteData)
   // State
   const [state, setState] = useState({
-    name: '',
-    location: '',
-    description: '',
-    notes: '',
-    monthly_rates: '',
-    clear_frequency_by_day: '',
-    desired_time: '',
-    number_of_workers_needed: '',
-    supplies_needed: '',
-    contact_person_name: '',
-    contact_phone_number: '',
-    show_dtails: true,
-    profile_image: '',
-    logo: null,
+    name: worksiteData?.personal_information?.name || '',
+    location: worksiteData?.personal_information?.location || '',
+    description: worksiteData?.personal_information?.description || '',
+    notes: worksiteData?.personal_information?.notes || '',
+    monthly_rates: worksiteData?.personal_information?.monthly_rates || '',
+    clear_frequency_by_day:
+      worksiteData?.personal_information?.clear_frequency_by_day || '',
+    desired_time: worksiteData?.personal_information?.desired_time || '',
+    number_of_workers_needed:
+      worksiteData?.personal_information?.number_of_workers_needed?.toString() ||
+      '',
+    supplies_needed:
+      worksiteData?.personal_information?.supplies_needed?.toString() || '',
+    contact_person_name:
+      worksiteData?.contact_person?.contact_person_name || '',
+    contact_phone_number:
+      worksiteData?.contact_person?.contact_phone_number || '',
+    show_dtails: worksiteData?.show_dtails || false,
+    // profile_image: worksiteData?.personal_information?.profile_image || '',
+    logo: worksiteData?.logo || null,
+    instruction_video: worksiteData?.instruction_video || null,
     loading: false
   })
 
@@ -85,12 +94,15 @@ export default function AddWorksiteScene ({ navigation }) {
         logo,
         instruction_video
       }
-      console.warn('formData', formData)
-      const res = await createWorksite(formData, token)
-      console.warn('createAdminProfile', res?.data)
+      if (worksiteData) {
+        await updateWorksite(worksiteData?.id, formData, token)
+        Toast.show(`Worksite has been updated!`)
+      } else {
+        await createWorksite(formData, token)
+        Toast.show(`Worksite has been added!`)
+      }
       handleChange('loading', false)
       navigation.goBack()
-      Toast.show(`Worksite has been added!`)
     } catch (error) {
       handleChange('loading', false)
       console.warn('err', error?.response?.data)
@@ -153,7 +165,7 @@ export default function AddWorksiteScene ({ navigation }) {
           handleChange('uploading', false)
         } else {
           const base64 = await RNFS.readFile(response.path, 'base64')
-          console.warn('base64',base64);
+          console.warn('base64', base64)
           handleChange('instruction_video', base64)
           handleChange('uploading', false)
           Toast.show('Video Added')
@@ -170,7 +182,7 @@ export default function AddWorksiteScene ({ navigation }) {
       return (
         <PrimaryTextInput
           {...fields}
-          // ref={o => (this[fields.key] = o)}
+          text={state[fields.key]}
           key={fields.key}
           onChangeText={(text, isValid) => handleChange(fields.key, text)}
         />
@@ -183,7 +195,7 @@ export default function AddWorksiteScene ({ navigation }) {
       return (
         <PrimaryTextInput
           {...fields}
-          // ref={o => (this[fields.key] = o)}
+          text={state[fields.key]}
           key={fields.key}
           onChangeText={(text, isValid) => handleChange(fields.key, text)}
         />
@@ -209,7 +221,7 @@ export default function AddWorksiteScene ({ navigation }) {
           title={Strings.uploadWorksiteLogo}
         />
         <Button
-        onPress={_uploadVideo}
+          onPress={_uploadVideo}
           style={[styles.footerWhiteButton]}
           isWhiteBg
           icon={'upload'}
@@ -223,7 +235,6 @@ export default function AddWorksiteScene ({ navigation }) {
           title={Strings.uploadVideo}
         />
         <Button
-          
           style={[styles.footerWhiteButton]}
           isWhiteBg
           icon={'add'}
@@ -236,7 +247,7 @@ export default function AddWorksiteScene ({ navigation }) {
           color={Colors.BUTTON_BG}
           title={Strings.createTask}
         />
-        <Button
+        {/* <Button
           style={[styles.footerWhiteButton]}
           title={Strings.edit}
           icon={'edit'}
@@ -248,7 +259,7 @@ export default function AddWorksiteScene ({ navigation }) {
             resizeMode: 'contain'
           }}
           color={Colors.BUTTON_BG}
-        />
+        /> */}
         <Button
           onPress={handleSubmit}
           disabled={
@@ -267,7 +278,7 @@ export default function AddWorksiteScene ({ navigation }) {
           }
           loading={loading}
           style={styles.footerButton}
-          title={Strings.save}
+          title={worksiteData ? Strings.update : Strings.save}
         />
       </View>
     )
@@ -277,11 +288,9 @@ export default function AddWorksiteScene ({ navigation }) {
     return (
       <View style={styles.termsContainer}>
         <TouchableOpacity
-        // onPress={() =>
-        //   this.setState({ termsConditions: !this.state.termsConditions })
-        // }
+          onPress={() => handleChange('show_dtails', !show_dtails)}
         >
-          <Image {...Images.checkbox} />
+          <Image {...Images[show_dtails ? 'checked' : 'checkbox']} />
         </TouchableOpacity>
         <Text style={styles.textStyle}>{'Show details'}</Text>
       </View>
@@ -308,7 +317,7 @@ export default function AddWorksiteScene ({ navigation }) {
               </>
             )}
           </TouchableOpacity> */}
-          <Text style={styles.title}>{'Worksite Information'}</Text>
+          <Text style={styles.title}>{'Worksitesite Information'}</Text>
           {renderPersonalInfoInput()}
           <Text style={styles.title}>{Strings.contactInfo}</Text>
           {renderEmployeeContactInput()}
@@ -326,7 +335,7 @@ export default function AddWorksiteScene ({ navigation }) {
     >
       <View style={styles.container}>
         <Header
-          title={Strings.addWorksite}
+          title={worksiteData ? Strings.updateWorksite : Strings.addWorksite}
           leftButton
           onLeftPress={() => navigation.goBack()}
         />

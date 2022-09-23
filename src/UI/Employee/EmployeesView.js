@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   ScrollView,
   View,
@@ -11,9 +11,44 @@ import { Fonts, Colors } from '../../res'
 import Sample from '../../res/Images/common/sample.png'
 import { Header, Button } from '../Common'
 import moment from 'moment'
+import Toast from 'react-native-simple-toast'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { deleteEmployee } from '../../api/business'
 
 export default function EmployeesView ({ navigation, route }) {
   const item = route?.params?.item
+
+  const [state, setState] = useState({
+    loading: false
+  })
+
+  const { loading } = state
+
+  const handleChange = (name, value) => {
+    setState(pre => ({ ...pre, [name]: value }))
+  }
+
+  const handleSubmit = async () => {
+    try {
+      handleChange('loading', true)
+      const token = await AsyncStorage.getItem('token')
+      const res = await deleteEmployee(item?.id, token)
+      console.warn('createAdminProfile', res?.data)
+      handleChange('loading', false)
+      navigation.goBack()
+      Toast.show(`Employee has been deleted!`)
+    } catch (error) {
+      handleChange('loading', false)
+      console.warn('err', error?.response?.data)
+      const showWError = Object.values(error.response?.data?.error)
+      if (showWError.length > 0) {
+        Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
+      } else {
+        Toast.show(`Error: ${JSON.stringify(error)}`)
+      }
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Header
@@ -55,7 +90,9 @@ export default function EmployeesView ({ navigation, route }) {
         </View>
         <View style={styles.textView}>
           <Text style={styles.job}>Address:</Text>
-          <Text style={styles.title}>{item?.address_information?.address_line_one} </Text>
+          <Text style={styles.title}>
+            {item?.address_information?.address_line_one}{' '}
+          </Text>
         </View>
         <View style={styles.textView}>
           <Text style={styles.job}>Position:</Text>
@@ -63,7 +100,9 @@ export default function EmployeesView ({ navigation, route }) {
         </View>
         <View style={styles.textView}>
           <Text style={styles.job}>Hourly Rate:</Text>
-          <Text style={styles.title}>${item?.work_information?.hourly_rate}/hr</Text>
+          <Text style={styles.title}>
+            ${item?.work_information?.hourly_rate}/hr
+          </Text>
         </View>
         <Button
           style={[styles.footerWhiteButton]}
@@ -80,7 +119,7 @@ export default function EmployeesView ({ navigation, route }) {
         />
         <Button
           style={[styles.footerWhiteButton]}
-          onPress={() => navigation.navigate('addEmployee')}
+          onPress={() => navigation.navigate('addEmployee', { item })}
           title={'Edit'}
           icon={'edit'}
           iconStyle={{
@@ -95,6 +134,8 @@ export default function EmployeesView ({ navigation, route }) {
         <Button
           style={[styles.footerWhiteButton, { marginBottom: 30 }]}
           title={'Delete Employee'}
+          onPress={handleSubmit}
+          loading={loading}
           icon={'delete'}
           iconStyle={{
             width: 20,

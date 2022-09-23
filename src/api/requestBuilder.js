@@ -22,6 +22,7 @@ const buildRequest = request => {
     method,
     url
   }
+  console.warn('requestConfig',requestConfig);
   return requestConfig
 }
 

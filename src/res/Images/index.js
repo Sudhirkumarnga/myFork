@@ -22,6 +22,10 @@ const Bg = {
     source: require('./common/checkbox.png'),
     style: { height: 18, width: 18, resizeMode: 'contain' }
   },
+  checked: {
+    source: require('./common/checked.png'),
+    style: { height: 18, width: 18, resizeMode: 'contain' }
+  },
   arrowLeft: {
     source: require('./common/arrowLeft.png'),
     style: { height: 14, width: 14, resizeMode: 'contain' }

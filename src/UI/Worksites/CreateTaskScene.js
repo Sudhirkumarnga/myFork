@@ -21,7 +21,7 @@ export default function CreateTaskScene ({ navigation, route }) {
     name: '',
     description: '',
     notes: '',
-    priority: '',
+    criticality: '',
     frequency_of_task: '',
     files: null,
     loading: false,
@@ -31,7 +31,7 @@ export default function CreateTaskScene ({ navigation, route }) {
   const {
     loading,
     name,
-    priority,
+    criticality,
     description,
     notes,
     frequency_of_task,
@@ -50,7 +50,7 @@ export default function CreateTaskScene ({ navigation, route }) {
       const formData = {
         worksite: worksiteData?.id,
         name,
-        priority,
+        criticality,
         description,
         notes,
         frequency_of_task
@@ -66,7 +66,7 @@ export default function CreateTaskScene ({ navigation, route }) {
       const res = await createTask(formData, token)
       console.warn('createAdminProfile', res?.data)
       handleChange('loading', false)
-      navigation.goBack()
+      navigation.navigate('AllWorksiteScene')
       Toast.show(`Task has been created!`)
     } catch (error) {
       handleChange('loading', false)
@@ -162,7 +162,7 @@ export default function CreateTaskScene ({ navigation, route }) {
           disabled={
             !name ||
             !description ||
-            !priority ||
+            !criticality ||
             !notes ||
             !frequency_of_task ||
             photos.length === 0
@@ -194,7 +194,11 @@ export default function CreateTaskScene ({ navigation, route }) {
       behavior={Platform.OS === 'ios' ? 'padding' : null}
     >
       <View style={styles.container}>
-        <Header title={Strings.createTask} leftButton />
+        <Header
+          title={Strings.createTask}
+          onLeftPress={() => navigation.goBack()}
+          leftButton
+        />
         {renderContent()}
       </View>
     </KeyboardAvoidingView>
