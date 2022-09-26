@@ -93,6 +93,7 @@ THIRD_PARTY_APPS = [
     'tinymce',
     'django_celery_beat',
     'django_celery_results',
+    'djstripe'
 ]
 
 MODULES_APPS = get_modules()
@@ -289,7 +290,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 50,
 }
 
-CORS_ALLOW_ALL_ORIGINS = True 
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ORIGIN_ALLOW_ALL = True
 
 AWS_QUERYSTRING_AUTH = False
@@ -324,3 +325,11 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
 TIME_INPUT_FORMATS = ('%I:%M %p',)
+
+
+STRIPE_TEST_PUBLIC_KEY ='pk_test_51JDWfKLVgVGgnNunjyDVTn1130UQqbfHWZcdlphQIVRd41r1emuzvUBjgZMviWJsqpwGNyUQxj6V2FGimiwWLtX200LqYNJmuf' # add here
+STRIPE_TEST_SECRET_KEY ='sk_test_51JDWfKLVgVGgnNund39HhzNCPDef1TcR3ZnjbYcz6rhvz6mmDT1qXPSp7WuETKREmaA37YpUTR9Agar7vXHYOR4c00q27I500E' # add here
+STRIPE_LIVE_SECRET_KEY = 'asdasdasdasd'
+STRIPE_LIVE_MODE = False  # Change to True in production# Add these two lines even if you are not using webhooks
+DJSTRIPE_WEBHOOK_SECRET = "whsec_xxx"
+DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"

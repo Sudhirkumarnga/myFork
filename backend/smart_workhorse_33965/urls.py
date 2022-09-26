@@ -30,6 +30,7 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("api/v1/", include("home.api.v1.urls")),
     path("admin/", admin.site.urls),
+    path("stripe/", include("djstripe.urls", namespace="djstripe")),
 ]
 
 admin.site.site_header = "Smart Workhorse"

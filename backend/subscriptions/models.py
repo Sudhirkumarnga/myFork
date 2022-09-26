@@ -7,7 +7,9 @@ from datetime import date, timedelta
 from django.db import models
 from tinymce.models import HTMLField
 from subscriptions.enums import SubscriptionPeriod
-
+from djstripe.models import Customer, Subscription
+from djstripe.models import Product, Price
+from djstripe.models import PaymentIntent
 
 
 class SubscriptionPlan(TimeStampedModel):
@@ -32,20 +34,21 @@ class SubscriptionPlan(TimeStampedModel):
 
 class SubscriptionDetails(TimeStampedModel):
     subscription_plan = models.ForeignKey(SubscriptionPlan, on_delete=models.CASCADE, null=True, blank=True)
-    text  = HTMLField()
+    text = HTMLField()
 
     class Meta:
         verbose_name = "Subscription Detail"
         verbose_name_plural = "Subscription Details"
 
     def __str__(self) -> str:
-        return self.subscription_plan.name 
+        return self.subscription_plan.name
+
 
 class UsersSubscription(TimeStampedModel):
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateTimeField(null=True, blank=True)
     expiry = models.DateTimeField(null=True, blank=True)
-    subscription_plan = models.ForeignKey(SubscriptionPlan,on_delete=models.CASCADE)
+    subscription_plan = models.ForeignKey(SubscriptionPlan, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "Users Subscription"
@@ -57,8 +60,15 @@ class UsersSubscription(TimeStampedModel):
     def save(self, *args, **kwargs):
         if self.subscription_plan.period == "MONTHLY":
             self.date = timezone.now()
-            self.expiry = timezone.now()+timedelta(days=30)
+            self.expiry = timezone.now() + timedelta(days=30)
         if self.subscription_plan.period == "YEARLY":
             self.date = timezone.now()
-            self.expiry = timezone.now()+timedelta(days=365)
-        super(UsersSubscription, self).save(*args, **kwargs)    
+            self.expiry = timezone.now() + timedelta(days=365)
+        super(UsersSubscription, self).save(*args, **kwargs)
+
+
+class Payment(TimeStampedModel):
+    order = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, related_name='payments')
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='payments')
+    amount = models.DecimalField(max_digits=7, decimal_places=2)
+    payment_intent = models.ForeignKey(PaymentIntent, on_delete=models.SET_NULL, null=True)

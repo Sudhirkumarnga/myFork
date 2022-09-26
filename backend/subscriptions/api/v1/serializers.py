@@ -1,25 +1,41 @@
 from rest_framework import serializers
 from subscriptions.models import (
-    SubscriptionPlan,
-    SubscriptionDetails,
-    UsersSubscription
+    Payment
 )
+from djstripe.models import Product, Price, Plan
+
 
 class SubscriptionPlanSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SubscriptionPlan
-        exclude = ('created_at', 'updated_at')
+        model = Plan
+        fields = ("id", "description", "amount", "currency", "interval", "product")
+        depth = 1
 
 
-class SubscriptionDetailsSerializer(serializers.ModelSerializer):
+class PlanPriceSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SubscriptionDetails
-        exclude = ('created_at', 'updated_at')
+        model = Price
+        fields = ('currency', 'unit_amount')
 
 
-class UserSubscriptionSerializer(serializers.ModelSerializer):
+class PaymentSerializer(serializers.ModelSerializer):
+    """
+    A custom serializer to handle Order Payments
+    """
 
     class Meta:
-        model = UsersSubscription
-        exclude = ('created_at', 'updated_at')
+        model = Payment
+        fields = '__all__'
+        # depth = 3
 
+
+# class SubscriptionDetailsSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = SubscriptionDetails
+#         exclude = ('created_at', 'updated_at')
+#
+#
+# class UserSubscriptionSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = UsersSubscription
+#         exclude = ('created_at', 'updated_at')

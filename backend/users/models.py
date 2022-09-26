@@ -39,6 +39,15 @@ class User(AbstractUser):
     )
     date_of_birth = models.DateField(null=True, blank=True)
 
+    customer = models.ForeignKey(
+        'djstripe.Customer', null=True, blank=True, on_delete=models.SET_NULL,
+        help_text="The user's Stripe Customer object, if it exists"
+    )
+    subscription = models.ForeignKey(
+        'djstripe.Subscription', null=True, blank=True, on_delete=models.SET_NULL,
+        help_text="The user's Stripe Subscription object, if it exists"
+    )
+
     def get_absolute_url(self):
         return reverse("users:detail", kwargs={"username": self.username})
 

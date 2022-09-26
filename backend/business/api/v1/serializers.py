@@ -53,7 +53,7 @@ class BusinessAddressSerializer(CountryFieldMixin, ModelSerializer):
 class BusinessSerializer(ModelSerializer):
     class Meta:
         model = Business
-        fields = ['name', 'pay_frequency', 'profile_image']
+        fields = ['name', 'business_code', 'pay_frequency', 'profile_image']
 
 
 class EmployeePersonalInformationSerializer(ModelSerializer):
