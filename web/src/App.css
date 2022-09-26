@@ -1,0 +1,367 @@
+@import url("//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css");
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+.listButton {
+  height: 50px;
+  color: #9D9799 !important;
+}
+
+.listButtonActive {
+  color: #fff !important;
+  height: 50px;
+  background-color: #313131 !important
+}
+
+.doughnut {
+  width: 150px;
+  margin-right: 20px;
+}
+
+.row {
+  display: flex;
+}
+
+.pickup {
+  margin-bottom: 20px;
+  color: rgba(0, 31, 71, 1);
+}
+
+.text_primary {
+  color: rgba(8, 68, 107, 1) !important;
+}
+
+.text_role {
+  color: rgba(196, 196, 196, 1) !important;
+}
+
+.dividerColor {
+  background-color: rgba(255, 255, 255, 0.4) !important;
+  width: 80%;
+}
+
+.text_white {
+  color: #fff !important;
+}
+
+.text_secondary {
+  color: rgba(10, 160, 244, 1) !important;
+}
+
+.text_grey {
+  text-transform: uppercase;
+  color: rgb(177, 179, 180) !important;
+}
+
+.orderUserPhoto {
+  width: 40px;
+  height: 40px;
+  border-radius: 40px;
+  margin: 0px 10px 10px 10px;
+}
+
+.item_picture {
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
+  margin: 0px 10px 10px 10px;
+}
+
+.historyItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 22%;
+}
+
+.orderDate {
+  height: 50px;
+}
+
+.uprCircle {
+  width: 30px;
+  height: 30px;
+  margin-bottom: 15px;
+  border-radius: 30px;
+  background-color: rgba(197, 208, 221, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.borderGap {
+  width: 20%;
+  height: 0.1px;
+  border: 2px dashed rgba(197, 208, 221, 1);
+  margin-left: -10%;
+  margin-right: -10%;
+  margin-top: 78px;
+}
+
+.historycontent {
+  text-align: center;
+}
+
+.innerCircle {
+  width: 20px;
+  height: 20px;
+  border-radius: 20px;
+  background-color: rgba(197, 208, 221, 1);
+}
+
+.innerCircleActive {
+  width: 20px;
+  height: 20px;
+  border-radius: 20px;
+  background-color: #282c34;
+}
+
+.c-pointer {
+  cursor: pointer;
+}
+
+.chartPaper {
+  padding: 15px;
+  min-height: 180px;
+}
+
+.paper {
+  padding: 15px;
+  width: 100%;
+  border-radius: 10px !important;
+}
+
+.backArrow {
+  width: 30px;
+  height: 30px;
+  background-color: #282c34;
+  border-radius: 5px;
+  margin-right: 15px;
+  margin-top: -5px;
+  cursor: pointer;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rowCenter {
+  display: flex;
+  align-items: center !important;
+}
+
+.greyBox {
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  margin-bottom: 10px;
+  margin-right: 15px;
+  background-color: rgba(241, 241, 242, 1);
+}
+
+.greenBox {
+  width: 20px;
+  margin-right: 15px;
+  height: 20px;
+  border-radius: 3px;
+  background-color: rgba(64, 199, 0, 1);
+}
+
+.orangeBox {
+  width: 20px;
+  margin-right: 15px;
+  height: 20px;
+  border-radius: 3px;
+  background-color: rgba(255, 129, 24, 1)
+}
+
+.font-14 {
+  font-size: 14px;
+}
+
+.header {
+  margin-top: 20px !important;
+}
+
+.search {
+  width: 100%;
+}
+
+.search input {
+  width: 100%;
+  height: 50px;
+  padding-left: 15px;
+  border-radius: 10px;
+  border: none;
+}
+
+.form-element {
+  position: relative;
+}
+
+.search .fa-search {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  bottom: 0;
+}
+
+.width150 {
+  width: 150px !important;
+  height: 45px !important;
+}
+
+.indicator {
+  background-color: rgba(8, 68, 107, 1) !important;
+}
+
+.tabs {
+  color: rgba(8, 68, 107, 1) !important;
+}
+
+.tabs:focus {
+  outline: none;
+}
+
+.activeTab {
+  color: rgba(8, 68, 107, 1) !important;
+  box-shadow: 0px 10px 15px 1px #888888;
+  background-color: #fff !important;
+}
+
+.primaryButton {
+  background-color: rgba(8, 68, 107, 1) !important;
+  color: #fff !important;
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+  border-radius: 5px !important;
+}
+
+.qrcodeimage {
+  width: 40px;
+}
+
+.drawer {
+  background-color: rgba(2, 94, 155, 1) !important
+}
+
+.iconDashboard {
+  margin-right: 15px;
+}
+
+.drawerClass {
+  background-color: #212121 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  z-index: 0;
+  /* height: 100vh !important; */
+  border-right: 0px !important;
+}
+
+input:focus {
+  outline: none;
+}
+
+.ProfileImage {
+  width: 50px;
+  height: 50px;
+  border-radius: 50px;
+  margin-right: 15px;
+}
+
+.head {
+  background-color: rgba(245, 247, 250, 1) !important;
+  color: rgba(8, 68, 107, 1);
+  padding: 10px;
+  margin-top: 15px;
+  border-radius: 8px;
+}
+
+.listItem {
+  color: rgba(8, 68, 107, 1);
+  padding: 10px;
+  margin-top: 15px;
+  border-bottom: 1px solid rgba(238, 238, 238, 1);
+  margin-bottom: 10px;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #2B66BC;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.feedbackUserImage {
+  width: 50px;
+  height: 50px;
+  border-radius: 50px;
+  margin-right: 15px;
+}
+
+.zipModal {
+  padding: 20px !important;
+  width: 400px;
+}
+
+.zipcode {
+  width: 100%;
+  height: 50px;
+  padding-left: 15px;
+  border-radius: 10px;
+  border: 1px solid #dfdada;
+
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
