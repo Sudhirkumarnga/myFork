@@ -7,7 +7,7 @@ const PrivateRoute = ({ isAuthenticated, isLoading, children }) => {
   if (isLoading) {
     return <div>Loading...</div>
   }
-  if (!isAuthenticated) return <Navigate to='/' replace />
+  if (!isProtected) return <Navigate to='/' replace />
 
   return children
 }

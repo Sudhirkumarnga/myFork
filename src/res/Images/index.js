@@ -18,6 +18,10 @@ const Bg = {
     source: require('./common/hide.png'),
     style: { height: 22, width: 22, resizeMode: 'contain' }
   },
+  filter: {
+    source: require('./common/filter.png'),
+    style: { height: 22, width: 22, resizeMode: 'contain' }
+  },
   checkbox: {
     source: require('./common/checkbox.png'),
     style: { height: 18, width: 18, resizeMode: 'contain' }

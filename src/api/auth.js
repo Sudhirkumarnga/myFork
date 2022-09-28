@@ -52,6 +52,10 @@ export const createAdminProfile = (payload, token) => {
   return API.post(`api/v1/profile/`, payload, token)
 }
 
+export const updateAdminProfile = (payload, token) => {
+  return API.put(`api/v1/profile/`, payload, token)
+}
+
 export const getMyReviews = token => {
   return API.get('api/v1/my-reviews/', token)
 }
@@ -82,4 +86,16 @@ export const sendOTPForVerification = (body, token) => {
 
 export const veriPhoneOTP = (body, token) => {
   return API.get(`api/v1/users/verify_phone/${body}`, token)
+}
+
+export const getCountries = token => {
+  return API.get(`api/v1/country/`, token)
+}
+
+export const getCities = token => {
+  return API.get(`api/v1/city/`, token)
+}
+
+export const getStates = token => {
+  return API.get(`api/v1/state/`, token)
 }

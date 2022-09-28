@@ -73,7 +73,7 @@ function App () {
   useEffect(() => {
     if (token) {
       _getProfile()
-      navigate('/dashboard/profile')
+      navigate('/subscription')
     }
   }, [userData])
 
@@ -105,11 +105,22 @@ function App () {
               <Route path={ROUTES.MAIN1} element={<Home />} />
               <Route path={ROUTES.MAIN2} element={<Home />} />
               <Route path={ROUTES.LOGIN} element={<Login />} />
-              <Route path={ROUTES.SUBSCRIPTION} element={<Subscription />} />
+              <Route
+                path={ROUTES.SUBSCRIPTION}
+                element={
+                  <PrivateRoute isAuthenticated={isProtected}>
+                    <Subscription />
+                  </PrivateRoute>
+                }
+              />
               <Route path={ROUTES.CHECKOUT} element={<Checkout />} />
               <Route
                 path={ROUTES.FORGOTPASSWORD}
-                element={<ForgotPassword />}
+                element={
+                  <PrivateRoute isAuthenticated={isProtected}>
+                    <ForgotPassword />
+                  </PrivateRoute>
+                }
               />
               <Route
                 path={ROUTES.CHANGEPASSWORD}

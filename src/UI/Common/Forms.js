@@ -90,11 +90,10 @@ const fields = {
     textInputProps: { autoCapitalize: 'none' }
   },
   signUpCode: {
-    key: 'signUpCode',
+    key: 'business_code',
     dateType: false,
     label: 'Signup Code',
-    placeholder: '',
-    textInputProps: { maxLength: 4 }
+    placeholder: ''
   },
   date_of_birth: {
     key: 'date_of_birth',
@@ -132,7 +131,7 @@ const fields = {
   zipcode: {
     key: 'zipcode',
     dateType: false,
-    label: 'Zip',
+    label: 'Zip Code',
     placeholder: ''
     // textInputProps: { maxLength: 4 }
   },
@@ -206,7 +205,14 @@ let formDetails = {
     show: ['first_name', 'last_name', 'phone', 'email', 'password']
   },
   signUpEmp: {
-    show: ['firstName', 'lastName', 'phone', 'email', 'password', 'signUpCode']
+    show: [
+      'first_name',
+      'last_name',
+      'phone',
+      'email',
+      'password',
+      'signUpCode'
+    ]
   },
   login: {
     show: ['email', 'password'],
@@ -252,13 +258,7 @@ let formDetails = {
     ]
   },
   businessAddress: {
-    show: [
-      'address_line_one',
-      'address_line_two',
-      'city',
-      'country',
-      'zipcode'
-    ],
+    show: ['address_line_one', 'address_line_two', 'city', 'state', 'zipcode'],
     updateFields: {
       addressLine1: {
         label: 'Business Address Line 1'
@@ -269,7 +269,7 @@ let formDetails = {
     }
   },
   employeeContact: {
-    show: ['email', 'mobile','phone']
+    show: ['email', 'mobile', 'phone']
   },
   employeeAddress: {
     show: ['address_line_one', 'address_line_two', 'city']

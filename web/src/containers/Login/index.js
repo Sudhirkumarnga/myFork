@@ -50,12 +50,12 @@ export default function Login ({}) {
     try {
       handleChange('  ', true)
       const payload = {
-        username: email,
+        email,
         password
       }
-      // const res = await loginUser(payload)
-      // localStorage.setItem('token', res?.data?.token)
-      // localStorage.setItem('user', JSON.stringify(res?.data?.user))
+      const res = await loginUser(payload)
+      localStorage.setItem('token', res?.data?.key)
+      localStorage.setItem('user', JSON.stringify(res?.data?.user))
       handleChange('loading', false)
       // _getProfile()
       // setUser(res?.data?.user)

@@ -67,7 +67,7 @@ class CustomDrawer extends BaseComponent {
 
   render () {
     const list = [
-      { title: 'My Profile', icon: `profile`, route: 'home' },
+      { title: 'My Profile', icon: `profile`, route: 'BusinessProfileView' },
       { title: 'Employee list', icon: `list`, route: 'EmployeeListScene' },
       { title: 'Worksites', icon: `worksites`, route: 'AllWorksiteScene' },
       { title: 'Report', icon: `report`, route: 'home' },

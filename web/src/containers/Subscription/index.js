@@ -41,10 +41,11 @@ export default function Subscription ({}) {
     loading: false,
     isModal: false,
     checked: '',
+    checkedPlan: null,
     plans: []
   })
 
-  const { loading, isModal, plans, checked } = state
+  const { loading, isModal, plans, checked, checkedPlan } = state
 
   const handleChange = (key, value) => {
     setState(pre => ({
@@ -65,7 +66,7 @@ export default function Subscription ({}) {
     try {
       handleChange('loading', true)
       const res = await getPlans()
-      handleChange('plans', res?.data)
+      handleChange('plans', res?.data?.results)
       handleChange('loading', false)
     } catch (error) {
       handleChange('loading', false)
@@ -90,27 +91,54 @@ export default function Subscription ({}) {
               </div>
               <Divider />
               <Grid container spacing={2} className='mt-4 mb-4'>
-                <Grid item xs={6} className=''>
-                  <div className='teirBox'>
-                    <Typography variant='h6' className='checkboxLabel'>
-                      2 Week Free trial
-                    </Typography>
-                    <div className='checkboxDiv mt-1'>
-                      <Radio
-                        checked={checked === 'teir1'}
-                        onClick={() => handleChange('checked', 'teir1')}
-                        className='checkbox1'
-                        sx={{
-                          color: 'rgba(201, 208, 216, 1)',
-                          '&.Mui-checked': {
-                            color: '#06726A'
-                          }
-                        }}
-                      />
+                {plans?.map((plan, index) => (
+                  <Grid key={index} item xs={6} className=''>
+                    <div className='teirBox'>
+                      <Typography variant='h6' className='checkboxLabel'>
+                        {plan?.description}
+                      </Typography>
+                      {/* <div className='checkboxDiv mt-1'>
+                        <Radio
+                          checked={checked === 'teir1'}
+                          onClick={() => handleChange('checked', 'teir1')}
+                          className='checkbox1'
+                          sx={{
+                            color: 'rgba(201, 208, 216, 1)',
+                            '&.Mui-checked': {
+                              color: '#06726A'
+                            }
+                          }}
+                        />
+                      </div> */}
+                      <div className='checkboxDiv mt-1'>
+                        <div>
+                          <div className='font-30'>{plan?.amount}</div>
+                          <div
+                            className='text-right text-grey'
+                            style={{ marginTop: -8 }}
+                          >
+                            $/{plan?.interval}
+                          </div>
+                        </div>
+                        <Radio
+                          checked={checked === plan?.id}
+                          onClick={() => {
+                            handleChange('checked', plan?.id)
+                            handleChange('checkedPlan', plan)
+                          }}
+                          className='checkbox1'
+                          sx={{
+                            color: 'rgba(201, 208, 216, 1)',
+                            '&.Mui-checked': {
+                              color: '#06726A'
+                            }
+                          }}
+                        />
+                      </div>
                     </div>
-                  </div>
-                </Grid>
-                <Grid item xs={6} className=''>
+                  </Grid>
+                ))}
+                {/* <Grid item xs={6} className=''>
                   <div className='teirBox'>
                     <Typography variant='h6' className='checkboxLabel'>
                       Tier 1-10
@@ -138,7 +166,7 @@ export default function Subscription ({}) {
                       />
                     </div>
                   </div>
-                </Grid>
+                </Grid> */}
               </Grid>
               <Grid container justifyContent={'flex-end'}>
                 <AppButton
@@ -166,24 +194,20 @@ export default function Subscription ({}) {
                 <Close />
               </IconButton>
             </Grid>
-            <p className='font-24 font-bold'>Basic offer</p>
-            <p className='font-14 mb-4 mt-4'>
-              You have selected Basic offer. Lorem ipsum dolor $9.99 per yearsit
-              amet, consectetur iscing elit, sed do eiusmod tempor incididunt ut
-              labre et dolore magna You have selected Basic offer. Lorem ipsum
-              dolor $9.99 per yearsit amet, consectetur iscing elit, sed do
-              eiusmod tempor incididunt ut labre et dolore magna{' '}
+            <p className='font-24 font-bold capitalize'>
+              {checkedPlan?.interval} offer
             </p>
-            <ul>
+            <p className='font-14 mb-4 mt-4'>{checkedPlan?.description}</p>
+            {/* <ul>
               <li>Ut enim ad minim veniam</li>
               <li>Ut enim ad minim veniam</li>
               <li>Ut enim ad minim veniam</li>
               <li>Ut enim ad minim veniam</li>
-            </ul>
+            </ul> */}
             <AppButton
               className={'mt-4'}
               title='Subscribe'
-              onClick={() => navigate('/checkout')}
+              onClick={() => navigate(`/checkout/${checkedPlan?.id}`)}
               color={'#fff'}
               backgroundColor={COLORS.primary}
             />

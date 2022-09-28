@@ -12,7 +12,8 @@ function AuthLoading ({ navigation }) {
   const {
     setUser,
     setAdminProfile,
-    _getAllSchedules
+    _getAllSchedules,
+    _getEarnings
     // _getOrders,
     // _getJourneys,
     // _getMyAddresses
@@ -21,19 +22,22 @@ function AuthLoading ({ navigation }) {
   const _getProfile = async () => {
     try {
       const token = await AsyncStorage.getItem('token')
+      const user = await AsyncStorage.getItem('user')
       const res = await getProfile(token)
-      console.warn('res?.data?.response', res?.data?.response)
+      const userData = JSON.parse(user)
+      console.warn('userData', userData)
+      if (userData) {
+        setUser(userData)
+      }
       if (res?.data?.response) {
         setAdminProfile(res?.data?.response)
       }
       if (!res?.data?.response?.personal_information?.first_name) {
         navigation.navigate('businessProfileCreation')
-      } else {
+      } else if (userData?.role === 'Organization Admin') {
         navigation.navigate('home')
       }
     } catch (error) {
-      // console.warn('error', error)
-      // this.handleChange('loading', false, true)
       const errorText = Object.values(error?.response?.data)
       Toast.show(`Error: ${errorText[0]}`)
     }
@@ -47,14 +51,10 @@ function AuthLoading ({ navigation }) {
   }, [])
   const _bootstrapAsync = async () => {
     const userUID = await AsyncStorage.getItem('token')
-    // const user = await AsyncStorage.getItem('user')
     if (userUID) {
       _getProfile()
       _getAllSchedules()
-      // const userData = JSON.parse(user)
-      // setUser(userData)
-      // _getProfile()
-      // navigation.navigate('home')
+      _getEarnings()
     } else {
       navigation.navigate('chooseEnv')
     }

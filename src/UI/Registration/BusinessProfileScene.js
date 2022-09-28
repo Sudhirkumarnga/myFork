@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import {
   View,
   Text,
@@ -14,25 +14,30 @@ import { Fonts, Colors, Images } from '../../res'
 import ImagePicker from 'react-native-image-crop-picker'
 import Strings from '../../res/Strings'
 import Toast from 'react-native-simple-toast'
-import { createAdminProfile } from '../../api/auth'
+import { createAdminProfile, updateAdminProfile } from '../../api/auth'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import moment from 'moment'
+import { useFocusEffect } from '@react-navigation/native'
+import AppContext from '../../Utils/Context'
+import { useContext } from 'react'
 
 export default function BusinessProfileScene ({ navigation }) {
+  const { _getCountries, cities, states, adminProfile } = useContext(AppContext)
   // State
   const [state, setState] = useState({
-    name: '',
-    pay_frequency: '',
-    first_name: '',
-    last_name: '',
-    phone: '',
-    date_of_birth: '',
-    address_line_one: '',
-    address_line_two: '',
-    city: '',
+    name: adminProfile?.business_information?.name || '',
+    pay_frequency: adminProfile?.business_information?.pay_frequency || '',
+    first_name: adminProfile?.personal_information?.first_name || '',
+    last_name: adminProfile?.personal_information?.last_name || '',
+    phone: adminProfile?.personal_information?.phone || '',
+    date_of_birth: adminProfile?.personal_information?.date_of_birth || '',
+    address_line_one: adminProfile?.business_address?.address_line_one || '',
+    address_line_two: adminProfile?.business_address?.address_line_two || '',
+    city: adminProfile?.business_address?.city || '',
     country: '',
-    zipcode: '',
-    profile_image: '',
+    zipcode: adminProfile?.business_address?.zipcode || '',
+    selectedState: adminProfile?.business_address?.state || '',
+    profile_image: adminProfile?.business_information?.profile_image || '',
     photo: null,
     loading: false
   })
@@ -48,15 +53,29 @@ export default function BusinessProfileScene ({ navigation }) {
     address_line_one,
     address_line_two,
     city,
+    selectedState,
     country,
     zipcode,
     profile_image,
     photo
   } = state
-  console.warn('state', state)
 
   const handleChange = (name, value) => {
     setState(pre => ({ ...pre, [name]: value }))
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      _getCountries()
+    }, [])
+  )
+
+  const getDropdownItem = list => {
+    const newList = []
+    list?.forEach(element => {
+      newList.push({ label: element?.name, value: element?.name })
+    })
+    return newList
   }
 
   const _uploadImage = async type => {
@@ -118,13 +137,16 @@ export default function BusinessProfileScene ({ navigation }) {
         business_address: {
           address_line_one,
           address_line_two,
-          city: 1,
-          state: 1,
+          city: getCityTValue(city),
+          state: getStateValue(selectedState),
           zipcode
         }
       }
-      const res = await createAdminProfile(formData, token)
-      console.warn('createAdminProfile', res?.data)
+      if (adminProfile) {
+        await updateAdminProfile(formData, token)
+      } else {
+        await createAdminProfile(formData, token)
+      }
       handleChange('loading', false)
       navigation.navigate('home')
       Toast.show(`Your profile has been updated!`)
@@ -144,6 +166,7 @@ export default function BusinessProfileScene ({ navigation }) {
             <Text style={styles.title}>{Strings.personalInfo}</Text>
             <PrimaryTextInput
               {...fields}
+              text={state[fields.key]}
               key={fields.key}
               onChangeText={(text, isValid) => handleChange(fields.key, text)}
             />
@@ -153,6 +176,7 @@ export default function BusinessProfileScene ({ navigation }) {
         return (
           <PrimaryTextInput
             {...fields}
+            text={state[fields.key]}
             key={fields.key}
             onChangeText={(text, isValid) => handleChange(fields.key, text)}
           />
@@ -161,15 +185,58 @@ export default function BusinessProfileScene ({ navigation }) {
     })
   }
 
+  const getCityTValue = value => {
+    const filtered = cities?.filter(e => e.name === value)
+    return filtered.length > 0 ? filtered[0].id : ''
+  }
+
+  const getStateValue = value => {
+    const filtered = states?.filter(e => e.name === value)
+    return filtered.length > 0 ? filtered[0].id : ''
+  }
+  const getStateText = (list, value) => {
+    const filtered = list?.filter(e => e?.id === value)
+    return filtered?.length > 0 ? filtered[0]?.name : ''
+  }
+
   const renderEmergencyTextInput = () => {
     return Forms.fields('businessAddress').map(fields => {
-      return (
-        <PrimaryTextInput
-          {...fields}
-          key={fields.key}
-          onChangeText={(text, isValid) => handleChange(fields.key, text)}
-        />
-      )
+      if (fields.key === 'city') {
+        return (
+          <PrimaryTextInput
+            text={getStateText(cities, city)}
+            dropdown={true}
+            items={getDropdownItem(cities)}
+            label={'City'}
+            key='city'
+            // placeholder='City'
+            onChangeText={(text, isValid) => handleChange('city', text)}
+          />
+        )
+      } else if (fields.key === 'state') {
+        return (
+          <PrimaryTextInput
+            text={getStateText(states, selectedState)}
+            dropdown={true}
+            items={getDropdownItem(states)}
+            label={'State'}
+            key='state'
+            // placeholder='City'
+            onChangeText={(text, isValid) =>
+              handleChange('selectedState', text)
+            }
+          />
+        )
+      } else {
+        return (
+          <PrimaryTextInput
+            {...fields}
+            text={state[fields.key]}
+            key={fields.key}
+            onChangeText={(text, isValid) => handleChange(fields.key, text)}
+          />
+        )
+      }
     })
   }
 
@@ -187,7 +254,7 @@ export default function BusinessProfileScene ({ navigation }) {
           !address_line_one ||
           !address_line_two ||
           !city ||
-          !country ||
+          !selectedState ||
           !zipcode ||
           !profile_image
         }
@@ -237,7 +304,7 @@ export default function BusinessProfileScene ({ navigation }) {
       <View style={styles.container}>
         <Header
           onLeftPress={() => navigation.goBack()}
-          title={'Create Profile'}
+          title={adminProfile ? 'Update Profile' : 'Create Profile'}
           leftButton
         />
         {renderContent()}
