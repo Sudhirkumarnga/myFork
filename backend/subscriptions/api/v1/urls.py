@@ -4,7 +4,8 @@ from subscriptions.api.v1.views import (
     SubscriptionPlanViewSet,
     # UserSubscriptionViewSet,
     # SubscriptionDetailViewSet,
-    PaymentView
+    PaymentView,
+    create_payement_method
 ) 
 
 router = routers.DefaultRouter()
@@ -14,6 +15,6 @@ router.register('subscription-plans', SubscriptionPlanViewSet, basename='subscri
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('payment/process/', PaymentView.as_view(), name='process_payment')
-
+    path('payment/process/', PaymentView.as_view(), name='process_payment'),
+    path('payment/create_payment_method/', create_payement_method.as_view(), name='create_payment_method')
 ]

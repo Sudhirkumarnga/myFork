@@ -39,16 +39,7 @@ class PaymentView(APIView):
             plan = Plan.objects.get(
                 id=request.data.get('plan_id')
             )
-            payment_method = stripe.PaymentMethod.create(
-                type=payment_method.get('type'),
-                card={
-                    "number": payment_method.get('card').get('number'),
-                    "exp_month": payment_method.get('card').get('exp_month'),
-                    "exp_year": payment_method.get('card').get('exp_year'),
-                    "cvc": payment_method.get('card').get('cvc'),
-                },
-            )
-
+            payment_method = stripe.PaymentMethod.retrieve(payment_method)
             customer = stripe.Customer.create(
                 email=request.user.email,
                 payment_method=payment_method,
@@ -100,3 +91,23 @@ class PaymentView(APIView):
                 ),
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+class create_payement_method(APIView):
+    permission_classes = [IsAuthenticated, IsOrganizationAdmin]
+
+    def post(self, request):
+        payment_method = request.data.get('payment_method')
+        payment_method = stripe.PaymentMethod.create(
+            type=payment_method.get('type'),
+            card={
+                "number": payment_method.get('card').get('number'),
+                "exp_month": payment_method.get('card').get('exp_month'),
+                "exp_year": payment_method.get('card').get('exp_year'),
+                "cvc": payment_method.get('card').get('cvc'),
+            },
+        )
+        return Response(
+            {
+                'payment_method': payment_method,
+            }
+        )
