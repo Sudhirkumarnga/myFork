@@ -112,7 +112,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'smart_workhorse_33965.urls'
 
-CORS_ORIGIN_WHITELIST = ['smart-workhorse-33965.botics.co','localhost', '127.0.0.1']
+CORS_ORIGIN_WHITELIST = ['https://smart-workhorse-33965.botics.co','http://localhost', 'http://127.0.0.1']
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
