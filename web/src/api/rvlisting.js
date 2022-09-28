@@ -12,8 +12,11 @@ export const makeBooking = payload => {
   return API.post(`api/v1/bookings/`, payload)
 }
 
+export const createPayment = payload => {
+  return API.post(`api/v1/payment/create_payment_method/`, payload)
+}
 export const makePayment = payload => {
-  return API.post(`api/v1/payments/process/`, payload)
+  return API.post(`api/v1/payment/process/`, payload)
 }
 
 export const getListRVS = () => {

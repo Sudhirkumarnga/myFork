@@ -4,12 +4,16 @@ import { BaseScene, Button, Forms, PrimaryTextInput } from '../Common'
 import { Fonts, Colors } from '../../res'
 import { AsyncHelper } from '../../Utils'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import BouncyCheckbox from 'react-native-bouncy-checkbox'
+import { signupUser } from '../../api/auth'
+import Toast from 'react-native-simple-toast'
 
 export default class LoginScene extends BaseScene {
   constructor (props) {
     super(props)
     this.state = {
       isFormValid: false,
+      termsConditions: false,
       env: '',
       isPassInValid: false,
       forms: Forms.fields('signUp')
@@ -64,6 +68,40 @@ export default class LoginScene extends BaseScene {
     this.props.navigation.navigate('signupComplete', { values: payload })
   }
 
+  handleSignup = async () => {
+    try {
+      this.handleChange('loading', true, true)
+      const {
+        first_name,
+        last_name,
+        email,
+        password,
+        phone,
+        business_code,
+        termsConditions
+      } = this.state
+      const payload = {
+        first_name,
+        last_name,
+        email,
+        password,
+        phone,
+        business_code,
+        is_read_terms: termsConditions
+      }
+      const res = await signupUser(payload)
+      this.handleChange('loading', false, true)
+      console.warn('signupUser', res?.data)
+      this.props.navigation.navigate('VerifyAccount', { email: values?.email })
+      Toast.show('Signed up Successfully, Please verify your account!')
+    } catch (error) {
+      console.warn('error', error)
+      this.handleChange('loading', false, true)
+      const errorText = Object.values(error?.response?.data)
+      Toast.show(`Error: ${errorText[0]}`)
+    }
+  }
+
   handleChange = (key, value, isValid) => {
     if (key === 'password') {
       this.checkPass(value)
@@ -88,10 +126,11 @@ export default class LoginScene extends BaseScene {
   }
 
   renderFooterButton () {
+    const { env } = this.state
     return (
       <Button
-        onPress={this.onSubmit}
-        title={this.ls('next')}
+        onPress={env === 'employee' ? this.handleSignup : this.onSubmit}
+        title={env == 'employee' ? this.ls('signUp') : this.ls('next')}
         disabled={
           !this.state.isFormValid ||
           !this.state.first_name ||
@@ -99,14 +138,55 @@ export default class LoginScene extends BaseScene {
           !this.state.email ||
           !this.state.password ||
           !this.state.phone ||
-          this.state.isPassInValid
+          this.state.isPassInValid ||
+          (env === 'employee' &&
+            (!this.state.business_code || !this.state.termsConditions))
         }
         style={styles.footerButton}
       />
     )
   }
 
+  renderTermsView () {
+    return (
+      <View style={styles.termsContainer}>
+        <BouncyCheckbox
+          size={20}
+          fillColor={Colors.BACKGROUND_BG}
+          unfillColor={Colors.WHITE}
+          disableBuiltInState
+          iconStyle={{
+            borderColor: Colors.BLACK,
+            borderRadius: 1
+          }}
+          style={{ marginRight: -20, marginTop: -3 }}
+          onPress={() =>
+            this.handleChange('termsConditions', !this.state.termsConditions)
+          }
+          isChecked={this.state.termsConditions}
+        />
+        <Text style={styles.textStyle}>
+          {'I have read '}
+          <Text
+            style={styles.linkStyle}
+            onPress={() => this.props.navigation.navigate('termsPrivacy')}
+          >
+            {'Terms & Conditions'}
+          </Text>
+          <Text style={styles.textStyle}>{' and '}</Text>
+          <Text
+            style={styles.linkStyle}
+            onPress={() => this.props.navigation.navigate('privacyPolicy')}
+          >
+            {'Privacy Policy'}
+          </Text>
+        </Text>
+      </View>
+    )
+  }
+
   render () {
+    const { env } = this.state
     return (
       <View style={styles.container}>
         <KeyboardAwareScrollView
@@ -132,7 +212,7 @@ export default class LoginScene extends BaseScene {
               special character
             </Text>
           )}
-          {/* {this.renderTermsView()} */}
+          {env == 'employee' && this.renderTermsView()}
           {this.renderFooterButton()}
         </KeyboardAwareScrollView>
       </View>
@@ -164,7 +244,6 @@ const styles = StyleSheet.create({
   termsContainer: {
     justifyContent: 'flex-start',
     flexDirection: 'row',
-    marginTop: 20,
     padding: 20
   },
   textStyle: {

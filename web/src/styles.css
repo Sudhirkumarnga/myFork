@@ -18,6 +18,10 @@ a {
     text-decoration: none;
 }
 
+.capitalize {
+    text-transform: capitalize;
+}
+
 a:hover {
     text-decoration: none;
 }
@@ -469,7 +473,7 @@ section {
     background-position: left;
 }
 
-.teirBox{
+.teirBox {
     border: 2px solid #E7E7E7 !important;
     border-radius: 10px;
     display: flex;

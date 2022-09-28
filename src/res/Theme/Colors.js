@@ -4,6 +4,7 @@ const greenColor = '#06726A'
 const greenLightColor = 'rgba(6, 114, 106, 0.1)'
 const modalBG = 'rgba(0, 0, 0, 0.6)'
 const greyColor = '#8B8B8B'
+const greyColor1 = '#A8A8A8'
 const lightGrey = '#F7F7F7'
 const darkColor = '#202020'
 
@@ -19,6 +20,7 @@ const common = {
   TEXT_INPUT_BG: lightGrey,
   TEXT_INPUT_BORDER: '#CECECE',
   SLIDER_COLOR: '#4CDED3',
+  BUTTON_BG1: greyColor1,
   HEADER_BG: greenColor,
   TEXT_COLOR: darkColor,
   VALID_TEXT_INPUT: greenColor,

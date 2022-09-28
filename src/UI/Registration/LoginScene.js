@@ -82,7 +82,7 @@ export default class LoginScene extends BaseScene {
         setUser(res?.data?.user)
         await AsyncStorage.setItem('user', JSON.stringify(res?.data?.user))
       }
-      this.props.navigation.navigate('home')
+      this.props.navigation.navigate('AuthLoading')
       Toast.show('Logged In up Successfully!')
     } catch (error) {
       console.warn('error', error)
