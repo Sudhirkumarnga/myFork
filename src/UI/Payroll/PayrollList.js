@@ -19,15 +19,22 @@ import Button from '../Common/Button'
 import { Switch } from 'react-native-switch'
 import AppContext from '../../Utils/Context'
 import moment from 'moment-timezone'
+import { Modal } from 'react-native'
+import { Icon } from 'react-native-elements'
+import Strings from '../../res/Strings'
+import PrimaryTextInput from '../Common/PrimaryTextInput'
 
 export default function EmployeeListScene ({ navigation }) {
   const { earnings, _getEarnings } = useContext(AppContext)
   const [state, setState] = useState({
     loading: false,
     isDisplay: true,
-    allEmployee: []
+    allEmployee: [],
+    visible: false,
+    name: '',
+    date: null
   })
-  const { loading, allEmployee, isDisplay } = state
+  const { loading, visible, isDisplay, name, date } = state
 
   const handleChange = (key, value) => {
     setState(pre => ({ ...pre, [key]: value }))
@@ -38,6 +45,11 @@ export default function EmployeeListScene ({ navigation }) {
       _getEarnings()
     }, [])
   )
+
+  const hideModal = () => {
+    handleChange('selectedEvent', null)
+    handleChange('visible', false)
+  }
 
   console.warn('earnings', earnings)
 
@@ -54,11 +66,14 @@ export default function EmployeeListScene ({ navigation }) {
       >
         <View>
           <Text style={styles.title1}>Payroll hours: 220h</Text>
-          <Text style={styles.dateText}>{moment().format("DD MMMM, YYYY")}</Text>
+          <Text style={styles.dateText}>
+            {moment(date).format('DD MMMM, YYYY')}
+          </Text>
         </View>
         <Button
           backgroundColor={Colors.BUTTON_BG1}
           icon={'filter'}
+          onPress={() => handleChange('visible', true)}
           iconStyle={{ height: 18, width: 18 }}
           style={{ height: 40, width: 100, marginTop: 0 }}
           title={'Filter'}
@@ -104,10 +119,7 @@ export default function EmployeeListScene ({ navigation }) {
         style={{ width: '100%' }}
         data={earnings}
         renderItem={({ item, index }) => (
-          <TouchableOpacity
-            onPress={() => navigation.navigate('employeesView', { item })}
-            style={styles.listContainer}
-          >
+          <View style={styles.listContainer}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Image
                 source={
@@ -151,9 +163,57 @@ export default function EmployeeListScene ({ navigation }) {
               </View>
               <Text style={styles.message}>View Details</Text>
             </View>
-          </TouchableOpacity>
+          </View>
         )}
       />
+      <Modal
+        visible={visible}
+        transparent
+        onDismiss={hideModal}
+        onRequestClose={hideModal}
+      >
+        <View style={styles.centerMode}>
+          <View style={styles.modal}>
+            <View style={{ alignItems: 'flex-end' }}>
+              <TouchableOpacity onPress={hideModal}>
+                <Icon name='close' type='antdesign' />
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.titleHead}>{'Filter Payroll'}</Text>
+            <PrimaryTextInput
+              text={name}
+              key='name'
+              label='Enter employee name'
+              onChangeText={(text, isValid) => handleChange('name', text)}
+            />
+            <PrimaryTextInput
+              text={date}
+              dateType={true}
+              key='date'
+              label='Choose Date'
+              onChangeText={(text, isValid) => handleChange('date', text)}
+            />
+            <Button
+              style={[styles.footerWhiteButton]}
+              onPress={() => {
+                // navigation.navigate('addEvents', { selectedEvent })
+                // hideModal()
+              }}
+              title={'Apply filter'}
+              color={Colors.BUTTON_BG}
+            />
+            <Button
+              style={[styles.footerWhiteButton, { borderWidth: 0 }]}
+              onPress={() => {
+                hideModal()
+              }}
+              isWhiteBg
+              title={'Cancel'}
+              color={Colors.BUTTON_BG}
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
   )
 }
@@ -177,6 +237,10 @@ const styles = StyleSheet.create({
   },
   title: {
     ...Fonts.poppinsRegular(14),
+    color: Colors.TEXT_COLOR
+  },
+  titleHead: {
+    ...Fonts.poppinsRegular(18),
     color: Colors.TEXT_COLOR
   },
   title1: {
@@ -224,5 +288,44 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     marginTop: 20,
     lineHeight: 24
+  },
+  inputStyle: {
+    height: 50,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    borderRadius: 10,
+    color: Colors.TEXT_INPUT_COLOR,
+    paddingHorizontal: 15,
+    ...Fonts.poppinsRegular(14),
+    borderWidth: 1,
+    backgroundColor: Colors.TEXT_INPUT_BG,
+    borderColor: Colors.TEXT_INPUT_BORDER
+  },
+  inputText: {
+    color: Colors.TEXT_INPUT_COLOR,
+    ...Fonts.poppinsRegular(14)
+  },
+  footerWhiteButton: {
+    marginTop: '5%',
+    height: 40,
+    width: '90%',
+    backgroundColor: 'red',
+    borderWidth: 1,
+    borderColor: Colors.BUTTON_BG
+  },
+  centerMode: {
+    backgroundColor: Colors.MODAL_BG,
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  modal: {
+    backgroundColor: Colors.WHITE,
+    borderRadius: 10,
+    padding: 20,
+    width: '90%'
   }
 })

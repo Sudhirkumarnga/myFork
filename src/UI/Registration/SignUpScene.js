@@ -92,7 +92,7 @@ export default class LoginScene extends BaseScene {
       const res = await signupUser(payload)
       this.handleChange('loading', false, true)
       console.warn('signupUser', res?.data)
-      this.props.navigation.navigate('VerifyAccount', { email: values?.email })
+      this.props.navigation.navigate('VerifyAccount', { email: payload?.email })
       Toast.show('Signed up Successfully, Please verify your account!')
     } catch (error) {
       console.warn('error', error)
