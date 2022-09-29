@@ -13,6 +13,8 @@ import BusinessProfileScene from './BusinessProfileScene'
 import SignupComplete from './SignupComplete'
 import VerifyAccount from './VerifyAccount'
 import BusinessProfileView from './BusinessProfileView'
+import EmployeeProfileScene from './EmployeeProfileScene'
+import EmpProfileView from './EmpProfileView'
 module.exports = {
   LoginScene,
   SignUpScene,
@@ -28,5 +30,7 @@ module.exports = {
   BusinessProfileScene,
   BusinessProfileView,
   SignupComplete,
-  VerifyAccount
+  VerifyAccount,
+  EmployeeProfileScene,
+  EmpProfileView
 }

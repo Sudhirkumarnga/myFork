@@ -28,9 +28,12 @@ import {
   GroupMessageScene,
   VerifyAccount,
   AddEvents,
-  BusinessProfileView
+  BusinessProfileView,
+  EmployeeProfileScene,
+  EmpProfileView
 } from "../UI"
 import { drawerNavigator } from "./DrawerNavigation"
+import { drawerNavigatorEmp } from "./DrawerNavigationEmp"
 import { TabBar } from "./TabBar"
 import AuthLoading from "../UI/AuthLoading"
 const Stack = createStackNavigator()
@@ -63,9 +66,12 @@ export const AuthNavigator = props => {
       <Stack.Screen name={"tab"} component={TabBar} />
 
       <Stack.Screen name={"home"} component={drawerNavigator} />
+      <Stack.Screen name={"homeEmployee"} component={drawerNavigatorEmp} />
       <Stack.Screen name={"allSubscription"} component={AllSubscriptionScene} />
       <Stack.Screen name={"employeesView"} component={EmployeesView} />
       <Stack.Screen name={"BusinessProfileView"} component={BusinessProfileView} />
+      <Stack.Screen name={"EmployeeProfileScene"} component={EmployeeProfileScene} />
+      <Stack.Screen name={"EmpProfileView"} component={EmpProfileView} />
       <Stack.Screen name={"addEmployee"} component={AddEmployeeScene} />
       <Stack.Screen name={"worksiteDetail"} component={WorksiteDetailScene} />
       <Stack.Screen name={"addWorksite"} component={AddWorksiteScene} />

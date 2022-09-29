@@ -24,18 +24,35 @@ function AuthLoading ({ navigation }) {
       const token = await AsyncStorage.getItem('token')
       const user = await AsyncStorage.getItem('user')
       const res = await getProfile(token)
-      const userData = JSON.parse(user)
-      console.warn('userData', userData)
-      if (userData) {
+      let userData
+      if (user) {
+        userData = JSON.parse(user)
         setUser(userData)
       }
+      console.warn('userData', user)
       if (res?.data?.response) {
         setAdminProfile(res?.data?.response)
       }
-      if (!res?.data?.response?.personal_information?.first_name) {
+
+      if (
+        userData?.role === 'Organization Admin' &&
+        !res?.data?.response?.personal_information?.first_name
+      ) {
         navigation.navigate('businessProfileCreation')
-      } else if (userData?.role === 'Organization Admin') {
+        return
+      } else if (
+        userData?.role !== 'Organization Admin' &&
+        !res?.data?.response?.emergency_contact?.first_name
+      ) {
+        navigation.navigate('EmployeeProfileScene')
+        return
+      }
+      if (userData?.role === 'Organization Admin') {
         navigation.navigate('home')
+        return
+      } else {
+        navigation.navigate('homeEmployee')
+        return
       }
     } catch (error) {
       const errorText = Object.values(error?.response?.data)

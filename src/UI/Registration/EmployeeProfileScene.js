@@ -14,74 +14,46 @@ import { Fonts, Colors, Images } from '../../res'
 import ImagePicker from 'react-native-image-crop-picker'
 import Strings from '../../res/Strings'
 import Toast from 'react-native-simple-toast'
-import { createAdminProfile } from '../../api/auth'
+import { createAdminProfile, updateAdminProfile } from '../../api/auth'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import moment from 'moment'
 import { useFocusEffect } from '@react-navigation/native'
 import AppContext from '../../Utils/Context'
 import { useContext } from 'react'
 
-export default function BusinessProfileScene ({ navigation }) {
-  const {
-    _getProfile,
-    _getCountries,
-    cities,
-    states,
-    adminProfile
-  } = useContext(AppContext)
+export default function EmployeeProfileScene ({ navigation }) {
+  const { _getProfile, adminProfile } = useContext(AppContext)
   // State
   const [state, setState] = useState({
-    name: adminProfile?.business_information?.name || '',
-    pay_frequency: adminProfile?.business_information?.pay_frequency || '',
     first_name: adminProfile?.personal_information?.first_name || '',
     last_name: adminProfile?.personal_information?.last_name || '',
     phone: adminProfile?.personal_information?.phone || '',
     date_of_birth: adminProfile?.personal_information?.date_of_birth || '',
-    address_line_one: adminProfile?.business_address?.address_line_one || '',
-    address_line_two: adminProfile?.business_address?.address_line_two || '',
-    city: adminProfile?.business_address?.city || '',
-    country: '',
-    zipcode: adminProfile?.business_address?.zipcode || '',
-    selectedState: adminProfile?.business_address?.state || '',
     profile_image: adminProfile?.business_information?.profile_image || '',
+    gender: adminProfile?.personal_information?.gender || '',
+    first_name1: adminProfile?.emergency_contact?.first_name || '',
+    last_name1: adminProfile?.emergency_contact?.last_name || '',
+    phone1: adminProfile?.emergency_contact?.phone || '',
     photo: null,
     loading: false
   })
 
   const {
     loading,
-    name,
-    pay_frequency,
     first_name,
     last_name,
     phone,
+    gender,
+    first_name1,
+    last_name1,
+    phone1,
     date_of_birth,
-    address_line_one,
-    address_line_two,
-    city,
-    selectedState,
-    country,
-    zipcode,
     profile_image,
     photo
   } = state
 
   const handleChange = (name, value) => {
     setState(pre => ({ ...pre, [name]: value }))
-  }
-
-  useFocusEffect(
-    useCallback(() => {
-      _getCountries()
-    }, [])
-  )
-
-  const getDropdownItem = list => {
-    const newList = []
-    list?.forEach(element => {
-      newList.push({ label: element?.name, value: element?.name })
-    })
-    return newList
   }
 
   const _uploadImage = async type => {
@@ -128,30 +100,24 @@ export default function BusinessProfileScene ({ navigation }) {
       handleChange('loading', true)
       const token = await AsyncStorage.getItem('token')
       const formData = {
-        business_information: {
-          name,
-          pay_frequency,
-          profile_image: photo
-        },
         personal_information: {
+          // profile_image: photo,
           first_name,
           last_name,
           phone,
-          date_of_birth: moment(date_of_birth).format('YYYY-MM-DD')
-          // gender: 'MALE'
+          date_of_birth: moment(date_of_birth).format('YYYY-MM-DD'),
+          gender
         },
-        business_address: {
-          address_line_one,
-          address_line_two,
-          city: getCityTValue(city),
-          state: getStateValue(selectedState),
-          zipcode
+        emergency_contact: {
+          first_name: first_name1,
+          last_name: last_name1,
+          phone: phone1
         }
       }
       await createAdminProfile(formData, token)
       _getProfile(token)
       handleChange('loading', false)
-      navigation.navigate('home')
+      navigation.navigate('homeEmployee')
       Toast.show(`Your profile has been updated!`)
     } catch (error) {
       handleChange('loading', false)
@@ -161,85 +127,29 @@ export default function BusinessProfileScene ({ navigation }) {
     }
   }
 
-  const renderTextInput = () => {
-    return Forms.fields('businessInfo').map((fields, index) => {
-      if (index === 2) {
-        return (
-          <>
-            <Text style={styles.title}>{Strings.personalInfo}</Text>
-            <PrimaryTextInput
-              {...fields}
-              text={state[fields.key]}
-              key={fields.key}
-              onChangeText={(text, isValid) => handleChange(fields.key, text)}
-            />
-          </>
-        )
-      } else {
-        return (
-          <PrimaryTextInput
-            {...fields}
-            text={state[fields.key]}
-            key={fields.key}
-            onChangeText={(text, isValid) => handleChange(fields.key, text)}
-          />
-        )
-      }
+  const renderPersonalTextInput = () => {
+    return Forms.fields('employeePersonalInfo').map(fields => {
+      return (
+        <PrimaryTextInput
+          {...fields}
+          text={state[fields.key]}
+          key={fields.key}
+          onChangeText={(text, isValid) => handleChange(fields.key, text)}
+        />
+      )
     })
   }
 
-  const getCityTValue = value => {
-    const filtered = cities?.filter(e => e.name === value)
-    return filtered.length > 0 ? filtered[0].id : ''
-  }
-
-  const getStateValue = value => {
-    const filtered = states?.filter(e => e.name === value)
-    return filtered.length > 0 ? filtered[0].id : ''
-  }
-  const getStateText = (list, value) => {
-    const filtered = list?.filter(e => e?.id === value)
-    return filtered?.length > 0 ? filtered[0]?.name : ''
-  }
-
   const renderEmergencyTextInput = () => {
-    return Forms.fields('businessAddress').map(fields => {
-      if (fields.key === 'city') {
-        return (
-          <PrimaryTextInput
-            text={getStateText(cities, city)}
-            dropdown={true}
-            items={getDropdownItem(cities)}
-            label={'City'}
-            key='city'
-            // placeholder='City'
-            onChangeText={(text, isValid) => handleChange('city', text)}
-          />
-        )
-      } else if (fields.key === 'state') {
-        return (
-          <PrimaryTextInput
-            text={getStateText(states, selectedState)}
-            dropdown={true}
-            items={getDropdownItem(states)}
-            label={'State'}
-            key='state'
-            // placeholder='City'
-            onChangeText={(text, isValid) =>
-              handleChange('selectedState', text)
-            }
-          />
-        )
-      } else {
-        return (
-          <PrimaryTextInput
-            {...fields}
-            text={state[fields.key]}
-            key={fields.key}
-            onChangeText={(text, isValid) => handleChange(fields.key, text)}
-          />
-        )
-      }
+    return Forms.fields('emergencyContact').map(fields => {
+      return (
+        <PrimaryTextInput
+          {...fields}
+          text={state[fields.key]}
+          key={fields.key}
+          onChangeText={(text, isValid) => handleChange(fields.key, text)}
+        />
+      )
     })
   }
 
@@ -248,17 +158,14 @@ export default function BusinessProfileScene ({ navigation }) {
       <Button
         title={Strings.submit}
         disabled={
-          !name ||
-          !pay_frequency ||
+          !first_name1 ||
+          !last_name1 ||
+          !phone1 ||
+          !gender ||
           !first_name ||
           !last_name ||
           !phone ||
           !date_of_birth ||
-          !address_line_one ||
-          !address_line_two ||
-          !city ||
-          !selectedState ||
-          !zipcode ||
           !profile_image
         }
         loading={loading}
@@ -266,10 +173,6 @@ export default function BusinessProfileScene ({ navigation }) {
         onPress={handleProfile}
       />
     )
-  }
-
-  const onSubmit = () => {
-    navigation.navigate('home')
   }
 
   const renderContent = () => {
@@ -289,9 +192,9 @@ export default function BusinessProfileScene ({ navigation }) {
               </>
             )}
           </TouchableOpacity>
-          <Text style={styles.title}>{Strings.businessInfo}</Text>
-          {renderTextInput()}
-          <Text style={styles.title}>{Strings.addressInfo}</Text>
+          <Text style={styles.title}>{Strings.personalInfo}</Text>
+          {renderPersonalTextInput()}
+          <Text style={styles.title}>{Strings.emergencyContact}</Text>
           {renderEmergencyTextInput()}
           {renderFooterButton()}
         </View>
@@ -307,7 +210,11 @@ export default function BusinessProfileScene ({ navigation }) {
       <View style={styles.container}>
         <Header
           onLeftPress={() => navigation.goBack()}
-          title={adminProfile ? 'Update Profile' : 'Create Profile'}
+          title={
+            adminProfile?.emergency_contact?.first_name
+              ? 'Update Profile'
+              : 'Create Profile'
+          }
           leftButton
         />
         {renderContent()}

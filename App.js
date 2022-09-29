@@ -9,7 +9,7 @@ import { MenuProvider } from 'react-native-popup-menu'
 import { getAllSchedules, getEarnings } from './src/api/business'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Toast from 'react-native-simple-toast'
-import { getCities, getCountries, getStates } from './src/api/auth'
+import { getCities, getCountries, getProfile, getStates } from './src/api/auth'
 
 const App = () => {
   const [user, setUser] = useState(null)
@@ -72,6 +72,21 @@ const App = () => {
     }
   }
 
+  const _getProfile = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token')
+      const res = await getProfile(token)
+      setAdminProfile(res?.data?.response)
+    } catch (error) {
+      const showWError = Object.values(error.response?.data?.error)
+      if (showWError.length > 0) {
+        Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
+      } else {
+        Toast.show(`Error: ${JSON.stringify(error)}`)
+      }
+    }
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -86,7 +101,8 @@ const App = () => {
         cities,
         states,
         earnings,
-        _getEarnings
+        _getEarnings,
+        _getProfile
       }}
     >
       <MenuProvider>

@@ -14,8 +14,12 @@ import { useFocusEffect } from '@react-navigation/native'
 import Toast from 'react-native-simple-toast'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { getAllWorksites } from '../../api/business'
+import AppContext from '../../Utils/Context'
+import { useContext } from 'react'
+import { getAllWorksitesEmp } from '../../api/employee'
 
 export default function AllWorksiteScene ({ navigation }) {
+  const { adminProfile } = useContext(AppContext)
   const [state, setState] = useState({
     loading: false,
     allWorksites: []
@@ -36,13 +40,17 @@ export default function AllWorksiteScene ({ navigation }) {
     try {
       handleChange('loading', true)
       const token = await AsyncStorage.getItem('token')
-      const res = await getAllWorksites(token)
-      console.warn('getAllWorksites', res?.data)
+      if (adminProfile?.emergency_contact?.first_name) {
+        const res = await getAllWorksitesEmp(token)
+        console.warn('res', res?.data)
+        handleChange('allWorksites', res?.data?.response)
+      } else {
+        const res = await getAllWorksites(token)
+        handleChange('allWorksites', res?.data?.results)
+      }
       handleChange('loading', false)
-      handleChange('allWorksites', res?.data?.results)
     } catch (error) {
       handleChange('loading', false)
-      console.warn('err', error?.response?.data)
       const showWError = Object.values(error.response?.data?.error)
       if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
@@ -51,11 +59,13 @@ export default function AllWorksiteScene ({ navigation }) {
       }
     }
   }
-  console.warn('allWorksites', allWorksites)
+  console.warn('adminProfile', allWorksites)
   const renderContent = () => {
     return (
       <ScrollView style={styles.childContainer}>
-        <Text style={styles.title}>{Strings.listWorksites}</Text>
+        {!adminProfile?.emergency_contact?.first_name && (
+          <Text style={styles.title}>{Strings.listWorksites}</Text>
+        )}
         {allWorksites?.map(item => (
           <View style={styles.cellContainer}>
             <View>
@@ -101,7 +111,9 @@ export default function AllWorksiteScene ({ navigation }) {
         leftButton
       />
       {renderContent()}
-      <Fab onPress={() => navigation.navigate('addWorksite')} />
+      {!adminProfile?.emergency_contact?.first_name && (
+        <Fab onPress={() => navigation.navigate('addWorksite')} />
+      )}
     </View>
   )
 }

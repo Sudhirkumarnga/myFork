@@ -14,6 +14,7 @@ import Toast from 'react-native-simple-toast'
 import { resetEmail, verifyEmail } from '../../api/auth'
 import OTPInputView from '@twotalltotems/react-native-otp-input'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import AsyncHelper from '../../Utils/AsyncHelper'
 
 export default class TokenScene extends BaseScene {
   constructor (props) {
@@ -31,6 +32,7 @@ export default class TokenScene extends BaseScene {
 
   handleVerify = async () => {
     try {
+      const env = await AsyncHelper.getEnv()
       const email = this.props.route?.params?.email
       this.handleChange('loading', true)
       const payload = {
@@ -42,7 +44,9 @@ export default class TokenScene extends BaseScene {
       this.handleChange('loading', false)
       Toast.show('Your account has been verified!')
       await AsyncStorage.setItem('token', res?.data?.response?.token)
-      this.props.navigation.navigate('businessProfileCreation')
+      this.props.navigation.navigate(
+        env === 'employee' ? 'EmployeeProfileScene' : 'businessProfileCreation'
+      )
       // setUser(res?.data?.user)
       // await AsyncStorage.setItem('token', res?.data?.token)
     } catch (error) {
