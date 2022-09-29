@@ -8,7 +8,8 @@ import {
   HomeScene,
   EmployeeListScene,
   AllWorksiteScene,
-  Scheduler
+  Scheduler,
+  PayrollScene
 } from '../UI'
 import { Fonts, Colors } from '../res'
 import Images from '../res/Images'
@@ -71,7 +72,7 @@ export const TabBar = props => {
       />
       <Tab.Screen
         name='Payroll'
-        component={HomeScene}
+        component={PayrollScene}
         options={{
           tabBarIcon: ({ focussed, color }) =>
             defaultOptions(focussed, color, 'earnings')

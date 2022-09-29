@@ -29,25 +29,25 @@ env = environ.Env()
 env.read_env(env_file)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool("DEBUG", default=False)
+DEBUG = env.bool("DEBUG", default=True)
 
-try:
-    # Pull secrets from Secret Manager
-    _, project = google.auth.default()
-    client = secretmanager.SecretManagerServiceClient()
-    settings_name = os.environ.get("SETTINGS_NAME", "django_settings")
-    name = client.secret_version_path(project, settings_name, "latest")
-    payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
-    env.read_env(io.StringIO(payload))
-except (DefaultCredentialsError, PermissionDenied):
-    pass
+# try:
+#     # Pull secrets from Secret Manager
+#     _, project = google.auth.default()
+#     client = secretmanager.SecretManagerServiceClient()
+#     settings_name = os.environ.get("SETTINGS_NAME", "django_settings")
+#     name = client.secret_version_path(project, settings_name, "latest")
+#     payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
+#     env.read_env(io.StringIO(payload))
+# except (DefaultCredentialsError, PermissionDenied):
+#     pass
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env.str("SECRET_KEY")
+SECRET_KEY = env.str("SECRET_KEY", 'test')
 
 ALLOWED_HOSTS = ["*","127.0.0.1", "localhost"]#env.list("HOST", default=["*","127.0.0.1", "localhost"])
 SITE_ID = 1
@@ -101,6 +101,7 @@ MODULES_APPS = get_modules()
 INSTALLED_APPS += LOCAL_APPS + THIRD_PARTY_APPS + MODULES_APPS
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -112,6 +113,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'smart_workhorse_33965.urls'
 
+CORS_ORIGIN_WHITELIST = ['https://smart-workhorse-33965.botics.co','http://localhost', 'http://127.0.0.1']
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

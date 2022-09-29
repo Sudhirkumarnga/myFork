@@ -292,8 +292,9 @@ const styles = StyleSheet.create({
     height: 44,
     position: 'absolute',
     bottom: 0,
-    width: '100%',
-    paddingHorizontal: 10,
+    left:20,
+    width: '90%',
+    paddingHorizontal: 20,
     color: Colors.TEXT_INPUT_COLOR
   }
 })

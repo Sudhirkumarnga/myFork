@@ -13,15 +13,21 @@ import {
   IconButton
 } from '@mui/material'
 import eyeIcon from '../../assets/svg/eye.svg'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getPlans, signupUser } from '../../api/auth'
 import AppContext from '../../Context'
 import { useContext } from 'react'
 import { COLORS } from '../../constants'
 import { useSnackbar } from 'notistack'
 import { Close } from '@mui/icons-material'
-import { useStripe, CardElement, useElements } from '@stripe/react-stripe-js'
-import { makePayment } from '../../api/rvlisting'
+import {
+  useStripe,
+  CardElement,
+  useElements,
+  CardNumberElement
+} from '@stripe/react-stripe-js'
+import { createPayment, makePayment } from '../../api/rvlisting'
+import CreditCardInput from 'react-credit-card-input'
 
 const CARD_ELEMENT_OPTIONS = {
   hidePostalCode: true
@@ -31,6 +37,7 @@ export default function Checkout ({}) {
   const { enqueueSnackbar } = useSnackbar()
   const navigate = useNavigate()
   const stripe = useStripe()
+  const { id } = useParams()
   const elements = useElements()
   const { user, setUser } = useContext(AppContext)
   const [state, setState] = useState({
@@ -38,10 +45,10 @@ export default function Checkout ({}) {
     isModal: false,
     checked: '',
     name: '',
-    plans: []
+    selected: null
   })
 
-  const { loading, isModal, name, checked } = state
+  const { loading, cvc, expiry, number, focus, name, selected } = state
 
   const handleChange = (key, value) => {
     setState(pre => ({
@@ -50,24 +57,53 @@ export default function Checkout ({}) {
     }))
   }
 
+  useEffect(() => {
+    _getPlans()
+  }, [])
+
+  const handleClose = () => {
+    handleChange('isModal', false)
+  }
+
+  const _getPlans = async () => {
+    try {
+      handleChange('loading', true)
+      const res = await getPlans()
+      handleChange('plans', res?.data?.results)
+      if (res?.data?.results?.length > 0) {
+        const selected = res?.data?.results?.filter(e => e?.id === id)
+        handleChange('selected', selected)
+      }
+      handleChange('loading', false)
+    } catch (error) {
+      handleChange('loading', false)
+      const errorText = Object.values(error?.response?.data)
+      if (errorText.length > 0) {
+        alert(`Error: ${errorText[0]}`)
+      } else {
+        alert(`Error: ${error}`)
+      }
+    }
+  }
+
   const handlePayment = async () => {
     try {
       handleChange('loading', true)
-      const cardElement = elements.getElement(CardElement)
-      stripe
-        .createPaymentMethod({
+      const b = expiry.split('/')
+      const payload = {
+        payment_method: {
           type: 'card',
-          card: cardElement
-        })
-        .then(result => {
-          console.warn('result', result?.paymentMethod?.id)
-          if (result?.paymentMethod?.id) {
-            _makePayment(result?.paymentMethod?.id)
-          } else {
-            alert(result.error.message)
-            handleChange('loading', false)
+          card: {
+            number,
+            exp_month: Number(b[0]),
+            exp_year: '20' + Number(b[1]),
+            cvc
           }
-        })
+        }
+      }
+      const res = await createPayment(payload)
+      _makePayment(res?.data?.payment_method?.id)
+      // handleChange('loading', false)
     } catch (error) {
       handleChange('loading', false)
       const errorText = Object.values(error?.response?.data)
@@ -85,11 +121,13 @@ export default function Checkout ({}) {
     try {
       const payload = {
         payment_method,
-        billing_details: {
-          name
-        }
+        plan_id: id
       }
       const res = await makePayment(payload)
+      handleChange('number', '')
+      handleChange('expiry', '')
+      handleChange('cvc', '')
+      handleChange('name', '')
       enqueueSnackbar(`Payment has been submitted!`, {
         variant: 'success',
         anchorOrigin: {
@@ -112,6 +150,8 @@ export default function Checkout ({}) {
     }
   }
 
+  console.warn('expiry', expiry)
+
   return (
     <div>
       <HomeHeader />
@@ -123,20 +163,13 @@ export default function Checkout ({}) {
               <Divider />
               <Grid container spacing={2} className='mt-4 mb-4'>
                 <Grid item xs={6} className=''>
-                  <p className='font-14 mb-4'>
-                    You have selected Basic offer. Lorem ipsum dolor $9.99 per
-                    yearsit amet, consectetur iscing elit, sed do eiusmod tempor
-                    incididunt ut labre et dolore magna You have selected Basic
-                    offer. Lorem ipsum dolor $9.99 per yearsit amet, consectetur
-                    iscing elit, sed do eiusmod tempor incididunt ut labre et
-                    dolore magna{' '}
-                  </p>
-                  <ul>
+                  <p className='font-14 mb-4'>{selected?.description}</p>
+                  {/* <ul>
                     <li>Ut enim ad minim veniam</li>
                     <li>Ut enim ad minim veniam</li>
                     <li>Ut enim ad minim veniam</li>
                     <li>Ut enim ad minim veniam</li>
-                  </ul>
+                  </ul> */}
                 </Grid>
                 <Grid item xs={6} className=''>
                   <div className=''>
@@ -144,7 +177,41 @@ export default function Checkout ({}) {
                       Card Details
                     </Typography>
                     <div className='cardBox'>
-                      <CardElement options={CARD_ELEMENT_OPTIONS} />
+                      {/* <Cards
+                        cvc={cvc}
+                        expiry={expiry}
+                        preview={false}
+                        focused={focus}
+                        // name={name}
+                        number={number}
+                      /> */}
+                      <CreditCardInput
+                        containerStyle={{
+                          width: '100%',
+                          backgroundColor: 'transparent',
+                          marginTop: -10
+                        }}
+                        fieldStyle={{ backgroundColor: 'transparent' }}
+                        inputStyle={{
+                          backgroundColor: 'transparent',
+                          marginTop: 5
+                        }}
+                        cardNumberInputProps={{
+                          value: number,
+                          onChange: value =>
+                            handleChange('number', value.target.value)
+                        }}
+                        cardExpiryInputProps={{
+                          value: expiry,
+                          onChange: e => handleChange('expiry', e.target.value)
+                        }}
+                        cardCVCInputProps={{
+                          value: cvc,
+                          onChange: e => handleChange('cvc', e.target.value)
+                        }}
+                        fieldClassName='input'
+                      />
+                      {/* <CardNumberElement onChange={(value)=>console.log('value',value)} /> */}
                     </div>
                     <Grid container spacing={2} sx={{ marginTop: -5 }}>
                       <Grid item xs={12} md={12}>
