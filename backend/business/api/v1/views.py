@@ -335,13 +335,10 @@ class EarningsView(APIView):
             status="CLOCK_OUT"
         )
         if date:
-            print(date)
             queryset = queryset.filter(updated_at__day=date)
         if month:
-            print(month)
             queryset = queryset.filter(updated_at__month=month)
         if year:
-            print(year)
             queryset = queryset.filter(updated_at__year=year)
 
         serializer = EarningSerializer(

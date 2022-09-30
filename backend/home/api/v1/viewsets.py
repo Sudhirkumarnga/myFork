@@ -75,14 +75,17 @@ class ValidateOTPView(APIView):
                             success=True,
                             message="Your Account has been verified.",
                             status=SmartWorkHorseStatus.Success.value,
-                            response={"token":token.key}
+                            response={
+                                "token":token.key,
+                                "user_role": token.user.role
+                            }
                         ),
                         status=status.HTTP_200_OK,
                         headers={},
                     )
             else:
                 return Response(
-                    {"detail": _("OTP is Invalide or Expired")},
+                    {"detail": _("OTP is Invalid or Expired")},
                     status=status.HTTP_404_NOT_FOUND
                 )
         except Exception as e:
