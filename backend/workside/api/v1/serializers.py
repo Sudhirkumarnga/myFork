@@ -346,8 +346,8 @@ class AttendanceEventSerializer(serializers.ModelSerializer):
     def get_total_hours(self, obj):
         request = self.context['request']
         all_attendance = Attendance.objects.filter(employee__user=request.user, status="CLOCK_OUT")
+        attendance_hours = 0
         if all_attendance.exists():
-            attendance_hours = 0
             for attendance in all_attendance:
                 attendance_hours += attendance.total_hours
         return attendance_hours
