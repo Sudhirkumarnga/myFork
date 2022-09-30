@@ -145,7 +145,9 @@ class Attendance(TimeStampedModel):
     urgent = models.BooleanField(default=False)
     clock_in_time = models.DateTimeField(null=True, blank=True)
     clock_out_time = models.DateTimeField(null=True, blank=True)
+    hourly_rate = models.IntegerField(default=0)
     total_hours = models.DecimalField(max_digits=200, decimal_places=1, default=0)
+    earnings = models.DecimalField(max_digits=200, decimal_places=1, default=0)
     is_approved = models.BooleanField(default=False)
 
     class Meta:
@@ -154,9 +156,9 @@ class Attendance(TimeStampedModel):
 
     def save(self, *args, **kwargs):
         if self.status == "CLOCK_OUT":
-            attendance = Attendance.objects.filter(employee=self.employee).last()
-            difference = Decimal(((self.clock_out_time - self.clock_in_time).total_seconds() / 3600))
-            self.total_hours = attendance.total_hours + difference
+            self.hourly_rate = self.employee.hourly_rate
+            self.total_hours = Decimal(((self.clock_out_time - self.clock_in_time).total_seconds() / 3600))
+            self.earnings = self.total_hours * self.hourly_rate
         super(Attendance, self).save(*args, **kwargs)
 
     def __str__(self):

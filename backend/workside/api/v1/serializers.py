@@ -295,8 +295,7 @@ class AttendanceActiveEmployeeSerializer(serializers.ModelSerializer):
         employees = []
         attendances = Attendance.objects.filter(event__employees__in=[data['employee']], status='CLOCK_IN')
         if attendances.exists():
-            for attendance in attendances:
-                employees.append(EmployeeSerializer(attendance.employee).data)
+            employees.append(EmployeeSerializer(attendances.last().employee).data)
         data['employee'] = employees
         return data
 
@@ -350,7 +349,5 @@ class AttendanceEventSerializer(serializers.ModelSerializer):
         if all_attendance.exists():
             attendance_hours = 0
             for attendance in all_attendance:
-                attendance_hours += attendance.clock_out_time - attendance.clock_in_time
-        else:
-            attendance_hours = 0
+                attendance_hours += attendance.total_hours
         return attendance_hours

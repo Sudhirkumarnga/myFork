@@ -130,3 +130,10 @@ def send_email_to_employee(user, password):
         [user.email],
         fail_silently=False,
     )
+
+
+def get_payroll_hours(serializer_data):
+    payroll_hours = 0
+    for data in serializer_data['employees']:
+        payroll_hours += data['employee_hours']
+    return payroll_hours

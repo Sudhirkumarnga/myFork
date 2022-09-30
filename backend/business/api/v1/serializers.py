@@ -277,16 +277,24 @@ class AttendanceSerializer(serializers.ModelSerializer):
 
 class EarningSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Employee
-        fields = ('id', 'profile_image', 'position', 'hourly_rate')
+        model = Attendance
+        fields = ()
 
     def to_representation(self, data):
         data = super(EarningSerializer, self).to_representation(data)
-        employee = Employee.objects.get(id=data['id'])
-        data['name'] = employee.user.get_full_name()
-        try:
-            data['total_hours'] = Attendance.objects.filter(employee=employee.id).last().total_hours
-        except:
-            data['total_hours'] = 0
-        data['earning'] = employee.get_total_pay_amount()
+        attendances = self.context['queryset']
+        employees = []
+        for attendance in attendances:
+            dict={}
+            dict['employee_name'] = attendance.employee.user.get_full_name()
+            dict['employee_image'] = attendance.employee.profile_image if attendance.employee.profile_image else None
+            dict['employee_position'] = attendance.employee.position
+            dict['employee_hourly_rate'] = attendance.employee.hourly_rate
+            dict['employee_hours'], dict['employee_earnings'] = 0, 0
+            for attendance in attendances.filter(employee=attendance.employee):
+                dict['employee_hours'] += attendance.total_hours
+                dict['employee_earnings'] += attendance.earnings
+            employees.append(dict)
+        data['employees'] = employees
+        data['date'] = attendances.first().updated_at.date()
         return data

@@ -24,7 +24,8 @@ from business.api.v1.serializers import (
 )
 
 from business.services import (
-    update_profile
+    update_profile,
+    get_payroll_hours
 )
 
 
@@ -322,10 +323,32 @@ class AttendanceView(APIView):
 
 
 class EarningsView(APIView):
-    queryset = Employee.objects.filter()
+    queryset = Attendance.objects.filter()
     permission_classes = [IsAuthenticated, IsOrganizationAdmin]
 
     def get(self, request):
-        queryset = self.queryset.filter(business__user=request.user.id)
-        serializer = EarningSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        date = self.request.query_params.get('date', None)
+        month = self.request.query_params.get('month', None)
+        year = self.request.query_params.get('year', None)
+        queryset = self.queryset.filter(
+            employee__business__user=request.user.id,
+            status="CLOCK_OUT"
+        )
+        if date:
+            print(date)
+            queryset = queryset.filter(updated_at__day=date)
+        if month:
+            print(month)
+            queryset = queryset.filter(updated_at__month=month)
+        if year:
+            print(year)
+            queryset = queryset.filter(updated_at__year=year)
+
+        serializer = EarningSerializer(
+            queryset.first(),
+            many=False,
+            context={'request': request, 'queryset': queryset}
+        )
+        data = serializer.data
+        data['payroll_hours'] = get_payroll_hours(data)
+        return Response(data, status=status.HTTP_200_OK)
