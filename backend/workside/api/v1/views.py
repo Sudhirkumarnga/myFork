@@ -103,7 +103,7 @@ class WorkSiteViewSet(ModelViewSet):
 
 
 class TaskViewSet(ModelViewSet):
-    permission_classes = [IsAuthenticated, IsOrganizationAdmin]
+    permission_classes = [IsAuthenticated]
     serializer_class = TaskSerializer
     queryset = Task.objects.filter()
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
