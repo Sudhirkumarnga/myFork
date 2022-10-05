@@ -253,12 +253,17 @@ class EventView(ModelViewSet):
 
 class SchedularView(APIView):
     queryset = Event.objects.filter()
-    permission_classes = [IsAuthenticated, IsOrganizationAdmin]
+    permission_classes = [IsAuthenticated]
     http_method_names = ['get', 'post', 'put', 'patch']
 
     def get(self, request):
         try:
-            queryset = self.queryset.filter(worksite__business__user=self.request.user)
+            if self.request.user.user_role == "Organization Admin":
+                queryset = self.queryset.filter(worksite__business__user=self.request.user)
+            else:
+                queryset = self.queryset.filter(
+                    employe__id=Employee.objects.get(user=self.request.user)
+                )
             queryset = get_filtered_queryset(request, queryset)
             serializer = SchedularSerializer(queryset, many=True)
             return Response(
