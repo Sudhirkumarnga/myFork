@@ -258,7 +258,7 @@ class SchedularView(APIView):
 
     def get(self, request):
         try:
-            if self.request.user.user_role == "Organization Admin":
+            if self.request.user.role == "Organization Admin":
                 queryset = self.queryset.filter(worksite__business__user=self.request.user)
             else:
                 queryset = self.queryset.filter(
