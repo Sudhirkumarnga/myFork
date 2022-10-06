@@ -262,10 +262,14 @@ class SchedularView(APIView):
                 queryset = self.queryset.filter(worksite__business__user=self.request.user)
             else:
                 queryset = self.queryset.filter(
-                    employe__id=Employee.objects.get(user=self.request.user)
+                    employees__id=Employee.objects.get(user=self.request.user).id
                 )
             queryset = get_filtered_queryset(request, queryset)
-            serializer = SchedularSerializer(queryset, many=True)
+            serializer = SchedularSerializer(
+                queryset,
+                many=True,
+                context={'request':request}
+            )
             return Response(
                 SmartWorkHorseResponse.get_response(
                     success=True,

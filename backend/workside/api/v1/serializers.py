@@ -216,9 +216,12 @@ class SchedularSerializer(ModelSerializer):
         fields = ('id', 'worksite_name', 'employees', 'selected_tasks', 'start_time', 'end_time')
 
     def to_representation(self, data):
+        request = self.context['request']
         data = super(SchedularSerializer, self).to_representation(data)
         data['worksite_name'] = Event.objects.get(id=data['id']).worksite.name
         data['logo'] = Event.objects.get(id=data['id']).worksite.business.profile_image.url
+        if request.user.role == "Employee":
+            del data['selected_tasks']
         return data
 
 
