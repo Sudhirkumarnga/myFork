@@ -221,7 +221,7 @@ class SchedularSerializer(ModelSerializer):
         data['worksite_name'] = Event.objects.get(id=data['id']).worksite.name
         data['logo'] = Event.objects.get(id=data['id']).worksite.business.profile_image.url
         if request.user.role == "Employee":
-            del data['selected_tasks']
+            del data['employees']
         return data
 
 
