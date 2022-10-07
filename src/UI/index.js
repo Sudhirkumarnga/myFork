@@ -11,6 +11,7 @@ import Messages from './Messages'
 import Scheduler from './Scheduler'
 import Payroll from './Payroll'
 import MyEarnings from './MyEarnings'
+import Reports from './Reports'
 
 module.exports = {
   ...Registration,
@@ -25,5 +26,6 @@ module.exports = {
   ...Messages,
   ...Scheduler,
   ...Payroll,
-  ...MyEarnings
+  ...MyEarnings,
+  ...Reports,
 }

@@ -1,39 +1,43 @@
-import React from "react"
-import { View, FlatList, StyleSheet, Text } from "react-native"
-import { BaseComponent, Button } from "../Common"
-import { Fonts, Colors } from "../../res"
-import DenyModal from "./DenyModal"
+import React from 'react'
+import { View, FlatList, StyleSheet, Text } from 'react-native'
+import { BaseComponent, Button } from '../Common'
+import { Fonts, Colors } from '../../res'
+import DenyModal from './DenyModal'
 
 const data = [
   {
-    title: "Employee name:",
-    des: "John Doe"
+    title: 'Employee name:',
+    des: 'John Doe'
   },
   {
-    title: "Date submitted:",
-    des: "April 28, 2022"
+    title: 'Date submitted:',
+    des: 'April 28, 2022'
   },
   {
-    title: "Description:",
-    des: "Lorem ipsum dolor sitameconsecteturadipi scing"
+    title: 'Dates requested:',
+    des: 'May 1, 2022 - May 7, 2022'
+  },
+  {
+    title: 'Description:',
+    des: 'Lorem ipsum dolor sitameconsecteturadipi scing'
   }
 ]
 
 export default class EmpRequestLeave extends BaseComponent {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       denyModalVisible: false,
       data: [
         {
-          title: "Employee name:",
-          des: "John Doe"
+          title: 'Employee name:',
+          des: 'John Doe'
         }
       ]
     }
   }
 
-  renderRequestCell() {
+  renderRequestCell () {
     return (
       <View
         style={{
@@ -55,16 +59,17 @@ export default class EmpRequestLeave extends BaseComponent {
     )
   }
 
-  renderButtons() {
+  renderButtons () {
     return (
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <Button
-          title={this.ls("approve")}
+          title={this.ls('approve')}
           style={styles.footerButton}
           onPress={() => {}}
         />
         <Button
-          title={this.ls("deny")}
+          title={this.ls('deny')}
+          color={Colors.BUTTON_BG}
           style={styles.footerWhiteButton}
           onPress={() => {
             this.setState({ denyModalVisible: true })
@@ -76,7 +81,7 @@ export default class EmpRequestLeave extends BaseComponent {
     )
   }
 
-  render() {
+  render () {
     return (
       <View style={styles.container}>
         <DenyModal
@@ -106,21 +111,22 @@ const styles = StyleSheet.create({
     flex: 1
   },
   footerButton: {
-    width: "45%",
+    width: '48%',
     marginVertical: 20,
     height: 40
   },
   footerWhiteButton: {
     borderWidth: 1,
     borderColor: Colors.BUTTON_BG,
-    width: "45%",
+    width: '48%',
+
     marginVertical: 20,
     height: 40
   },
   description: {
     ...Fonts.poppinsRegular(14),
     color: Colors.TEXT_COLOR,
-    textAlign: "left",
+    textAlign: 'left',
     marginTop: 2
   }
 })

@@ -102,7 +102,7 @@ export default class RequestLeaveScene extends BaseScene {
           leftButton
           title={this.ls("timeOffReq")}
           onLeftPress={() =>
-            this.props.navigation.toggleDrawer({
+            this.props?.navigation?.toggleDrawer({
               side: "left",
               animated: true
             })

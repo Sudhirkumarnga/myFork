@@ -70,8 +70,8 @@ class CustomDrawer extends BaseComponent {
       { title: 'My Profile', icon: `profile`, route: 'BusinessProfileView' },
       { title: 'Employee list', icon: `list`, route: 'EmployeeListScene' },
       { title: 'Worksites', icon: `worksites`, route: 'AllWorksiteScene' },
-      { title: 'Report', icon: `report`, route: 'home' },
-      { title: 'Timer off Requests', icon: `timer`, route: 'home' },
+      { title: 'Report', icon: `report`, route: 'ReportsScene' },
+      { title: 'Timer off Requests', icon: `timer`, route: 'RequestLeaveScene' },
       { title: 'Settings', icon: `settings`, route: 'Settings' }
     ]
     return (
