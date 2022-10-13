@@ -71,6 +71,7 @@ LOCAL_APPS = [
     'home',
     'users.apps.UsersConfig',
     "workside",
+    "reports",
     'business',
     'subscriptions'
 ]

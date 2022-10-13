@@ -29,6 +29,7 @@ urlpatterns = [
     path("auth/signup/account-confirm-email/<str:key>/", confirm_email),
     path("auth/signup/", include("rest_auth.registration.urls")),
     path("", include("business.api.v1.urls")),
+    path("", include("reports.api.v1.urls")),
     path("", include("workside.api.v1.urls")),
     path("", include("subscriptions.api.v1.urls")),
 ]
