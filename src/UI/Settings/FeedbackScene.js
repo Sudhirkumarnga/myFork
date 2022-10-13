@@ -1,28 +1,28 @@
-import React, { Component } from "react"
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
-import { BaseScene, Button, PrimaryTextInput, Forms, Header } from "../Common"
-import { ImagePickerAndUploader } from "../../Utils"
-import { Fonts, Colors } from "../../res"
+import React, { Component } from 'react'
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { BaseScene, Button, PrimaryTextInput, Forms, Header } from '../Common'
+import { ImagePickerAndUploader } from '../../Utils'
+import { Fonts, Colors } from '../../res'
 
 export default class FeedbackScene extends BaseScene {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       image: {},
       userImage: false,
-      password: "",
-      confirmPassword: "",
+      password: '',
+      confirmPassword: '',
       isFormValid: false
     }
     this.setForms()
     this.isFormValid = this.isFormValid.bind(this)
   }
 
-  setForms(field) {
-    this.forms = Forms.fields("feedback")
+  setForms (field) {
+    this.forms = Forms.fields('feedback')
   }
 
-  isFormValid() {
+  isFormValid () {
     let error = null
     this.forms.map(i => {
       if (!this[i.key].isValid()) {
@@ -39,13 +39,13 @@ export default class FeedbackScene extends BaseScene {
     return true
   }
 
-  onSubmit() {
+  onSubmit () {
     let error = null
     let params = {}
     if (!this.password.isValid()) {
-      error = "Please enter valid password"
+      error = 'Please enter valid password'
     } else if (this.state.password != this.state.confirmPassword) {
-      error = "Password does not match"
+      error = 'Password does not match'
     }
     if (error) {
       alert(error)
@@ -58,7 +58,7 @@ export default class FeedbackScene extends BaseScene {
     }
   }
 
-  handleAWSUpload() {
+  handleAWSUpload () {
     const config = {
       width: 300,
       height: 150,
@@ -82,25 +82,25 @@ export default class FeedbackScene extends BaseScene {
       })
   }
 
-  renderCancelButton() {
+  renderCancelButton () {
     return (
       <TouchableOpacity
         style={{
-          justifyContent: "center",
-          alignItems: "center",
+          justifyContent: 'center',
+          alignItems: 'center',
           paddingVertical: 20
         }}
         onPress={() => this.props.navigation.goBack()}
       >
-        <Text style={styles.cancelText}>{this.ls("cancel")}</Text>
+        <Text style={styles.cancelText}>{this.ls('cancel')}</Text>
       </TouchableOpacity>
     )
   }
 
-  renderTextInput() {
+  renderTextInput () {
     const props = {
       dropdown: true,
-      items: [{ value: "Workite number 1", label: "Workite number 1" }]
+      items: [{ value: 'Workite number 1', label: 'Workite number 1' }]
     }
     return (
       <View>
@@ -108,21 +108,21 @@ export default class FeedbackScene extends BaseScene {
           return (
             <PrimaryTextInput
               {...item}
-              onChangeText={text => this.isFormValid(text, "password")}
+              onChangeText={text => this.isFormValid(text, 'password')}
               ref={o => (this[item.key] = o)}
             />
           )
         })}
         <PrimaryTextInput
           ref={o => (this.worksite = o)}
-          label="Worksite"
+          label='Worksite'
           {...props}
           onChangeText={worksite => this.setState({ worksite })}
         />
         <PrimaryTextInput
-          onChangeText={text => this.isFormValid(text, "confirmPassword")}
+          onChangeText={text => this.isFormValid(text, 'confirmPassword')}
           ref={o => (this.message = o)}
-          label="Message"
+          label='Message'
           inputStyle={{ height: 100 }}
           multiline
         />
@@ -130,39 +130,46 @@ export default class FeedbackScene extends BaseScene {
     )
   }
 
-  renderUploadButton() {
+  renderUploadButton () {
     return (
       <Button
         style={[styles.footerWhiteButton]}
         isWhiteBg
-        icon={"upload"}
-        title={this.ls("uploadMedia")}
+        iconStyle={{
+          width: 20,
+          height: 20,
+          tintColor: Colors.GREEN_COLOR,
+          resizeMode: 'contain'
+        }}
+        color={Colors.GREEN_COLOR}
+        icon={'upload'}
+        title={this.ls('uploadMedia')}
         onPress={() => this.handleAWSUpload()}
       />
     )
   }
 
-  renderFooterButton() {
+  renderFooterButton () {
     return (
       <Button
-        title={this.ls("submit")}
+        title={this.ls('submit')}
         style={styles.footerButton}
         onPress={this.props.onPress}
       />
     )
   }
-  renderHeader() {
+  renderHeader () {
     return (
       <Header
-        title={this.ls("worksiteFeedback")}
+        title={'Send App Feedback'}
         leftButton
-        leftIcon={this.images("leftArrow")}
+        leftIcon={this.images('leftArrow')}
         onLeftPress={() => this.props.navigation.goBack()}
       />
     )
   }
 
-  render() {
+  render () {
     return (
       <View style={styles.container}>
         {this.renderHeader()}
@@ -185,8 +192,8 @@ const styles = StyleSheet.create({
   title: {
     ...Fonts.poppinsRegular(28),
     color: Colors.BLACK,
-    textAlign: "center",
-    marginTop: "20%"
+    textAlign: 'center',
+    marginTop: '20%'
   },
   description: {
     ...Fonts.poppinsRegular(14),
@@ -194,8 +201,8 @@ const styles = StyleSheet.create({
     marginVertical: 10
   },
   footerButton: {
-    marginTop: "15%",
-    width: "90%"
+    marginTop: '15%',
+    width: '90%'
   },
   forgotPwdText: {
     ...Fonts.poppinsRegular(14),
@@ -207,9 +214,9 @@ const styles = StyleSheet.create({
     color: Colors.BUTTON_BG
   },
   footerWhiteButton: {
-    marginTop: "5%",
-    width: "90%",
-    backgroundColor: "red",
+    marginTop: '5%',
+    width: '90%',
+    backgroundColor: 'red',
     borderWidth: 1,
     borderColor: Colors.BUTTON_BG
   }

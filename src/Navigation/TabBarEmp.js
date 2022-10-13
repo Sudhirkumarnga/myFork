@@ -9,7 +9,8 @@ import {
   EmployeeListScene,
   AllWorksiteScene,
   Scheduler,
-  MyEarningsScene
+  MyEarningsScene,
+  WorksiteMapScene,
 } from '../UI'
 import { Fonts, Colors } from '../res'
 import Images from '../res/Images'
@@ -29,6 +30,8 @@ function HomeStack () {
       <Stack.Screen name='HomeEmp' component={HomeEmp} />
       <Stack.Screen name='EmployeeListScene' component={EmployeeListScene} />
       <Stack.Screen name='AllWorksiteScene' component={AllWorksiteScene} />
+      <Stack.Screen name='WorksiteMapScene' component={WorksiteMapScene} />
+      <Stack.Screen name='RequestLeaveScene' component={RequestLeaveScene} />
     </Stack.Navigator>
   )
 }

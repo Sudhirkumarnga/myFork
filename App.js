@@ -6,7 +6,11 @@ import SplashScreen from 'react-native-splash-screen'
 import './src/protos'
 import AppContext from './src/Utils/Context'
 import { MenuProvider } from 'react-native-popup-menu'
-import { getAllSchedules, getEarnings } from './src/api/business'
+import {
+  getAllSchedules,
+  getEarnings,
+  getleaveRequest
+} from './src/api/business'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Toast from 'react-native-simple-toast'
 import { getCities, getCountries, getProfile, getStates } from './src/api/auth'
@@ -19,6 +23,7 @@ const App = () => {
   const [cities, setCities] = useState([])
   const [states, setStates] = useState([])
   const [earnings, setEarnings] = useState([])
+  const [leaveRequest, setLeaveRequest] = useState([])
   useEffect(() => {
     setTimeout(() => {
       SplashScreen.hide()
@@ -72,6 +77,22 @@ const App = () => {
     }
   }
 
+  const _getleaveRequest = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token')
+      const res = await getleaveRequest(token)
+      console.log('getleaveRequest',res?.data?.results)
+      setLeaveRequest(res?.data?.results)
+    } catch (error) {
+      const showWError = Object.values(error.response?.data?.error)
+      if (showWError.length > 0) {
+        Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
+      } else {
+        Toast.show(`Error: ${JSON.stringify(error)}`)
+      }
+    }
+  }
+
   const _getProfile = async () => {
     try {
       const token = await AsyncStorage.getItem('token')
@@ -102,7 +123,9 @@ const App = () => {
         states,
         earnings,
         _getEarnings,
-        _getProfile
+        _getProfile,
+        leaveRequest,
+        _getleaveRequest
       }}
     >
       <MenuProvider>

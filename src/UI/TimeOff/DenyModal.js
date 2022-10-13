@@ -29,7 +29,15 @@ class DenyModal extends BaseComponent {
   renderButton () {
     return (
       <View style={styles.footerButtonsContainer}>
-        <Button style={styles.footerSkipButton} title={this.ls('send')} />
+        <Button
+          onPress={() =>
+            this.props.UpdateRequest(this.props.leaveItem?.id, 'DENY')
+          }
+          disabled={!this.props.admin_note}
+          loading={this.props.loadingApprove}
+          style={styles.footerSkipButton}
+          title={this.ls('send')}
+        />
       </View>
     )
   }
@@ -53,7 +61,9 @@ class DenyModal extends BaseComponent {
       <PrimaryTextInput
         ref={o => (this['message'] = o)}
         label={this.ls('reasonForDeny')}
-        onChangeText={() => {}}
+        onChangeText={(text, isValid) =>
+          this.props.handleChange('admin_note', text, isValid)
+        }
         inputStyle={{ height: 80, width: '100%', marginTop: 20 }}
         multiline
       />

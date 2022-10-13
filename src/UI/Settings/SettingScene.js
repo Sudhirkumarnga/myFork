@@ -11,12 +11,14 @@ import { BaseScene, Header } from '../Common'
 import { Fonts, Colors } from '../../res'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import AppContext from '../../Utils/Context'
+import LogoutModal from './LogoutModal'
 
 export default class SettingScene extends BaseScene {
   static contextType = AppContext
   constructor (props) {
     super(props)
     this.state = {
+      visible: false,
       data: [
         {
           icon: 'lock',
@@ -81,7 +83,7 @@ export default class SettingScene extends BaseScene {
             }}
             onPress={() =>
               item.title === 'Logout'
-                ? this.logout()
+                ? this.setState({ visible: true })
                 : this.props.navigation.navigate(item.screen)
             }
           >
@@ -105,6 +107,11 @@ export default class SettingScene extends BaseScene {
           onLeftPress={() => this.props.navigation.goBack()}
         />
         {this.renderContent()}
+        <LogoutModal
+          visible={this.state.visible}
+          onCancel={() => this.setState({ visible: false })}
+          logout={this.logout}
+        />
       </View>
     )
   }

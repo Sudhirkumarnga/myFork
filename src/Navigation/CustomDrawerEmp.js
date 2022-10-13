@@ -69,7 +69,7 @@ class CustomDrawerEmp extends BaseComponent {
     const list = [
       { title: 'My Profile', icon: `profile`, route: 'EmpProfileView' },
       { title: 'Worksites', icon: `worksites`, route: 'AllWorksiteScene' },
-      { title: 'Timer off Requests', icon: `timer`, route: 'home' },
+      { title: 'Timer off Requests', icon: `timer`, route: 'RequestLeaveScene' },
       { title: 'Settings', icon: `settings`, route: 'Settings' }
     ]
     return (

@@ -4,30 +4,12 @@ import { BaseComponent, Button } from '../Common'
 import { Fonts, Colors } from '../../res'
 import DenyModal from './DenyModal'
 
-const data = [
-  {
-    title: 'Employee name:',
-    des: 'John Doe'
-  },
-  {
-    title: 'Date submitted:',
-    des: 'April 28, 2022'
-  },
-  {
-    title: 'Dates requested:',
-    des: 'May 1, 2022 - May 7, 2022'
-  },
-  {
-    title: 'Description:',
-    des: 'Lorem ipsum dolor sitameconsecteturadipi scing'
-  }
-]
-
 export default class EmpRequestLeave extends BaseComponent {
   constructor (props) {
     super(props)
     this.state = {
       denyModalVisible: false,
+      leaveItem: null,
       data: [
         {
           title: 'Employee name:',
@@ -37,7 +19,25 @@ export default class EmpRequestLeave extends BaseComponent {
     }
   }
 
-  renderRequestCell () {
+  renderRequestCell (leaveItem) {
+    const data = [
+      {
+        title: 'Employee name:',
+        des: leaveItem?.Employee_name
+      },
+      {
+        title: 'Date submitted:',
+        des: leaveItem?.created_at
+      },
+      {
+        title: 'Dates requested:',
+        des: leaveItem?.from_date + ' - ' + leaveItem?.to_date
+      },
+      {
+        title: 'Description:',
+        des: leaveItem?.description
+      }
+    ]
     return (
       <View
         style={{
@@ -54,25 +54,36 @@ export default class EmpRequestLeave extends BaseComponent {
             </View>
           )
         })}
-        {this.renderButtons()}
+        {this.renderButtons(leaveItem)}
       </View>
     )
   }
 
-  renderButtons () {
+  renderButtons (leaveItem, handleChange) {
     return (
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <Button
           title={this.ls('approve')}
+          disabled={
+            this.props.loadingApprove ||
+            leaveItem?.status === 'APPROVED' ||
+            leaveItem?.status === 'DENY'
+          }
           style={styles.footerButton}
-          onPress={() => {}}
+          onPress={() => this.props.UpdateRequest(leaveItem?.id, 'APPROVED')}
         />
         <Button
           title={this.ls('deny')}
           color={Colors.BUTTON_BG}
           style={styles.footerWhiteButton}
+          disabled={
+            this.props.loadingApprove ||
+            leaveItem?.status === 'APPROVED' ||
+            leaveItem?.status === 'DENY'
+          }
           onPress={() => {
-            this.setState({ denyModalVisible: true })
+            this.props.handleChange('denyModalVisible', true, true)
+            this.props.handleChange('leaveItem', leaveItem, true)
           }}
           isWhiteBg
           textStyle={{ color: Colors.BUTTON_BG }}
@@ -85,11 +96,16 @@ export default class EmpRequestLeave extends BaseComponent {
     return (
       <View style={styles.container}>
         <DenyModal
-          visible={this.state.denyModalVisible}
+          visible={this.props.denyModalVisible}
+          handleChange={this.props.handleChange}
+          UpdateRequest={this.props.UpdateRequest}
+          leaveItem={this.props.leaveItem}
+          admin_note={this.props.admin_note}
+          loadingApprove={this.props.loadingApprove}
           onRequestClose={() => this.setState({ denyModalVisible: false })}
         />
         <FlatList
-          data={[1, 2, 3]}
+          data={this.props.leaveRequest || []}
           renderItem={({ item }) => this.renderRequestCell(item)}
           showsVerticalScrollIndicator={false}
         />

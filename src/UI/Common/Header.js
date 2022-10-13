@@ -37,7 +37,7 @@ class Header extends Component {
       <TouchableOpacity
         style={[styles.headerCommon, { width: "15%" }]}
         hitSlop={{ top: 40, bottom: 40, left: 40, right: 40 }}
-        onPress={this.props.onLeftPress}
+        onPress={this.props.onRightPress}
       >
         {!!this.props.rightIcon && (
           <Image

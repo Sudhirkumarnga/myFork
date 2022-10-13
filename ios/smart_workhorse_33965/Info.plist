@@ -7,7 +7,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>smart-workhorse-33965</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -38,7 +38,7 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Poppins-Medium.ttf</string>

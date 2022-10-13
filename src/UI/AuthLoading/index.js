@@ -13,8 +13,8 @@ function AuthLoading ({ navigation }) {
     setUser,
     setAdminProfile,
     _getAllSchedules,
-    _getEarnings
-    // _getOrders,
+    _getEarnings,
+    _getleaveRequest
     // _getJourneys,
     // _getMyAddresses
   } = context
@@ -32,6 +32,10 @@ function AuthLoading ({ navigation }) {
       console.warn('userData', user)
       if (res?.data?.response) {
         setAdminProfile(res?.data?.response)
+      }
+
+      if (userData?.role === 'Organization Admin') {
+        _getleaveRequest()
       }
 
       if (

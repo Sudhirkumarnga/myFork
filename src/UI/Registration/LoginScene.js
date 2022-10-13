@@ -51,14 +51,14 @@ export default class LoginScene extends BaseScene {
   }
 
   checkPass = value => {
-    const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/
-    if (regex.test(value)) {
-      this.handleChange('isPassInValid', false)
-    } else {
-      this.handleChange('isPassInValid', true)
-    }
+    // const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
+    // if (regex.test(value)) {
+    //   this.handleChange('isPassInValid', false)
+    // } else {
+    //   this.handleChange('isPassInValid', true)
+    // }
   }
-  
+
   handleChange = (key, value, isValid) => {
     if (key === 'password') {
       this.checkPass(value)
@@ -154,8 +154,7 @@ export default class LoginScene extends BaseScene {
               }}
             >
               Password must be atleast 8 characters which contain at least one
-              lowercase letter, one uppercase letter, one numeric digit, and one
-              special character
+              lowercase letter, one uppercase letter, and one numeric digit
             </Text>
           )}
           {this.renderForgotPwd()}

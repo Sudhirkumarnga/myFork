@@ -33,7 +33,8 @@ import momenttimezone from 'moment-timezone'
 import Strings from '../../res/Strings'
 
 export default function Scheduler ({ navigation }) {
-  const { schedules, _getAllSchedules } = useContext(AppContext)
+  const { schedules, user, _getAllSchedules } = useContext(AppContext)
+  const isEmp = user?.role !== 'Organization Admin'
   const [state, setState] = useState({
     mode: 'week',
     openSelect: false,
@@ -143,7 +144,7 @@ export default function Scheduler ({ navigation }) {
     }
   }
 
-  console.warn('getEvents', getEvents(schedules))
+  console.warn('selectedEvent', selectedEvent)
   return (
     <View style={styles.container}>
       <Header leftButton title={'Scheduler'} />
@@ -252,7 +253,7 @@ export default function Scheduler ({ navigation }) {
             <Button
               backgroundColor={Colors.BLUR_TEXT}
               style={{ height: 40 }}
-              title={'Publish All'}
+              title={isEmp ? 'Worksites' : 'Publish All'}
             />
           )}
         </View>
@@ -269,7 +270,7 @@ export default function Scheduler ({ navigation }) {
         events={getEvents(schedules)}
         height={600}
       />
-      <Fab onPress={() => navigation.navigate('addEvents')} />
+      {!isEmp && <Fab onPress={() => navigation.navigate('addEvents')} />}
       <Modal
         visible={visible}
         transparent
@@ -288,78 +289,86 @@ export default function Scheduler ({ navigation }) {
               {selectedEvent?.start_time}
             </Text>
             <Text style={styles.title}>{'Tasks'}</Text>
-            <View
-              style={{
-                flexDirection: 'row',
-                width: '100%',
-                marginVertical: 10,
-                alignItems: 'center',
-                paddingBottom: 8,
-                borderBottomColor: Colors.TEXT_INPUT_BORDER,
-                borderBottomWidth: 1
-              }}
-            >
-              <Text style={styles.inputText}>{'task?.name'}</Text>
-            </View>
-            <Text style={styles.title}>{'Assigned Employees'}</Text>
-            <FlatList
-              data={[0]}
-              style={{ width: '100%', marginTop: 20 }}
-              renderItem={({ item, index }) => (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginBottom: 20,
-                    borderBottomWidth: 1,
-                    paddingBottom: 10,
-                    borderBottomColor: Colors.TEXT_INPUT_BORDER
-                  }}
-                >
-                  <Image
-                    source={
-                      item?.personal_information?.profile_image
-                        ? { uri: item?.personal_information?.profile_image }
-                        : userProfile
-                    }
-                    style={{
-                      width: 50,
-                      height: 50,
-                      borderRadius: 10,
-                      marginRight: 20
-                    }}
-                  />
-                  <Text style={{ ...Fonts.poppinsRegular(12) }}>
-                    {item?.personal_information?.first_name}
-                  </Text>
-                  <Text
-                    style={{
-                      ...Fonts.poppinsRegular(12),
-                      color: Colors.BLUR_TEXT
-                    }}
-                  >
-                    Phone Number:
-                  </Text>
-                </View>
-              )}
-            />
-            <Button
-              style={[styles.footerWhiteButton]}
-              onPress={() => {
-                navigation.navigate('addEvents', { selectedEvent })
-                hideModal()
-              }}
-              title={Strings.edit}
-              icon={'edit'}
-              isWhiteBg
-              iconStyle={{
-                width: 20,
-                height: 20,
-                tintColor: Colors.GREEN_COLOR,
-                resizeMode: 'contain'
-              }}
-              color={Colors.BUTTON_BG}
-            />
+            {selectedEvent?.selected_tasks?.map((task, index) => (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  width: '100%',
+                  marginVertical: 10,
+                  alignItems: 'center',
+                  paddingBottom: 8,
+                  borderBottomColor: Colors.TEXT_INPUT_BORDER,
+                  borderBottomWidth: 1
+                }}
+              >
+                <Text style={styles.inputText}>{task?.name}</Text>
+              </View>
+            ))}
+            {!isEmp && (
+              <>
+                <Text style={styles.title}>{'Assigned Employees'}</Text>
+                <FlatList
+                  data={[0]}
+                  style={{ width: '100%', marginTop: 20 }}
+                  renderItem={({ item, index }) => (
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        marginBottom: 20,
+                        borderBottomWidth: 1,
+                        paddingBottom: 10,
+                        borderBottomColor: Colors.TEXT_INPUT_BORDER
+                      }}
+                    >
+                      <Image
+                        source={
+                          item?.personal_information?.profile_image
+                            ? { uri: item?.personal_information?.profile_image }
+                            : userProfile
+                        }
+                        style={{
+                          width: 50,
+                          height: 50,
+                          borderRadius: 10,
+                          marginRight: 20
+                        }}
+                      />
+                      <Text style={{ ...Fonts.poppinsRegular(12) }}>
+                        {item?.personal_information?.first_name}
+                      </Text>
+                      <Text
+                        style={{
+                          ...Fonts.poppinsRegular(12),
+                          color: Colors.BLUR_TEXT
+                        }}
+                      >
+                        Phone Number:
+                      </Text>
+                    </View>
+                  )}
+                />
+              </>
+            )}
+            {!isEmp && (
+              <Button
+                style={[styles.footerWhiteButton]}
+                onPress={() => {
+                  navigation.navigate('addEvents', { selectedEvent })
+                  hideModal()
+                }}
+                title={Strings.edit}
+                icon={'edit'}
+                isWhiteBg
+                iconStyle={{
+                  width: 20,
+                  height: 20,
+                  tintColor: Colors.GREEN_COLOR,
+                  resizeMode: 'contain'
+                }}
+                color={Colors.BUTTON_BG}
+              />
+            )}
           </View>
         </View>
       </Modal>

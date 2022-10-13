@@ -87,6 +87,7 @@ export default class MessagesScene extends BaseScene {
             })
           }
           rightIcon={{ ...this.images('bell') }}
+          onRightPress={() => this.props.navigation.navigate('Notifications')}
         />
         {this.renderContent()}
       </View>

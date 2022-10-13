@@ -11,3 +11,7 @@ export const getUpcomingShift = token => {
 export const getAllWorksitesEmp = token => {
   return API.get(`api/v1/worksites/`, token)
 }
+
+export const leaveRequest = (payload, token) => {
+  return API.post(`api/v1/leave_request/`, payload, token)
+}

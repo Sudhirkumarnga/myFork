@@ -1,4 +1,4 @@
-import React from "react"
+import React from 'react'
 import {
   StyleSheet,
   View,
@@ -7,68 +7,72 @@ import {
   TouchableOpacity,
   Text,
   Dimensions
-} from "react-native"
-import { Colors, Images, Fonts } from "../../res"
-import { Button, BaseComponent } from "../Common"
-const { width, height } = Dimensions.get("window")
+} from 'react-native'
+import { Colors, Images, Fonts } from '../../res'
+import { Button, BaseComponent } from '../Common'
+const { width, height } = Dimensions.get('window')
 
 class LogoutModal extends BaseComponent {
-  constructor(props) {
+  constructor (props) {
     super()
     this.state = {
       visible: true
     }
   }
 
-  componentDidMount() {}
+  componentDidMount () {}
 
-  renderSeparator() {
+  renderSeparator () {
     return <View style={styles.separator} />
   }
 
-  renderQueue() {
+  renderQueue () {
     let mins = Math.floor(120 / 60)
-    let minutes = mins == 1 ? " min" : " mins"
+    let minutes = mins == 1 ? ' min' : ' mins'
     return (
       <View style={styles.textContainer}>
         <Text style={styles.queuetitle}>
-          {this.strings("queueNo") + " "}
+          {this.strings('queueNo') + ' '}
           <Text style={styles.subText}> </Text>
         </Text>
         <Text style={styles.queuetitle}>
-          {this.strings("timeToConnect") + " "}
-          <Text style={styles.subText}>{""}</Text>
+          {this.strings('timeToConnect') + ' '}
+          <Text style={styles.subText}>{''}</Text>
         </Text>
       </View>
     )
   }
 
-  renderButton() {
+  renderButton () {
     return (
       <View style={styles.footerButtonsContainer}>
-        <Button style={styles.footerSkipButton} title={this.ls("logout")} />
+        <Button
+          style={styles.footerSkipButton}
+          onPress={this.props.logout}
+          title={this.ls('logout')}
+        />
       </View>
     )
   }
 
-  renderCancelButton() {
+  renderCancelButton () {
     return (
       <TouchableOpacity
         style={{
-          justifyContent: "center",
-          alignItems: "center"
+          justifyContent: 'center',
+          alignItems: 'center'
         }}
-        onRequestClose={this.props.onRequestClose}
+        onPress={this.props.onCancel}
       >
-        <Text style={styles.cancelText}>{this.ls("cancel")}</Text>
+        <Text style={styles.cancelText}>{this.ls('cancel')}</Text>
       </TouchableOpacity>
     )
   }
 
-  render() {
+  render () {
     return (
       <Modal
-        visible={this.state.visible}
+        visible={this.props.visible}
         transparent
         onRequestClose={this.props.onRequestClose}
       >
@@ -77,7 +81,7 @@ class LogoutModal extends BaseComponent {
           onPress={this.props.onRequestClose}
         >
           <View style={styles.modalView}>
-            <Text style={styles.title}>{this.ls("logoutDes")}</Text>
+            <Text style={styles.title}>{this.ls('logoutDes')}</Text>
             {this.renderButton()}
             {this.renderCancelButton()}
           </View>
@@ -90,27 +94,27 @@ class LogoutModal extends BaseComponent {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)"
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)'
   },
   modalContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "red"
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'red'
   },
   modalView: {
     width: width * 0.9,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
-    position: "absolute",
-    justifyContent: "center"
+    position: 'absolute',
+    justifyContent: 'center'
   },
   title: {
     ...Fonts.poppinsMedium(22),
-    textAlign: "center",
+    textAlign: 'center',
     color: Colors.BLACK
   },
   cancelText: {
@@ -118,9 +122,13 @@ const styles = StyleSheet.create({
     color: Colors.BUTTON_BG
   },
   footerButtonsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 20
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 20,
+    width: '100%'
+  },
+  footerSkipButton: {
+    width: '100%'
   }
 })
 export default LogoutModal

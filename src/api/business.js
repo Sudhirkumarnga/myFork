@@ -63,3 +63,11 @@ export const deleteEvent = (id, token) => {
 export const getEarnings = token => {
   return API.get(`api/v1/earnings/`, token)
 }
+
+export const getleaveRequest = token => {
+  return API.get(`api/v1/leave_request/`, token)
+}
+
+export const updateLeaveRequest = (id, payload, token) => {
+  return API.put(`api/v1/leave_request/${id}/`, payload, token)
+}

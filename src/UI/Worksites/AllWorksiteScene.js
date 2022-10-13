@@ -61,23 +61,27 @@ export default function AllWorksiteScene ({ navigation }) {
   }
   console.warn('adminProfile', allWorksites)
   const renderContent = () => {
+    const isEmp = adminProfile?.emergency_contact?.first_name
     return (
       <ScrollView style={styles.childContainer}>
-        {!adminProfile?.emergency_contact?.first_name && (
-          <Text style={styles.title}>{Strings.listWorksites}</Text>
-        )}
+        {!isEmp && <Text style={styles.title}>{Strings.listWorksites}</Text>}
         {allWorksites?.map(item => (
           <View style={styles.cellContainer}>
             <View>
               <Text style={styles.cellTitle}>
-                {item?.personal_information?.name}
+                {isEmp ? item?.worksite_name : item?.personal_information?.name}
               </Text>
               <Text style={styles.description}>
-                {item?.personal_information?.location}
+                {isEmp ? item?.location : item?.personal_information?.location}
               </Text>
             </View>
             <TouchableOpacity
-              onPress={() => navigation.navigate('worksiteDetail', { item })}
+              onPress={() =>
+                navigation.navigate(
+                  isEmp ? 'WorksiteMapScene' : 'worksiteDetail',
+                  { item }
+                )
+              }
               style={{ justifyContent: 'flex-end' }}
             >
               <Text
@@ -86,7 +90,7 @@ export default function AllWorksiteScene ({ navigation }) {
                   { color: Colors.BLUR_TEXT, ...Fonts.poppinsRegular(13) }
                 ]}
               >
-                View Details
+                {isEmp ? 'Map view' : 'View Details'}
               </Text>
             </TouchableOpacity>
           </View>
