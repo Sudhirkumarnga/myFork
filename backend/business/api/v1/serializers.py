@@ -224,7 +224,7 @@ class ProfileSerializer(ModelSerializer):
 class LeaveRequestSerializer(ModelSerializer):
     class Meta:
         model = LeaveRequest
-        exclude = ('created_at', 'updated_at')
+        exclude = ('updated_at',)
 
     def to_representation(self, data):
         data = super(LeaveRequestSerializer, self).to_representation(data)
