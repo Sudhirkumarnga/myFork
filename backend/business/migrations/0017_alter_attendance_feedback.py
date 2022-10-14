@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
+        migrations.AlterField(
             model_name='attendance',
             name='feedback',
             field=models.CharField(blank=True, choices=[('CONFIDENT', 'CONFIDENT'), ('HAPPY', 'HAPPY'), ('NEUTRAL', 'NEUTRAL'), ('WORRIED', 'WORRIED'), ('RUSHED', 'RUSHED'), ('UPSET', 'UPSET')], max_length=200, null=True, verbose_name='Attendance Feedback'),
