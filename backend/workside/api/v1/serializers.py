@@ -281,7 +281,7 @@ class AttendanceWorksiteSerializer(serializers.ModelSerializer):
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
-        fields = ('id', 'profile_image',)
+        fields = ('id', 'profile_image','mobile')
 
     def to_representation(self, data):
         data = super(EmployeeSerializer, self).to_representation(data)
@@ -317,9 +317,12 @@ class AttendanceEventSerializer(serializers.ModelSerializer):
         request = self.context['request']
         data = super(AttendanceEventSerializer, self).to_representation(data)
         attendance = Attendance.objects.filter(employee__user=request.user, event__id=data['id'])
+        data['schedule_shift'] = f"{str(self.instance.start_time.time())} to {str(self.instance.end_time.time())}"
+        data['logo'] = data['worksite'].logo.url if data['worksite'].logo else None
         if attendance.exists():
             if attendance.first().status == 'CLOCK_IN':
                 data['status'] = "CLOCK_OUT"
+                data['clock_in_time'] = attendance.first().clock_in_time
             else:
                 data['status'] = "CLOCK_IN"
         else:

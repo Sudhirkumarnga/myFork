@@ -1,3 +1,6 @@
+import base64
+
+from django.core.files.base import ContentFile
 from rest_framework.serializers import ModelSerializer
 from django_countries.serializers import CountryFieldMixin
 from django.utils.translation import ugettext_lazy as _
@@ -24,6 +27,11 @@ from business.services import (
     update_user_for_employee,
     update_employee
 )
+
+
+def convert_image_from_bse64_to_blob(image):
+    data = ContentFile(base64.b64decode(image), name='file.jpg')
+    return data
 
 
 class CountrySerializer(ModelSerializer):
@@ -277,7 +285,6 @@ class AttendanceSerializer(serializers.ModelSerializer):
         )
         return attendance
 
-
 class EarningSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attendance
@@ -288,9 +295,10 @@ class EarningSerializer(serializers.ModelSerializer):
         attendances = self.context['queryset']
         employees = []
         for attendance in attendances:
-            dict={}
+            dict = {}
             dict['employee_name'] = attendance.employee.user.get_full_name()
-            dict['employee_image'] = attendance.employee.profile_image.url if attendance.employee.profile_image else None
+            dict[
+                'employee_image'] = attendance.employee.profile_image.url if attendance.employee.profile_image else None
             dict['employee_position'] = attendance.employee.position
             dict['employee_hourly_rate'] = attendance.employee.hourly_rate
             dict['employee_hours'], dict['employee_earnings'] = 0, 0

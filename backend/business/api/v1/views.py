@@ -299,27 +299,39 @@ class AttendanceView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request):
-        data = request.data
-        attendance_id = self.request.query_params.get('attendance_id', None)
-        if attendance_id:
-            queryset = self.queryset.filter(id=attendance_id).first()
-        else:
-            queryset = self.queryset.filter(event__id=request.data['event']).last()
+        try:
+            data = request.data
+            attendance_id = self.request.query_params.get('attendance_id', None)
+            if attendance_id:
+                queryset = self.queryset.filter(id=attendance_id).first()
+            else:
+                queryset = self.queryset.filter(event__id=request.data['event']).last()
 
-        if 'feedback_media' in data:
-            data['feedback_media'] = convert_image_from_bse64_to_blob(data['feedback_media'])
-        if 'notes_media' in data:
-            data['notes_media'] = convert_image_from_bse64_to_blob(data['feedback_media'])
+            if 'feedback_media' in data:
+                data['feedback_media'] = convert_image_from_bse64_to_blob(data['feedback_media'])
+            if 'notes_media' in data:
+                data['notes_media'] = convert_image_from_bse64_to_blob(data['notes_media'])
 
-        serializer = AttendanceSerializer(
-            queryset,
-            data=request.data,
-            context={'request': request}
-        )
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            serializer = AttendanceSerializer(
+                queryset,
+                data=request.data,
+                context={'request': request}
+            )
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=False,
+                    message="Something went wrong in updating employee",
+                    status=SmartWorkHorseStatus.Error.value,
+                    error={str(e)},
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 class EarningsView(APIView):

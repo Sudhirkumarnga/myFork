@@ -15,8 +15,9 @@ from business.models import (
 
 
 def convert_image_from_bse64_to_blob(image):
+    print(image)
     data = ContentFile(base64.b64decode(image), name='file.jpg')
-    return data
+    return None
 
 
 def update_profile(user, data):
