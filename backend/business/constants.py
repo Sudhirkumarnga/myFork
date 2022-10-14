@@ -48,3 +48,16 @@ class RequestStatus(Enum):
     @classmethod
     def choices(cls):
         return tuple((i.name, i.value) for i in cls)
+
+
+class AttendanceFeedback(Enum):
+    CONFIDENT = "CONFIDENT"
+    HAPPY = "HAPPY"
+    NEUTRAL = "NEUTRAL"
+    WORRIED = "WORRIED"
+    RUSHED = "RUSHED"
+    UPSET = "UPSET"
+
+    @classmethod
+    def choices(cls):
+        return tuple((i.name, i.value) for i in cls)

@@ -285,6 +285,13 @@ class AttendanceSerializer(serializers.ModelSerializer):
         )
         return attendance
 
+
+class AttendanceFeedbackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attendance
+        fields = ('id', 'feedback',)
+
+
 class EarningSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attendance

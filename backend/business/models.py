@@ -7,7 +7,7 @@ from cities_light.abstract_models import (AbstractCity, AbstractRegion,
                                           AbstractCountry, AbstractSubRegion)
 from cities_light.receivers import connect_default_signals
 
-from business.constants import BusinessPayFrequency, AttendanceStatus, RequestStatus, RequestType
+from business.constants import BusinessPayFrequency, AttendanceStatus, RequestStatus, RequestType, AttendanceFeedback
 
 User = get_user_model()
 from decimal import Decimal
@@ -149,6 +149,12 @@ class Attendance(TimeStampedModel):
     total_hours = models.DecimalField(max_digits=200, decimal_places=1, default=0)
     earnings = models.DecimalField(max_digits=200, decimal_places=1, default=0)
     is_approved = models.BooleanField(default=False)
+    feedback = models.CharField(
+        _("Attendance Feedback"),
+        max_length=200,
+        choices=AttendanceFeedback.choices(),
+        null=True, blank=True
+    )
 
     class Meta:
         verbose_name = "Attendance"

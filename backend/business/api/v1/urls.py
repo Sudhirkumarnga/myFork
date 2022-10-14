@@ -8,7 +8,8 @@ from business.api.v1.views import (
     RegionListAPIView,
     LeaveRequestView,
     AttendanceView,
-    EarningsView
+    EarningsView,
+    AttendanceFeedbackView
 )
 
 
@@ -25,6 +26,7 @@ urlpatterns = [
     path('state/', RegionListAPIView.as_view(), name='state_list'),
     path('profile/', ProfileView.as_view(), name='profile'),
     path('attendance/', AttendanceView.as_view(), name='attendance'),
+    path('attendance_feedback/', AttendanceFeedbackView.as_view(), name='attendance_feedback'),
     path('earnings/', EarningsView.as_view(), name='earnings'),
 
 ] + router.urls
