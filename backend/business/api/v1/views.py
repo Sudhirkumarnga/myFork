@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from users.models import User
 from business.services import convert_image_from_bse64_to_blob
-from business.models import Employee, Country, City, Region, LeaveRequest, Attendance
+from business.models import Employee, Country, City, Region, LeaveRequest, Attendance, Business
 from business.api.v1.serializers import (
     BusinessAdminProfileSerializer,
     BusinessEmployeeProfileSerializer,
@@ -339,7 +339,7 @@ class AttendanceFeedbackView(APIView):
     queryset = Attendance.objects.filter()
 
     def put(self, request):
-        # try:
+        try:
             attendance_id = self.request.query_params.get('attendance_id', None)
             if attendance_id:
                 queryset = self.queryset.filter(id=attendance_id).first()
@@ -355,16 +355,16 @@ class AttendanceFeedbackView(APIView):
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # except Exception as e:
-        #     return Response(
-        #         SmartWorkHorseResponse.get_response(
-        #             success=False,
-        #             message="Something went wrong in updating employee",
-        #             status=SmartWorkHorseStatus.Error.value,
-        #             error={str(e)},
-        #         ),
-        #         status=status.HTTP_400_BAD_REQUEST,
-        #     )
+        except Exception as e:
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=False,
+                    message="Something went wrong in updating employee",
+                    status=SmartWorkHorseStatus.Error.value,
+                    error={str(e)},
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 class EarningsView(APIView):
@@ -429,3 +429,17 @@ class EarningsView(APIView):
         data = serializer.data
         data['payroll_hours'] = get_payroll_hours(data)
         return Response(data, status=status.HTTP_200_OK)
+
+
+class DeleteAccountView(APIView):
+    queryset = Business.objects.filter()
+    permission_classes = [IsAuthenticated, IsOrganizationAdmin]
+
+    def delete(self, request, *args, **kwargs):
+        queryset = self.queryset.filter(
+            user = self.request.user
+        )
+        Employee.objects.filter(business=queryset.first()).delete()
+        queryset.delete()
+        self.request.user.delete()
+        return Response(status=status.HTTP_200_OK)
