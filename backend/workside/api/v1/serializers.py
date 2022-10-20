@@ -5,11 +5,12 @@ from workside.services import (
     create_worksite,
     update_worksite,
     create_task,
-    create_task_attachment
+    create_task_attachment, send_notification_to_employees
 )
 from business.models import Attendance
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
+
 
 class TaskSerializerforWorksite(ModelSerializer):
     class Meta:
@@ -192,8 +193,8 @@ class EventSerializer(ModelSerializer):
             )
         else:
             event = Event.objects.filter(
-                start_time__lte= data['start_time'],
-                end_time__gte= data['end_time'],
+                start_time__lte=data['start_time'],
+                end_time__gte=data['end_time'],
                 worksite__business__user=request.user
             )
         if event.exists():
@@ -281,7 +282,7 @@ class AttendanceWorksiteSerializer(serializers.ModelSerializer):
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
-        fields = ('id', 'profile_image','mobile')
+        fields = ('id', 'profile_image', 'mobile')
 
     def to_representation(self, data):
         data = super(EmployeeSerializer, self).to_representation(data)

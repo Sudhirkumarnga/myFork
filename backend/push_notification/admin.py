@@ -1,5 +1,5 @@
 from django.contrib import admin
-from admin_panel.apps.push_notification.models import *
+from push_notification.models import *
 
 # Register your models here.
 

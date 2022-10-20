@@ -1,4 +1,4 @@
-from admin_panel.apps.push_notification.constant import Push_Notification_Repeating_Days, Notication_Group_Name, Push_Notification_Type
+from push_notification.constant import Push_Notification_Repeating_Days, Push_Notification_Type, Notification_Group_Name
 from django.utils.translation import ugettext_lazy as _
 from users.models import User
 from django.db import models
@@ -23,7 +23,7 @@ class Template(models.Model):
 class PushNotificationGroup(models.Model):
     name = models.CharField(
         _("Name of Group"), max_length=200, null=True, blank=True,
-        choices=[(role.value, role.value) for role in Notication_Group_Name]
+        choices=[(role.value, role.value) for role in Notification_Group_Name]
     )
     users = models.ManyToManyField(User, blank=True)
 

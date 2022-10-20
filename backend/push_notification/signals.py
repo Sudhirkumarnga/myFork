@@ -1,10 +1,10 @@
 # from admin_panel.apps.push_notification.services import  create_or_update_periodic_task, get_or_create_crontab_schedule, delete_cronjob_instance
 # from django_celery_beat.models import CrontabSchedule, PeriodicTask
-from admin_panel.apps.push_notification.models import Notification_Schedular, Notification
+from push_notification.models import NotificationSchedular, Notification
 from django.db.models.signals import post_save,pre_delete
 # from admin_panel.apps.push_notification.utils import get_day_of_week
 from django.dispatch import receiver
-from admin_panel.apps.push_notification.utils import send_notification
+from push_notification.utils import send_notification
 
 # @receiver(post_save, sender=Notification_Schedular, dispatch_uid="create_cronjob")
 # def create_cronjob(sender, instance, **kwargs):

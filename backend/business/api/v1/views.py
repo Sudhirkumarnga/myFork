@@ -1,6 +1,8 @@
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
+
+from push_notification.services import create_notification
 from smart_workhorse_33965.permissions import IsOrganizationAdmin
 from rest_framework.permissions import IsAuthenticated
 from smart_workhorse_33965.response import SmartWorkHorseResponse, SmartWorkHorseStatus
@@ -9,7 +11,8 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from users.models import User
-from business.services import convert_image_from_bse64_to_blob
+from business.services import convert_image_from_bse64_to_blob, send_clock_in_notification_to_employee, \
+    send_clock_in_notification_to_business_owner
 from business.models import Employee, Country, City, Region, LeaveRequest, Attendance, Business
 from business.api.v1.serializers import (
     BusinessAdminProfileSerializer,
@@ -27,6 +30,7 @@ from business.services import (
     update_profile,
     get_payroll_hours
 )
+from workside.models import Event
 
 
 class CountryListApiView(ListAPIView):
@@ -295,6 +299,8 @@ class AttendanceView(APIView):
         )
         if serializer.is_valid():
             serializer.save()
+            send_clock_in_notification_to_business_owner(request)
+            send_clock_in_notification_to_employee(request)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

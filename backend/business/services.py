@@ -1,5 +1,7 @@
 from django.core.mail import send_mail
 from allauth.utils import email_address_exists, generate_unique_username
+
+from push_notification.services import create_notification
 from smart_workhorse_33965.settings import EMAIL_HOST_USER
 from users.models import User
 import base64
@@ -12,6 +14,7 @@ from business.models import (
     BusinessAddress,
 
 )
+from workside.models import Event
 
 
 def convert_image_from_bse64_to_blob(image):
@@ -137,3 +140,23 @@ def get_payroll_hours(serializer_data):
     for data in serializer_data['employees']:
         payroll_hours += data['employee_hours']
     return payroll_hours
+
+
+def send_clock_in_notification_to_business_owner(request):
+    event = Event.objects.get(id=request.data['event'])
+    create_notification({
+        "name": "Event ClockIn",
+        "description": f"{request.user.get_full_name()} clockIn in {event.worksite.name}",
+        "user": event.worksite.business.user
+    }
+    )
+
+
+def send_clock_in_notification_to_employee(request):
+    event = Event.objects.get(id=request.data['event'])
+    create_notification({
+        "name": "Event ClockIn",
+        "description": f"you have clockIn in new {event.worksite.name}",
+        "user": request.user
+    }
+    )

@@ -20,7 +20,7 @@ from workside.api.v1.serializers import (
 )
 from workside.services import (
     update_serializer_data,
-    get_filtered_queryset
+    get_filtered_queryset, send_notification_to_employees
 )
 from datetime import datetime
 from rest_framework.filters import SearchFilter
@@ -249,6 +249,38 @@ class EventView(ModelViewSet):
         context = super(EventView, self).get_serializer_context()
         context.update({"request": self.request})
         return context
+
+    def create(self, request, *args, **kwargs):
+        try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            send_notification_to_employees(
+                Employee.objects.filter(
+                    id__in=request.data['employees']
+                )
+            )
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=True,
+                    message="Event Successfully Created.",
+                    status=SmartWorkHorseStatus.Success.value,
+                    response=serializer.data
+                ),
+                status=status.HTTP_201_CREATED,
+                headers={},
+            )
+        except Exception as e:
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=False,
+                    message="Something went wrong in creating Event.",
+                    status=SmartWorkHorseStatus.Error.value,
+                    error={str(e)},
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
 
 
 class SchedularView(APIView):

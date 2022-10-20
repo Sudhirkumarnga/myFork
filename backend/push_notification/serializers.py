@@ -1,4 +1,4 @@
-from admin_panel.apps.push_notification.models import *
+from push_notification.models import *
 
 from rest_framework import serializers
 

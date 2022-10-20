@@ -3,8 +3,10 @@ import datetime
 import calendar
 from datetime import date
 from django.core.files.base import ContentFile
+
+from push_notification.services import create_notification
 from workside import models
-from workside.tasks import event_publishing_reminder_task
+from workside.tasks import event_publishing_reminder_task, event_start_notification_task
 from business.models import (
     Business
 )
@@ -90,7 +92,7 @@ def calculate_reminder_date(event_id, publishing_reminder, start_time):
     return reminder_date
 
 
-def get_filtered_queryset(request,queryset):
+def get_filtered_queryset(request, queryset):
     month = request.query_params.get('month', None)
     year = request.query_params.get('year', None)
     week_view = request.query_params.get('week_view', None)
@@ -122,3 +124,17 @@ def get_filtered_queryset(request,queryset):
         queryset = queryset.filter(start_time__range=[first_date, last_date])
 
     return queryset
+
+
+def send_notification_to_employees(employees):
+    for employee in employees:
+        create_notification({
+            "name": "Event Assigned",
+            "description": "You have Assigned new Event",
+            "user": employee.user
+        }
+        )
+
+
+def send_event_reminder_to_employees(start_time, employees, worksite):
+    event_start_notification_task.apply_async((start_time, employees, worksite), eta=start_time)

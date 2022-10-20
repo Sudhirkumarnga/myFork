@@ -32,4 +32,5 @@ urlpatterns = [
     path("", include("reports.api.v1.urls")),
     path("", include("workside.api.v1.urls")),
     path("", include("subscriptions.api.v1.urls")),
+    path("", include("push_notification.urls")),
 ]

@@ -13,7 +13,7 @@ from workside.enums import (
     EventPublishingReminder
 )
 from workside.services import (
-    calculate_reminder_date
+    calculate_reminder_date, send_event_reminder_to_employees
 )
 
 
@@ -118,6 +118,8 @@ class Event(TimeStampedModel):
 
     def save(self, *args, **kwargs):
         super(Event, self).save(*args, **kwargs)
+        if self.event_status == "PUBLISHED":
+            send_event_reminder_to_employees(self.start_time, self.employees, self.worksite)
         if self.event_status == "DRAFT":
             self.reminder_date = calculate_reminder_date(
                 self.id,

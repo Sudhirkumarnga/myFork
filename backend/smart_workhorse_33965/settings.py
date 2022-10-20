@@ -73,7 +73,8 @@ LOCAL_APPS = [
     "workside",
     "reports",
     'business',
-    'subscriptions'
+    'subscriptions',
+    'push_notification'
 ]
 THIRD_PARTY_APPS = [
     'rest_framework',
@@ -94,7 +95,8 @@ THIRD_PARTY_APPS = [
     'tinymce',
     'django_celery_beat',
     'django_celery_results',
-    'djstripe'
+    'djstripe',
+    'fcm_django'
 ]
 
 MODULES_APPS = get_modules()
@@ -336,3 +338,17 @@ STRIPE_LIVE_SECRET_KEY = 'asdasdasdasd'
 STRIPE_LIVE_MODE = False  # Change to True in production# Add these two lines even if you are not using webhooks
 DJSTRIPE_WEBHOOK_SECRET = "whsec_xxx"
 DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"
+
+FCM_DJANGO_SETTINGS = {
+    # default: _('FCM Django')
+    "APP_VERBOSE_NAME": "Smart Work Horse",
+    # Your firebase API KEY
+    "FCM_SERVER_KEY": env.str("FCM_SERVER_KEY", "FCM_SERVER_KEY"),
+    # true if you want to have only one active device per registered user at a time
+    # default: False
+    "ONE_DEVICE_PER_USER": False,
+    # devices to which notifications cannot be sent,
+    # are deleted upon receiving error response from FCM
+    # default: False
+    "DELETE_INACTIVE_DEVICES": False,
+}

@@ -1,9 +1,8 @@
 from django.conf import settings
-from admin_panel.apps.push_notification import services
-from worldcarry_35201.celery import app
+from push_notification import services
 
 from celery import shared_task,current_task
-from admin_panel.apps.push_notification import models
+from push_notification import models
 import celery
 
 

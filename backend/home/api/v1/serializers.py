@@ -13,13 +13,13 @@ from business.models import (
     Business,
     BusinessAddress
 )
-from home.services import(
+from home.services import (
     create_business_and_business_address,
     create_organization_employee,
     create_employee,
     generate_user_otp,
     create_emergency_contact
-) 
+)
 
 User = get_user_model()
 
@@ -31,7 +31,8 @@ class SignupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'email', 'password', 'phone', 'business_code', 'employee_types', 'is_read_terms')
+        fields = ('id', 'first_name', 'last_name', 'email', 'password', 'phone', 'business_code', 'employee_types',
+                  'is_read_terms')
         extra_kwargs = {
             'password': {
                 'write_only': True,
@@ -82,9 +83,9 @@ class SignupSerializer(serializers.ModelSerializer):
                     validated_data.get('email'),
                     'user'
                 ]),
-                phone = validated_data.get('phone'),
-                is_read_terms = validated_data.get('is_read_terms'),
-                role = 'Employee'
+                phone=validated_data.get('phone'),
+                is_read_terms=validated_data.get('is_read_terms'),
+                role='Employee'
             )
         else:
             user = User(
@@ -96,22 +97,22 @@ class SignupSerializer(serializers.ModelSerializer):
                     validated_data.get('email'),
                     'user'
                 ]),
-                is_read_terms = validated_data.get('is_read_terms'),
-                role = 'Organization Admin'
+                is_read_terms=validated_data.get('is_read_terms'),
+                role='Organization Admin'
             )
         user.set_password(validated_data.get('password'))
         user.save()
         request = self._get_request()
         setup_user_email(request, user, [])
         generate_user_otp(user)
-        
+
         if validated_data.__contains__("business_code"):
             employee = create_organization_employee(user, validated_data)
             create_emergency_contact(employee)
 
         else:
-            business = create_business_and_business_address(user,validated_data)
-            employee = create_employee(business,user,validated_data)
+            business = create_business_and_business_address(user, validated_data)
+            employee = create_employee(business, user, validated_data)
         return user
 
     def save(self, request=None):
@@ -130,7 +131,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
         if User_OTP.objects.filter(user__email=attrs['email'], is_expire=False).exists():
             raise serializers.ValidationError(_("Please Validate Your OTP first."))
-        
+
         return attrs
 
     def save(self, validated_data):
@@ -138,7 +139,8 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         user.set_password(validated_data['new_password1'])
         user.save()
         return user
-        
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

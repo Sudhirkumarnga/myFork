@@ -1,3 +1,4 @@
+from push_notification.services import create_notification
 from smart_workhorse_33965.response import SmartWorkHorseResponse, SmartWorkHorseStatus
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from allauth.account import app_settings as allauth_settings
@@ -15,22 +16,22 @@ from django.conf import settings
 from rest_framework import status
 
 from rest_auth.app_settings import (
-    TokenSerializer, 
-    UserDetailsSerializer, 
+    TokenSerializer,
+    UserDetailsSerializer,
     LoginSerializer,
     create_token
 )
-from home.api.v1.serializers import(
+from home.api.v1.serializers import (
     SignupSerializer,
-    UserSerializer, 
+    UserSerializer,
     PasswordResetConfirmSerializer
-) 
+)
 
 from home.services import (
-    send_account_confirmation_email, 
-    sent_password_reset_email, 
+    send_account_confirmation_email,
+    sent_password_reset_email,
     generate_user_otp, send_new_otp
-) 
+)
 
 
 class SignupViewSet(RegisterView):
@@ -48,11 +49,16 @@ class SignupViewSet(RegisterView):
                 user,
                 otp
             )
-
+            create_notification({
+                    "name": "Welcome",
+                    "description": "Welcome to Smart Work Horse",
+                    "user": user
+                }
+            )
         return user
 
+
 class ValidateOTPView(APIView):
-    
     permission_classes = (AllowAny,)
 
     def post(self, request):
@@ -71,18 +77,18 @@ class ValidateOTPView(APIView):
                 email_address.save()
                 token = TokenModel.objects.get(user__email=email)
                 return Response(
-                        SmartWorkHorseResponse.get_response(
-                            success=True,
-                            message="Your Account has been verified.",
-                            status=SmartWorkHorseStatus.Success.value,
-                            response={
-                                "token":token.key,
-                                "user_role": token.user.role
-                            }
-                        ),
-                        status=status.HTTP_200_OK,
-                        headers={},
-                    )
+                    SmartWorkHorseResponse.get_response(
+                        success=True,
+                        message="Your Account has been verified.",
+                        status=SmartWorkHorseStatus.Success.value,
+                        response={
+                            "token": token.key,
+                            "user_role": token.user.role
+                        }
+                    ),
+                    status=status.HTTP_200_OK,
+                    headers={},
+                )
             else:
                 return Response(
                     {"detail": _("OTP is Invalid or Expired")},
@@ -99,8 +105,9 @@ class ValidateOTPView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+
 class LoginViewSet(LoginView):
-    
+
     def get_response(self):
         serializer_class = self.get_response_serializer()
 
@@ -129,8 +136,8 @@ class LoginViewSet(LoginView):
                                     httponly=True)
         return response
 
-class PasswordResetView(APIView):
 
+class PasswordResetView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request, *args, **kwargs):
@@ -139,7 +146,7 @@ class PasswordResetView(APIView):
         if user.exists():
             user = user.first()
             otp = generate_user_otp(user)
-            sent_password_reset_email(user,otp)
+            sent_password_reset_email(user, otp)
             return Response(
                 {"detail": _("Password reset e-mail has been sent.")},
                 status=status.HTTP_200_OK
@@ -149,6 +156,7 @@ class PasswordResetView(APIView):
                 {"detail": _("Email Does not exists")},
                 status=status.HTTP_200_OK
             )
+
 
 class PasswordResetConfirmView(APIView):
     serializer_class = PasswordResetConfirmSerializer
@@ -162,6 +170,7 @@ class PasswordResetConfirmView(APIView):
             {"detail": _("Password has been reset with the new password.")}
         )
 
+
 class RegenrateOTPView(APIView):
     permission_classes = (AllowAny,)
 
@@ -171,7 +180,7 @@ class RegenrateOTPView(APIView):
         if user.exists():
             user = user.first()
             otp = generate_user_otp(user)
-            send_new_otp(user,otp)
+            send_new_otp(user, otp)
             return Response(
                 {"detail": _("OTP has been sent to your email address.")},
                 status=status.HTTP_200_OK
