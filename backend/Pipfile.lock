@@ -253,11 +253,11 @@
         },
         "dj-stripe": {
             "hashes": [
-                "sha256:5d58829a0688f4cbf36dae8d108177d947da17e9023504ba35dc632da32ae254",
-                "sha256:6ad39e2720d915083f93698edb74354a8a5b6cfc0fa701703394f8be063a4b8a"
+                "sha256:a0e809a6e44f90af82e092630e79998ab4f5b30071cc5e8f65ef0328cb86cbc0",
+                "sha256:adf7a542cec828489be5347ee6492eb049a189cb011f4c77860bbf45deb3341b"
             ],
             "index": "pypi",
-            "version": "==2.7.0"
+            "version": "==2.6.2"
         },
         "django": {
             "hashes": [
