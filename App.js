@@ -14,6 +14,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Toast from 'react-native-simple-toast'
 import { getCities, getCountries, getProfile, getStates } from './src/api/auth'
+import { getUpcomingShift } from './src/api/employee'
 
 const App = () => {
   const [user, setUser] = useState(null)
@@ -24,6 +25,7 @@ const App = () => {
   const [states, setStates] = useState([])
   const [earnings, setEarnings] = useState([])
   const [leaveRequest, setLeaveRequest] = useState([])
+  const [upcomingShiftData, setUpcomingShiftData] = useState(null)
   useEffect(() => {
     setTimeout(() => {
       SplashScreen.hide()
@@ -81,7 +83,7 @@ const App = () => {
     try {
       const token = await AsyncStorage.getItem('token')
       const res = await getleaveRequest(token)
-      console.log('getleaveRequest',res?.data?.results)
+      console.log('getleaveRequest', res?.data?.results)
       setLeaveRequest(res?.data?.results)
     } catch (error) {
       const showWError = Object.values(error.response?.data?.error)
@@ -108,6 +110,23 @@ const App = () => {
     }
   }
 
+  const _getUpcomingShift = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token')
+      const res = await getUpcomingShift(token)
+      console.warn('getUpcomingShift', res?.data)
+      setUpcomingShiftData(res?.data)
+    } catch (error) {
+      console.warn('err', error?.response?.data)
+      const showWError = Object.values(error.response?.data?.error)
+      if (showWError.length > 0) {
+        Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
+      } else {
+        Toast.show(`Error: ${JSON.stringify(error)}`)
+      }
+    }
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -125,7 +144,9 @@ const App = () => {
         _getEarnings,
         _getProfile,
         leaveRequest,
-        _getleaveRequest
+        _getleaveRequest,
+        _getUpcomingShift,
+        upcomingShiftData
       }}
     >
       <MenuProvider>

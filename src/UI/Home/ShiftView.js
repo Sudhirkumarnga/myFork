@@ -1,20 +1,64 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { View, Text, StyleSheet, Image } from 'react-native'
 import { BaseScene, Button } from '../Common'
 import { Fonts, Colors, Images, Strings } from '../../res'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { getUpcomingShift } from '../../api/employee'
+import { createAttendance, getUpcomingShift } from '../../api/employee'
 import Toast from 'react-native-simple-toast'
 import { useState } from 'react'
-import { useFocusEffect } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { useCallback } from 'react'
+import AppContext from '../../Utils/Context'
+import { FlatList } from 'react-native'
+import { Modal } from 'react-native'
+import { TouchableOpacity } from 'react-native'
+import { Icon } from 'react-native-elements'
+import Upset from '../../res/Svgs/Upset.svg'
+import Rushed from '../../res/Svgs/Rushed.svg'
+import Neutral from '../../res/Svgs/Neutral.svg'
+import Happy from '../../res/Svgs/Happy.svg'
+import Confident from '../../res/Svgs/Confident.svg'
+import Worried from '../../res/Svgs/Worried.svg'
+import { ScrollView } from 'react-native'
+import BouncyCheckbox from 'react-native-bouncy-checkbox'
+import PrimaryTextInput from '../Common/PrimaryTextInput'
+import moment from 'moment-timezone'
+import { SvgXml } from 'react-native-svg'
 
-export default function ShiftView ({}) {
+export default function ShiftView () {
+  const navigation = useNavigation()
+  const { _getUpcomingShift, upcomingShiftData } = useContext(AppContext)
   const [state, setState] = useState({
-    loading: false
+    loading: false,
+    visible: false,
+    visible1: false,
+    completed_tasks: [],
+    notes: '',
+    feedback: '',
+    clock_in_time: '',
+    clock_out_time: '',
+    urgent: false,
+    is_clock_in_time: false,
+    is_clock_out_time: false,
+    loadingSubmit: false,
+    selectedFeeling: ''
   })
 
-  const { loading } = state
+  const {
+    loading,
+    completed_tasks,
+    visible,
+    visible1,
+    is_clock_in_time,
+    clock_in_time,
+    is_clock_out_time,
+    clock_out_time,
+    urgent,
+    feedback,
+    notes,
+    loadingSubmit,
+    selectedFeeling
+  } = state
 
   const handleChange = (name, value) => {
     setState(pre => ({ ...pre, [name]: value }))
@@ -26,16 +70,44 @@ export default function ShiftView ({}) {
     }, [])
   )
 
-  const _getUpcomingShift = async () => {
+  const hideModal = () => {
+    handleChange('selectedEvent', null)
+    handleChange('visible', false)
+    handleChange('visible1', false)
+  }
+
+  const _createAttendance = async () => {
     try {
-      handleChange('loading', true)
+      handleChange('loadingSubmit', true)
       const token = await AsyncStorage.getItem('token')
-      const res = await getUpcomingShift(token)
-      console.warn('getUpcomingShift', res?.data)
-      handleChange('loading', false)
+      const payload = {
+        event: upcomingShiftData?.id,
+        status: 'CLOCK_OUT',
+        completed_tasks,
+        notes,
+        feedback,
+        urgent,
+        clock_in_time: moment(
+          moment().format('YYYY-MM-DD ' + clock_in_time)
+        ).format(),
+        clock_out_time: moment(
+          moment().format('YYYY-MM-DD ' + clock_out_time)
+        ).format()
+      }
+      const res = await createAttendance(payload, token)
+      console.warn('createAttendance', res?.data)
+      handleChange('loadingSubmit', false)
+      handleChange('notes', '')
+      handleChange('feedback', '')
+      handleChange('clock_in_time', '')
+      handleChange('clock_out_time', '')
+      handleChange('urgent', false)
+      handleChange('completed_tasks', [])
+      handleChange('visible', false)
+      handleChange('visible1', false)
+      _getUpcomingShift()
     } catch (error) {
-      handleChange('loading', false)
-      console.warn('err', error?.response?.data)
+      handleChange('loadingSubmit', false)
       const showWError = Object.values(error.response?.data?.error)
       if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
@@ -46,8 +118,40 @@ export default function ShiftView ({}) {
   }
 
   const renderClockButton = () => {
-    return <Button title={Strings.clockIn} style={{ marginTop: 30 }} />
+    return (
+      <Button
+        onPress={() =>
+          upcomingShiftData?.status === 'CLOCK_IN'
+            ? navigation.navigate('ShiftDetails', { upcomingShiftData })
+            : handleChange('visible', true)
+        }
+        title={
+          upcomingShiftData?.status === 'CLOCK_IN'
+            ? 'Clock Out'
+            : Strings.clockIn
+        }
+        backgroundColor={
+          upcomingShiftData?.status === 'CLOCK_IN'
+            ? Colors.RED_COLOR
+            : Colors.BACKGROUND_BG
+        }
+        style={{
+          marginTop: 30
+        }}
+      />
+    )
   }
+
+  const feelings = [
+    { key: 'Confident', icon: Confident },
+    { key: 'Happy', icon: Happy },
+    { key: 'Neutral', icon: Neutral },
+    { key: 'Worried', icon: Worried },
+    { key: 'Rushed', icon: Rushed },
+    { key: 'Upset', icon: Upset }
+  ]
+
+  console.warn('upcomingShiftData', upcomingShiftData)
 
   return (
     <View style={styles.container}>
@@ -59,19 +163,367 @@ export default function ShiftView ({}) {
       >
         <View>
           <Text style={styles.title}>{Strings.upcomingShift}</Text>
-          <Text style={styles.description}>{Strings.worksiteNumber}</Text>
+          <Text style={styles.description}>
+            {upcomingShiftData?.worksite?.name}
+          </Text>
           <Text
             style={[
               styles.description,
               { fontSize: 14, color: Colors.HOME_DES }
             ]}
           >
-            {'Location:'}
+            Location: {upcomingShiftData?.worksite?.location}
           </Text>
+          {upcomingShiftData?.status === 'CLOCK_IN' && (
+            <Text
+              style={[
+                styles.description,
+                { fontSize: 14, color: Colors.HOME_DES }
+              ]}
+            >
+              Clock in time: {upcomingShiftData?.clock_time}
+            </Text>
+          )}
         </View>
         <Image {...Images.calendar} style={styles.image} />
       </View>
       {renderClockButton()}
+      <Modal
+        visible={visible}
+        transparent
+        onDismiss={hideModal}
+        onRequestClose={hideModal}
+      >
+        <View style={styles.centerMode}>
+          <ScrollView style={styles.modal}>
+            <View style={{ alignItems: 'flex-end', marginTop: 20 }}>
+              <TouchableOpacity onPress={hideModal}>
+                <Icon name='close' type='antdesign' />
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.title}>Task check</Text>
+            <Text style={{ ...Fonts.poppinsRegular(12), marginBottom: 20 }}>
+              {upcomingShiftData?.worksite?.name}
+            </Text>
+
+            <Text
+              style={{
+                ...Fonts.poppinsRegular(12),
+                textTransform: 'uppercase',
+                textAlign: 'right',
+                width: '100%',
+                color: Colors.BLUR_TEXT
+              }}
+            >
+              {'Mark as done'}
+            </Text>
+            {upcomingShiftData?.worksite?.tasks?.map(task => (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  width: '100%',
+                  justifyContent: 'space-between',
+                  marginVertical: 10,
+                  alignItems: 'center',
+                  paddingBottom: 8,
+                  borderBottomColor: Colors.TEXT_INPUT_BORDER,
+                  borderBottomWidth: 1
+                }}
+              >
+                <Text style={styles.inputText}>{task?.name}</Text>
+                <BouncyCheckbox
+                  size={20}
+                  fillColor={Colors.BACKGROUND_BG}
+                  disableBuiltInState
+                  iconStyle={{
+                    borderColor: Colors.BLACK,
+                    borderRadius: 1,
+                    marginBottom: 2
+                  }}
+                  onPress={() => {
+                    if (completed_tasks?.some(e => e === task?.id)) {
+                      const removed = completed_tasks?.filter(
+                        e => e !== task?.id
+                      )
+                      handleChange('completed_tasks', removed)
+                    } else {
+                      handleChange('completed_tasks', [
+                        ...completed_tasks,
+                        task?.id
+                      ])
+                    }
+                  }}
+                  isChecked={completed_tasks?.includes(task?.id)}
+                />
+              </View>
+            ))}
+            <Text style={[styles.title, { marginTop: 30 }]}>Notes</Text>
+            <PrimaryTextInput
+              text={notes}
+              style={{ width: '110%' }}
+              label={'Notes'}
+              key='notes'
+              placeholder='Notes'
+              onChangeText={(text, isValid) => handleChange('notes', text)}
+            />
+
+            <Button
+              style={[styles.footerWhiteButton]}
+              // onPress={() => {
+              //   navigation.navigate('addEvents', { selectedEvent })
+              //   hideModal()
+              // }}
+              title={'Upload media'}
+              icon={'upload'}
+              isWhiteBg
+              iconStyle={{
+                width: 20,
+                height: 20,
+                tintColor: Colors.GREEN_COLOR,
+                resizeMode: 'contain'
+              }}
+              color={Colors.BUTTON_BG}
+            />
+            <Text style={[styles.title, { marginTop: 40 }]}>
+              Feedback/Requests
+            </Text>
+            <PrimaryTextInput
+              style={{ width: '110%' }}
+              text={feedback}
+              label={'Feedback/Requests'}
+              key='feedback'
+              placeholder='Feedback/Requests'
+              onChangeText={(text, isValid) => handleChange('feedback', text)}
+            />
+
+            <Button
+              style={[styles.footerWhiteButton]}
+              // onPress={() => {
+              //   navigation.navigate('addEvents', { selectedEvent })
+              //   hideModal()
+              // }}
+              title={'Upload media'}
+              icon={'upload'}
+              isWhiteBg
+              iconStyle={{
+                width: 20,
+                height: 20,
+                tintColor: Colors.GREEN_COLOR,
+                resizeMode: 'contain'
+              }}
+              color={Colors.BUTTON_BG}
+            />
+            <View
+              style={{
+                flexDirection: 'row',
+                marginVertical: 20,
+                alignItems: 'center'
+              }}
+            >
+              <BouncyCheckbox
+                size={20}
+                fillColor={Colors.BACKGROUND_BG}
+                disableBuiltInState
+                iconStyle={{
+                  borderColor: Colors.BLACK,
+                  borderRadius: 1,
+                  marginBottom: 2
+                }}
+                onPress={() => handleChange('urgent', !urgent)}
+                isChecked={urgent}
+              />
+              <Text style={[styles.inputText]}>Urgent</Text>
+            </View>
+            <Text style={[styles.title, { marginTop: 20 }]}>Edit time</Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                width: '100%',
+                justifyContent: 'space-between',
+                marginVertical: 10,
+                alignItems: 'center'
+              }}
+            >
+              {is_clock_in_time ? (
+                <PrimaryTextInput
+                  style={{ width: '60%', marginTop: 20 }}
+                  text={clock_in_time}
+                  label={'Clock In Time'}
+                  key='clock_in_time'
+                  placeholder='Clock In Time'
+                  onChangeText={(text, isValid) =>
+                    handleChange('clock_in_time', text)
+                  }
+                />
+              ) : (
+                <Text style={[styles.inputText, { marginTop: 10 }]}>
+                  Clock in time: {clock_in_time}
+                </Text>
+              )}
+              <Button
+                onPress={() =>
+                  handleChange('is_clock_in_time', !is_clock_in_time)
+                }
+                title={is_clock_in_time ? 'Save' : 'Edit'}
+                icon={is_clock_in_time ? '' : 'edit'}
+                iconStyle={{ width: 15, height: 15, color: '#fff' }}
+                backgroundColor={
+                  is_clock_in_time ? Colors.BACKGROUND_BG : Colors.BUTTON_BG1
+                }
+                style={{
+                  width: '30%'
+                }}
+              />
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                width: '100%',
+                justifyContent: 'space-between',
+                marginBottom: 10,
+                alignItems: 'center',
+                paddingBottom: 8
+              }}
+            >
+              {is_clock_out_time ? (
+                <PrimaryTextInput
+                  style={{ width: '60%', marginTop: 20 }}
+                  text={clock_out_time}
+                  label={'Clock In Time'}
+                  key='clock_out_time'
+                  placeholder='Clock In Time'
+                  onChangeText={(text, isValid) =>
+                    handleChange('clock_out_time', text)
+                  }
+                />
+              ) : (
+                <Text style={[styles.inputText, { marginTop: 10 }]}>
+                  Clock out time: {clock_out_time}
+                </Text>
+              )}
+              <Button
+                onPress={() =>
+                  handleChange('is_clock_out_time', !is_clock_out_time)
+                }
+                title={is_clock_out_time ? 'Save' : 'Edit'}
+                icon={is_clock_out_time ? '' : 'edit'}
+                iconStyle={{ width: 15, height: 15, color: '#fff' }}
+                backgroundColor={
+                  is_clock_out_time ? Colors.BACKGROUND_BG : Colors.BUTTON_BG1
+                }
+                style={{
+                  width: '30%'
+                }}
+              />
+            </View>
+            <Button
+              onPress={() => {
+                handleChange('visible', false)
+                handleChange('visible1', true)
+              }}
+              disabled={
+                !notes ||
+                !feedback ||
+                !clock_in_time ||
+                !clock_out_time ||
+                completed_tasks.length === 0
+              }
+              title={'Submit'}
+              style={{
+                width: '100%'
+              }}
+            />
+            <Button
+              onPress={() => handleChange('visible', false)}
+              title={'Cancel'}
+              isWhiteBg
+              color={Colors.BACKGROUND_BG}
+              style={{
+                width: '100%',
+                marginBottom: 20
+              }}
+            />
+          </ScrollView>
+        </View>
+      </Modal>
+      <Modal
+        visible={visible1}
+        transparent
+        onDismiss={hideModal}
+        onRequestClose={hideModal}
+      >
+        <View style={[styles.centerMode, { justifyContent: 'center' }]}>
+          <View style={[styles.modal, { borderRadius: 10 }]}>
+            <View style={{ alignItems: 'flex-end', marginTop: 20 }}>
+              <TouchableOpacity onPress={hideModal}>
+                <Icon name='close' type='antdesign' />
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.title}>How are you feeling today?</Text>
+            <FlatList
+              data={feelings}
+              numColumns={3}
+              style={{ width: '100%' }}
+              columnWrapperStyle={{ justifyContent: 'space-between' }}
+              renderItem={({ item }) => (
+                <View
+                  style={{
+                    width: '30%',
+                    marginRight: 5,
+                    marginTop: 5,
+                    marginLeft: 5
+                  }}
+                >
+                  <TouchableOpacity
+                    onPress={() => handleChange('selectedFeeling', item.key)}
+                    style={{
+                      height: 80,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor:
+                        selectedFeeling === item.key
+                          ? Colors.TEXT_INPUT_BORDER
+                          : Colors.WHITE,
+                      borderRadius: 10,
+                      shadowColor: '#000',
+                      shadowOffset: {
+                        width: 0,
+                        height: 2
+                      },
+                      shadowOpacity: 0.25,
+                      shadowRadius: 3.84,
+                      elevation: 5
+                    }}
+                  >
+                    <SvgXml xml={item.icon} />
+                  </TouchableOpacity>
+                  <Text
+                    style={{
+                      ...Fonts.poppinsRegular(12),
+                      textAlign: 'center',
+                      width: '100%',
+                      color: Colors.BLACK,
+                      marginTop: 5
+                    }}
+                  >
+                    {item.key}
+                  </Text>
+                </View>
+              )}
+            />
+
+            <Button
+              onPress={_createAttendance}
+              loading={loadingSubmit}
+              title={'Submit'}
+              style={{
+                width: '100%',
+                marginBottom: 20
+              }}
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
   )
 }
@@ -95,10 +547,43 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     marginTop: 10
   },
+  inputText: {
+    ...Fonts.poppinsRegular(14),
+    color: Colors.TEXT_COLOR,
+    textAlign: 'left'
+  },
   image: {
     tintColor: Colors.BUTTON_BG,
     resizeMode: 'contain',
     width: 30,
     height: 30
+  },
+  centerMode: {
+    backgroundColor: Colors.MODAL_BG,
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'flex-end'
+  },
+  modal: {
+    backgroundColor: Colors.WHITE,
+    borderTopRightRadius: 10,
+    borderTopLeftRadius: 10,
+    paddingHorizontal: 20,
+    width: '90%',
+    maxHeight: '90%'
+  },
+  title: {
+    ...Fonts.poppinsMedium(18),
+    color: Colors.TEXT_COLOR,
+    width: '90%'
+  },
+  footerWhiteButton: {
+    marginTop: '5%',
+    height: 40,
+    width: '100%',
+    backgroundColor: 'red',
+    borderWidth: 1,
+    borderColor: Colors.BUTTON_BG
   }
 })

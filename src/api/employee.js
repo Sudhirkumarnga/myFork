@@ -15,3 +15,11 @@ export const getAllWorksitesEmp = token => {
 export const leaveRequest = (payload, token) => {
   return API.post(`api/v1/leave_request/`, payload, token)
 }
+
+export const newAttendance = (payload, token) => {
+  return API.post(`api/v1/attendance/`, payload, token)
+}
+
+export const createAttendance = (payload, token) => {
+  return API.put(`api/v1/attendance/`, payload, token)
+}

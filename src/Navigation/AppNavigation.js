@@ -37,6 +37,7 @@ import { drawerNavigatorEmp } from './DrawerNavigationEmp'
 import { TabBar } from './TabBar'
 import AuthLoading from '../UI/AuthLoading'
 import Notifications from '../UI/Notifications'
+import ShiftDetails from '../UI/Home/ShiftDetails'
 const Stack = createStackNavigator()
 
 export const AuthNavigator = props => {
@@ -68,6 +69,7 @@ export const AuthNavigator = props => {
 
       <Stack.Screen name={'home'} component={drawerNavigator} />
       <Stack.Screen name={'Notifications'} component={Notifications} />
+      <Stack.Screen name={'ShiftDetails'} component={ShiftDetails} />
       <Stack.Screen name={'homeEmployee'} component={drawerNavigatorEmp} />
       <Stack.Screen name={'allSubscription'} component={AllSubscriptionScene} />
       <Stack.Screen name={'employeesView'} component={EmployeesView} />

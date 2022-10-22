@@ -9,8 +9,10 @@ import {
 } from 'react-native'
 import { BaseScene, Button } from '../Common'
 import { Fonts, Colors } from '../../res'
+import AppContext from '../../Utils/Context'
 
 export default class ActiveEmpView extends BaseScene {
+  static contextType = AppContext
   constructor (props) {
     super(props)
     this.state = {
@@ -22,13 +24,13 @@ export default class ActiveEmpView extends BaseScene {
     this.setState(pre => ({ ...pre, [key]: value }))
   }
 
-  renderEmployeeCell () {
+  renderEmployeeCell (item) {
     return (
       <View style={{ padding: 20 }}>
         <Image />
         <View>
-          <Text style={styles.employeeName}>John Doe</Text>
-          <Text style={styles.employeeWorksite}>Worksite 1</Text>
+          <Text style={styles.employeeName}>{item?.name}</Text>
+          <Text style={styles.employeeWorksite}>{item?.worksite?.name}</Text>
         </View>
       </View>
     )
@@ -56,16 +58,19 @@ export default class ActiveEmpView extends BaseScene {
     )
   }
 
-  renderBottomView () {
+  renderBottomView (upcomingShiftData) {
     return (
       <View style={styles.bottomView}>
-        <Text style={styles.title}>{this.ls('payPeriod')} 23h</Text>
+        <Text style={styles.title}>
+          {this.ls('payPeriod')} {upcomingShiftData?.total_hours}h
+        </Text>
       </View>
     )
   }
 
   render () {
     const { isActive } = this.state
+    const { upcomingShiftData } = this.context
     return (
       <>
         <View style={styles.container}>
@@ -73,12 +78,12 @@ export default class ActiveEmpView extends BaseScene {
           {isActive && (
             <FlatList
               scrollEnabled={false}
-              data={[{ id: 1 }, { id: 2 }, { id: 2 }, { id: 2 }]}
-              renderItem={() => this.renderEmployeeCell()}
+              data={upcomingShiftData?.active_employees}
+              renderItem={({ item }) => this.renderEmployeeCell(item)}
             />
           )}
         </View>
-        {this.renderBottomView()}
+        {this.renderBottomView(upcomingShiftData)}
       </>
     )
   }
