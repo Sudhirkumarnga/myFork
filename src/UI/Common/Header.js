@@ -78,8 +78,7 @@ class Header extends Component {
     )
   }
 }
-const HEADER_HEIGHT =
-  Platform.OS === "ios" ? (height >= 812 || width >= 812 ? 122 : 44) : 56
+const HEADER_HEIGHT = 56
 
 const styles = StyleSheet.create({
   container: {

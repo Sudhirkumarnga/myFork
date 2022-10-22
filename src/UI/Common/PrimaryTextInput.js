@@ -6,14 +6,15 @@ import {
   TextInput,
   Image,
   TouchableOpacity,
-  Keyboard
+  Keyboard,
+  Platform
 } from 'react-native'
 import { Fonts, Colors, Images } from '../../res'
 import RNPickerSelect from 'react-native-picker-select'
 import DatePicker from 'react-native-datepicker'
 
 class PrimaryTextInput extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       text: this.props.text,
@@ -27,15 +28,15 @@ class PrimaryTextInput extends Component {
     this.onBlur = this.onBlur.bind(this)
   }
 
-  text () {
+  text() {
     return this.state.text ? this.state.text : ''
   }
 
-  clear () {
+  clear() {
     this.setState({ text: '' })
   }
 
-  isValid (text, countryCodeInput) {
+  isValid(text, countryCodeInput) {
     if (!!text || !!this.state.text) {
       let inputText = text || this.state.text
       const regex = this.props.regex
@@ -50,7 +51,7 @@ class PrimaryTextInput extends Component {
     return false
   }
 
-  onFocus () {
+  onFocus() {
     if (this.props.handleFocus) {
       Keyboard.dismiss()
       this.txtInput.blur()
@@ -67,11 +68,11 @@ class PrimaryTextInput extends Component {
     }
   }
 
-  onBlur () {
+  onBlur() {
     this.setState({ isFocused: false })
   }
 
-  borderColor () {
+  borderColor() {
     return this.state.isFocused
       ? this.state.text
         ? this.state.isValid && !this.props.isPassInValid
@@ -81,13 +82,13 @@ class PrimaryTextInput extends Component {
       : Colors.TEXT_INPUT_BORDER
   }
 
-  onChangeText (text) {
+  onChangeText(text) {
     const isValid = this.isValid(text)
     this.props.onChangeText(text, isValid)
     this.setState({ text, isValid })
   }
 
-  renderDatePicker () {
+  renderDatePicker() {
     if (this.props.dateType) {
       return (
         <DatePicker
@@ -128,7 +129,7 @@ class PrimaryTextInput extends Component {
     }
   }
 
-  renderDropDownPicker () {
+  renderDropDownPicker() {
     if (this.props.dropdown) {
       return (
         <RNPickerSelect
@@ -161,7 +162,7 @@ class PrimaryTextInput extends Component {
     }
   }
 
-  renderRightInputView () {
+  renderRightInputView() {
     if (this.props.passwordPolicy) {
       return (
         <TouchableOpacity
@@ -228,7 +229,7 @@ class PrimaryTextInput extends Component {
     )
   }
 
-  primaryTextInput (inputStyle) {
+  primaryTextInput(inputStyle) {
     if (this.props.dropdown) {
       return (
         <TouchableOpacity
@@ -242,7 +243,7 @@ class PrimaryTextInput extends Component {
     return this.renderTextInput(inputStyle)
   }
 
-  render () {
+  render() {
     return (
       <View style={[styles.container, this.props.style]}>
         {this.renderTextInput(styles)}
@@ -265,7 +266,7 @@ const styles = StyleSheet.create({
   inputStyle: {
     height: 50,
     width: '90%',
-    paddingTop: 15,
+    paddingTop: Platform.OS === 'android' ? 15 : 0,
     borderRadius: 10,
     color: Colors.TEXT_INPUT_COLOR,
     paddingHorizontal: 15,
@@ -292,7 +293,7 @@ const styles = StyleSheet.create({
     height: 44,
     position: 'absolute',
     bottom: 0,
-    left:20,
+    left: 20,
     width: '90%',
     paddingHorizontal: 20,
     color: Colors.TEXT_INPUT_COLOR

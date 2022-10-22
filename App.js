@@ -15,6 +15,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import Toast from 'react-native-simple-toast'
 import { getCities, getCountries, getProfile, getStates } from './src/api/auth'
 import { getUpcomingShift } from './src/api/employee'
+import { SafeAreaView, View } from 'react-native'
+import Colors from './src/res/Theme/Colors'
 
 const App = () => {
   const [user, setUser] = useState(null)
@@ -151,7 +153,11 @@ const App = () => {
     >
       <MenuProvider>
         <NavigationContainer>
-          <AuthNavigator />
+          <View style={{ flex: 1,backgroundColor:Colors.BACKGROUND_BG }}>
+          <SafeAreaView style={{ flex: 1 }}>
+            <AuthNavigator />
+          </SafeAreaView>
+          </View>
         </NavigationContainer>
       </MenuProvider>
     </AppContext.Provider>
