@@ -37,6 +37,7 @@
 		00E356EE1AD99517003FC87E /* smart_workhorse_33965Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = smart_workhorse_33965Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* smart_workhorse_33965Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = smart_workhorse_33965Tests.m; sourceTree = "<group>"; };
+		04B4279C290B318600719A59 /* smart_workhorse_33965.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = smart_workhorse_33965.entitlements; path = smart_workhorse_33965/smart_workhorse_33965.entitlements; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* smart_workhorse_33965.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = smart_workhorse_33965.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = smart_workhorse_33965/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = smart_workhorse_33965/AppDelegate.m; sourceTree = "<group>"; };
@@ -116,6 +117,7 @@
 		13B07FAE1A68108700A75B9A /* smart_workhorse_33965 */ = {
 			isa = PBXGroup;
 			children = (
+				04B4279C290B318600719A59 /* smart_workhorse_33965.entitlements */,
 				CF85DD772848D1F500BB7287 /* Fonts */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -523,8 +525,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = smart_workhorse_33965/smart_workhorse_33965.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = UTCW9K8YJ2;
+				DEVELOPMENT_TEAM = BT2PTR3XT2;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = smart_workhorse_33965/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ClearR;
@@ -538,7 +541,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "Cleanr-App-pro.cleanr.cleanrapp";
+				PRODUCT_BUNDLE_IDENTIFIER = com.pro.cleanr.cleanrapp;
 				PRODUCT_NAME = smart_workhorse_33965;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -552,8 +555,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = smart_workhorse_33965/smart_workhorse_33965.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = UTCW9K8YJ2;
+				DEVELOPMENT_TEAM = BT2PTR3XT2;
 				INFOPLIST_FILE = smart_workhorse_33965/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ClearR;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -566,7 +570,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "Cleanr-App-pro.cleanr.cleanrapp";
+				PRODUCT_BUNDLE_IDENTIFIER = com.pro.cleanr.cleanrapp;
 				PRODUCT_NAME = smart_workhorse_33965;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
