@@ -155,6 +155,9 @@ class Attendance(TimeStampedModel):
         choices=AttendanceFeedback.choices(),
         null=True, blank=True
     )
+    location = models.CharField(_("Employee Location"), max_length=255, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
 
     class Meta:
         verbose_name = "Attendance"

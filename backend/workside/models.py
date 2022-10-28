@@ -24,6 +24,8 @@ def business_directory_path(instance, filename):
 class WorkSite(TimeStampedModel):
     name = models.CharField(_("WorkSide Name"), blank=True, null=True, max_length=255)
     location = models.CharField(_("WorkSide Location"), max_length=255, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     description = models.TextField(_("WorkSide Description"), blank=True, null=True)
     notes = models.TextField(_("WorkSide Notes"), blank=True, null=True)
     monthly_rates = models.CharField(_("WorkSide Monthly Rates"), max_length=10, blank=True, null=True)

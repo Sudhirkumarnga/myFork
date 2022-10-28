@@ -5,7 +5,8 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from business.models import Attendance
 from reports.api.v1.serializers import PayrollReportSerializer, WorksiteSerializer, TaskSerializer, \
-    InspectionReportSerializer, TaskFeedbackSerializer
+    InspectionReportSerializer, TaskFeedbackSerializer, LocationVarianceReportSerializer, \
+    ScheduleVarianceReportSerializer
 from smart_workhorse_33965.permissions import IsOrganizationAdmin
 from smart_workhorse_33965.response import SmartWorkHorseResponse, SmartWorkHorseStatus
 from workside.models import WorkSite, Task
@@ -161,3 +162,101 @@ class TaskFeedbackView(ModelViewSet):
     serializer_class = TaskFeedbackSerializer
     queryset = TaskFeedback.objects.filter()
     http_method_names = ['post']
+
+
+class LocationVarianceReport(APIView):
+    queryset = Attendance.objects.filter()
+    permission_classes = [IsAuthenticated, IsOrganizationAdmin]
+    http_method_names = ['get']
+
+    def get(self, request):
+        try:
+            queryset = self.queryset.filter(employee__business__user=self.request.user)
+            employee = self.request.query_params.get('employee', None)
+            from_date = self.request.query_params.get('from', None)
+            to_date = self.request.query_params.get('to', None)
+            if employee:
+                queryset = queryset.filter(
+                    employee_id=employee
+                )
+            if from_date:
+                queryset = queryset.filter(
+                    updated_at__date__gte=from_date
+                )
+            if to_date:
+                queryset = queryset.filter(
+                    updated_at__date__lte=to_date
+                )
+            serializer = LocationVarianceReportSerializer(
+                queryset,
+                many=True
+            )
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=True,
+                    message="Location Variance reports successfully returned.",
+                    status=SmartWorkHorseStatus.Success.value,
+                    response=serializer.data
+                ),
+                status=status.HTTP_201_CREATED,
+                headers={},
+            )
+        except Exception as e:
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=False,
+                    message="Something went wrong in Payroll reports.",
+                    status=SmartWorkHorseStatus.Error.value,
+                    error={str(e)},
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
+class ScheduleVarianceReport(APIView):
+    queryset = Attendance.objects.filter()
+    permission_classes = [IsAuthenticated, IsOrganizationAdmin]
+    http_method_names = ['get']
+
+    def get(self, request):
+        try:
+            queryset = self.queryset.filter(employee__business__user=self.request.user)
+            employee = self.request.query_params.get('employee', None)
+            from_date = self.request.query_params.get('from', None)
+            to_date = self.request.query_params.get('to', None)
+            if employee:
+                queryset = queryset.filter(
+                    employee_id=employee
+                )
+            if from_date:
+                queryset = queryset.filter(
+                    updated_at__date__gte=from_date
+                )
+            if to_date:
+                queryset = queryset.filter(
+                    updated_at__date__lte=to_date
+                )
+            serializer = ScheduleVarianceReportSerializer(
+                queryset,
+                many=True
+            )
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=True,
+                    message="Schedule Variance reports successfully returned.",
+                    status=SmartWorkHorseStatus.Success.value,
+                    response=serializer.data
+                ),
+                status=status.HTTP_201_CREATED,
+                headers={},
+            )
+        except Exception as e:
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=False,
+                    message="Something went wrong in Payroll reports.",
+                    status=SmartWorkHorseStatus.Error.value,
+                    error={str(e)},
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
+            )

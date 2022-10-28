@@ -6,10 +6,10 @@ from push_notification import models
 import celery
 
 
-FIREBASE_PUSH_NOTIFICATION = settings.FIREBASE_PUSH_NOTIFICATION
+#FIREBASE_PUSH_NOTIFICATION = settings.FIREBASE_PUSH_NOTIFICATION
 
 
 @shared_task(name='tasks.send_notification')
 def send_notification(instance):
-    if FIREBASE_PUSH_NOTIFICATION:
-        services.send_notification_firebase(instance)
+    #if FIREBASE_PUSH_NOTIFICATION:
+    services.send_notification_firebase(instance)

@@ -41,7 +41,7 @@ class WorksiteSerializer(ModelSerializer):
 
     class Meta:
         model = WorkSite
-        fields = ('id', 'business', 'personal_information', 'contact_person', 'is_active', 'show_dtails', 'tasks')
+        fields = ('id', 'business', 'personal_information', 'contact_person', 'is_active', 'show_dtails', 'tasks', 'location', 'longitude', 'latitude')
 
     @staticmethod
     def get_personal_information(obj):
