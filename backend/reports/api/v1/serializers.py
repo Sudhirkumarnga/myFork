@@ -94,7 +94,7 @@ class InspectionReportSerializer(ModelSerializer):
     def to_representation(self, data):
         data = super(InspectionReportSerializer, self).to_representation(data)
         request = self.context['request']
-        data['inspector'] = request.user
+        data['inspector'] = request.user.get_full_name()
         data['areas'] = InspectionAreaSerializer(
             InspectionArea.objects.filter(report_id=data['id']),
             many=True
