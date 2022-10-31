@@ -30,7 +30,8 @@ import {
   AddEvents,
   BusinessProfileView,
   EmployeeProfileScene,
-  EmpProfileView
+  EmpProfileView,
+  InspectionDetails
 } from '../UI'
 import { drawerNavigator } from './DrawerNavigation'
 import { drawerNavigatorEmp } from './DrawerNavigationEmp'
@@ -96,6 +97,7 @@ export const AuthNavigator = props => {
       <Stack.Screen name={'paymentScene'} component={PaymentScene} />
       <Stack.Screen name={'cardDetail'} component={CardDetailScene} />
       <Stack.Screen name={'newMessage'} component={NewMessageScene} />
+      <Stack.Screen name={'InspectionDetails'} component={InspectionDetails} />
     </Stack.Navigator>
   )
 }

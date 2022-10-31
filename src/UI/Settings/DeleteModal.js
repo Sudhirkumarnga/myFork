@@ -12,7 +12,7 @@ import { Colors, Images, Fonts } from '../../res'
 import { Button, BaseComponent } from '../Common'
 const { width, height } = Dimensions.get('window')
 
-class LogoutModal extends BaseComponent {
+class DeleteModal extends BaseComponent {
   constructor (props) {
     super()
     this.state = {
@@ -26,29 +26,13 @@ class LogoutModal extends BaseComponent {
     return <View style={styles.separator} />
   }
 
-  renderQueue () {
-    let mins = Math.floor(120 / 60)
-    let minutes = mins == 1 ? ' min' : ' mins'
-    return (
-      <View style={styles.textContainer}>
-        <Text style={styles.queuetitle}>
-          {this.strings('queueNo') + ' '}
-          <Text style={styles.subText}> </Text>
-        </Text>
-        <Text style={styles.queuetitle}>
-          {this.strings('timeToConnect') + ' '}
-          <Text style={styles.subText}>{''}</Text>
-        </Text>
-      </View>
-    )
-  }
-
   renderButton () {
     return (
       <View style={styles.footerButtonsContainer}>
         <Button
           style={styles.footerSkipButton}
           onPress={this.props.logout}
+          loading={this.props.loading}
           title={'Yes'}
         />
       </View>
@@ -81,7 +65,9 @@ class LogoutModal extends BaseComponent {
           onPress={this.props.onRequestClose}
         >
           <View style={styles.modalView}>
-            <Text style={styles.title}>{this.ls('logoutDes')}</Text>
+            <Text style={styles.title}>
+              {'Are you sure you want to delete account?'}
+            </Text>
             {this.renderButton()}
             {this.renderCancelButton()}
           </View>
@@ -131,4 +117,4 @@ const styles = StyleSheet.create({
     width: '100%'
   }
 })
-export default LogoutModal
+export default DeleteModal

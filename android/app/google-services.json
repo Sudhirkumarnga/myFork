@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "987250699049",
+    "project_id": "cleanr-1e54f",
+    "storage_bucket": "cleanr-1e54f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:987250699049:android:1922cbf4193d10baa9a538",
+        "android_client_info": {
+          "package_name": "com.smart_workhorse_33965"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "987250699049-p777np89bet8j0esn6jg4bos41djtlre.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1umkfSHuGBmeXD57u80DbD9aW8WzpmXA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "987250699049-p777np89bet8j0esn6jg4bos41djtlre.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

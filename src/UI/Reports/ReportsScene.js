@@ -11,7 +11,7 @@ export default function ReportsScene ({ navigation }) {
     { title: 'Payroll Reports' },
     { title: 'Mindset Reports' },
     { title: 'Employee Skill Reports' },
-    { title: 'Inspection Reports' }
+    { title: 'Inspection' }
   ]
   return (
     <View style={styles.container}>

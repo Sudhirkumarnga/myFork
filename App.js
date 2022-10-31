@@ -13,7 +13,14 @@ import {
 } from './src/api/business'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Toast from 'react-native-simple-toast'
-import { getCities, getCountries, getProfile, getStates } from './src/api/auth'
+import {
+  getAllNotifications,
+  getCities,
+  getCountries,
+  getProfile,
+  getStates,
+  readDevice
+} from './src/api/auth'
 import { getUpcomingShift } from './src/api/employee'
 import { SafeAreaView, View } from 'react-native'
 import Colors from './src/res/Theme/Colors'
@@ -26,6 +33,7 @@ const App = () => {
   const [cities, setCities] = useState([])
   const [states, setStates] = useState([])
   const [earnings, setEarnings] = useState([])
+  const [notifications, setNotifications] = useState([])
   const [leaveRequest, setLeaveRequest] = useState([])
   const [upcomingShiftData, setUpcomingShiftData] = useState(null)
   useEffect(() => {
@@ -129,6 +137,28 @@ const App = () => {
     }
   }
 
+  const _readDevice = async payload => {
+    try {
+      const token = await AsyncStorage.getItem('token')
+      const res = await readDevice(payload, token)
+    } catch (error) {
+      console.warn('error', error?.response?.data?.detail)
+      Toast.show(`Error: ${error?.response?.data?.detail}`)
+    }
+  }
+
+  const _getNotification = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token')
+      const res = await getAllNotifications(token)
+      console.warn('_getNotification', res?.data?.results)
+      setNotifications(res?.data?.results)
+    } catch (error) {
+      console.warn('_getNotification', JSON.stringify(error?.response?.data))
+      Toast.show(`Error: ${error?.response?.data?.detail}`)
+    }
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -148,15 +178,18 @@ const App = () => {
         leaveRequest,
         _getleaveRequest,
         _getUpcomingShift,
-        upcomingShiftData
+        upcomingShiftData,
+        _readDevice,
+        notifications,
+        _getNotification
       }}
     >
       <MenuProvider>
         <NavigationContainer>
-          <View style={{ flex: 1,backgroundColor:Colors.BACKGROUND_BG }}>
-          <SafeAreaView style={{ flex: 1 }}>
-            <AuthNavigator />
-          </SafeAreaView>
+          <View style={{ flex: 1, backgroundColor: Colors.BACKGROUND_BG }}>
+            <SafeAreaView style={{ flex: 1 }}>
+              <AuthNavigator />
+            </SafeAreaView>
           </View>
         </NavigationContainer>
       </MenuProvider>

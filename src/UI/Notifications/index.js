@@ -11,7 +11,7 @@ import {
 } from 'react-native'
 // import { colors } from '../utils/colors'
 // import Header from '../components/Header'
-// import Silver from '../assets/silver.png'
+import NotificationIcon from '../../res/Images/common/notificationIcon.png'
 // import { FONT1BOLD, FONT1MEDIUM, FONT1REGULAR } from '../utils/fonts'
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import { Icon, CheckBox } from 'react-native-elements'
@@ -24,6 +24,7 @@ import AppContext from '../../Utils/Context'
 import Header from '../Common/Header'
 import { Fonts } from '../../res/Theme'
 import Colors from '../../res/Theme/Colors'
+import { readNotification } from '../../api/auth'
 
 const Notifications = ({ navigation }) => {
   const { _user, notifications, _getNotification } = useContext(AppContext)
@@ -38,39 +39,44 @@ const Notifications = ({ navigation }) => {
     setState(pre => ({ ...pre, [name]: value }))
   }
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     if (notifications?.length > 0) {
-  //       const readed = notifications?.filter(e => e.is_read === true)
-  //       const unreaded = notifications?.filter(e => e.is_read === false)
-  //       handleChange('readed', readed)
-  //       handleChange('unreaded', unreaded)
-  //     } else {
-  //       handleChange('readed', [])
-  //       handleChange('unreaded', [])
-  //     }
-  //   }, [notifications])
-  // )
+  useFocusEffect(
+    useCallback(() => {
+      if (notifications?.length > 0) {
+        const readed = notifications?.filter(e => e.is_read === true)
+        const unreaded = notifications?.filter(e => e.is_read === false)
+        handleChange('readed', readed)
+        handleChange('unreaded', unreaded)
+      } else {
+        handleChange('readed', [])
+        handleChange('unreaded', [])
+      }
+    }, [notifications])
+  )
 
-  // const _readNotification = async id => {
-  //   try {
-  //     handleChange('loading', true)
-  //     const token = await AsyncStorage.getItem('accessToken')
-  //     await readNotification(id, token)
-  //     handleChange('loading', false)
-  //     _getNotification()
-  //   } catch (error) {
-  //     handleChange('loading', false)
-  //     Toast.show(`Error: ${error.message}`)
-  //   }
-  // }
+  const _readNotification = async id => {
+    try {
+      handleChange('loading', true)
+      const token = await AsyncStorage.getItem('token')
+      await readNotification(id, token)
+      handleChange('loading', false)
+      _getNotification()
+    } catch (error) {
+      handleChange('loading', false)
+      Toast.show(`Error: ${error.message}`)
+    }
+  }
+
+  console.warn('notifications', notifications)
 
   const _renderItem = (item, index) => {
     return (
       <View key={index} style={styles.list}>
         <View style={styles.listView}>
           <View style={[styles.iconBox]}>
-            {/* <Image source={Silver} style={styles.itemImage} /> */}
+            <Image
+              source={item?.image ? { uri: item?.image } : NotificationIcon}
+              style={styles.itemImage}
+            />
           </View>
           <View
             style={{
@@ -90,18 +96,18 @@ const Notifications = ({ navigation }) => {
               <Text
                 style={{
                   // fontFamily: FONT1REGULAR,
-                  color: colors.white,
+                  color: Colors.BLACK,
                   width: '70%',
                   fontSize: 13
                 }}
               >
-                {item?.body}
+                {item?.description}
               </Text>
               <View style={styles.optionView}>
                 {!item?.is_read && <View style={styles.dot} />}
                 <TouchableOpacity>
                   <Text style={[styles.smallText]}>
-                    {item?.time || moment(item?.created_at).fromNow()}
+                    {moment(item?.created_at).fromNow()}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -114,7 +120,7 @@ const Notifications = ({ navigation }) => {
                     <Icon
                       name={'checkbox-marked'}
                       type={'material-community'}
-                      color={colors.primary}
+                      color={Colors.BACKGROUND_BG}
                     />
                   }
                   textStyle={styles.forgotText}
@@ -123,10 +129,10 @@ const Notifications = ({ navigation }) => {
                     <Icon
                       name={'checkbox-blank-outline'}
                       type={'material-community'}
-                      color={colors.otpInput}
+                      color={Colors.BLUR_TEXT}
                     />
                   }
-                  // onPress={() => _readNotification(item?.id)}
+                  onPress={() => _readNotification(item?.id)}
                   checked={item?.read}
                 />
               </View>
@@ -151,10 +157,26 @@ const Notifications = ({ navigation }) => {
         <View style={styles.newContainer}>
           <View style={styles.newView}>
             <Text style={styles.listheading}>New</Text>
+            <View
+              style={{
+                width: 20,
+                height: 20,
+                marginLeft: 15,
+                marginTop: -5,
+                backgroundColor: Colors.RED_COLOR,
+                borderRadius: 20,
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <Text style={{ color: Colors.WHITE, marginTop: -1 }}>
+                {unreaded?.length}
+              </Text>
+            </View>
           </View>
           <Text style={styles.markasall}>Mark as read</Text>
         </View>
-        {loading && <ActivityIndicator color={colors.secondary} />}
+        {loading && <ActivityIndicator color={Colors.BACKGROUND_BG} />}
         <FlatList
           data={unreaded}
           style={{ width: '100%' }}
@@ -202,6 +224,7 @@ const styles = StyleSheet.create({
   },
   newView: {
     flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 10
   },
   dot: {
@@ -254,7 +277,6 @@ const styles = StyleSheet.create({
     marginTop: 0
   },
   listheading: {
-    marginBottom: 10,
     ...Fonts.poppinsRegular(18)
     // color: colors.white,
     // fontFamily: FONT1BOLD
@@ -323,6 +345,7 @@ const styles = StyleSheet.create({
   itemImage: {
     width: 50,
     height: 50,
+    borderRadius: 5,
     resizeMode: 'contain'
   }
 })

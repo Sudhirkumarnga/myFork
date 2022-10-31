@@ -11,7 +11,8 @@ import {
   Scheduler,
   PayrollScene,
   ReportsScene,
-  ReportsView
+  ReportsView,
+  CreateInspection
 } from '../UI'
 import { Fonts, Colors } from '../res'
 import Images from '../res/Images'
@@ -34,6 +35,7 @@ function HomeStack () {
       <Stack.Screen name='ReportsScene' component={ReportsScene} />
       <Stack.Screen name='ReportsView' component={ReportsView} />
       <Stack.Screen name='RequestLeaveScene' component={RequestLeaveScene} />
+      <Stack.Screen name='CreateInspection' component={CreateInspection} />
     </Stack.Navigator>
   )
 }

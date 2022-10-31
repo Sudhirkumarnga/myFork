@@ -71,3 +71,35 @@ export const getleaveRequest = token => {
 export const updateLeaveRequest = (id, payload, token) => {
   return API.put(`api/v1/leave_request/${id}/`, payload, token)
 }
+
+export const scheduleVarianceReports = (payload, token) => {
+  return API.get(`api/v1/schedulevariance-reports/${payload}`, token)
+}
+
+export const locationVarianceReports = (payload, token) => {
+  return API.get(`api/v1/locationvariance-reports/${payload}`, token)
+}
+
+export const payrollReports = (payload, token) => {
+  return API.get(`api/v1/payroll-reports/${payload}`, token)
+}
+
+export const inspectionReports = (payload, token) => {
+  return API.get(`api/v1/inspection-report/${payload}`, token)
+}
+
+export const getWorksitesInspection = token => {
+  return API.get(`api/v1/get_worksites/`, token)
+}
+
+export const getWorksitesTasks = (id, token) => {
+  return API.get(`api/v1/get_worksites_tasks/?worksite_id=${id}`, token)
+}
+
+export const createInspectionReport = (payload, token) => {
+  return API.post(`api/v1/inspection-report/`, payload, token)
+}
+
+export const createFeedback = (payload, token) => {
+  return API.post(`api/v1/task-feedback/`, payload, token)
+}

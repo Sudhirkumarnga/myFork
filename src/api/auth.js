@@ -32,10 +32,6 @@ export const editProfile = (id, payload, token) => {
   return API.patch(`api/v1/users/${id}/`, payload, token)
 }
 
-export const deleteAccount = (client_id, token) => {
-  return API.delete(`api/v1/client/${client_id}/`, {}, token)
-}
-
 export const forgotpasswordCode = payload => {
   return API.post('api/v1/forgotpasswordcode', payload)
 }
@@ -98,4 +94,20 @@ export const getCities = token => {
 
 export const getStates = token => {
   return API.get(`api/v1/state/`, token)
+}
+
+export const readDevice = (payload, token) => {
+  return API.post(`api/v1/device/`, payload, token)
+}
+
+export const getAllNotifications = token => {
+  return API.get(`api/v1/notification/`, token)
+}
+
+export const readNotification = (id, token) => {
+  return API.get(`api/v1/notification/read_notification/?id=${id}`, token)
+}
+
+export const deleteAccount = token => {
+  return API.delete(`api/v1/delete_account/`, {}, token)
 }

@@ -132,7 +132,7 @@ export default class LoginScene extends BaseScene {
         onPress={env === 'employee' ? this.handleSignup : this.onSubmit}
         title={env == 'employee' ? this.ls('signUp') : this.ls('next')}
         disabled={
-          !this.state.isFormValid ||
+          // !this.state.isFormValid ||
           !this.state.first_name ||
           !this.state.last_name ||
           !this.state.email ||

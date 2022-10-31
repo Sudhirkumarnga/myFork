@@ -1,10 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { useContext, useEffect } from 'react'
-import { StyleSheet, View, ActivityIndicator } from 'react-native'
+import { StyleSheet, View, ActivityIndicator, Platform } from 'react-native'
 import Toast from 'react-native-simple-toast'
 import { getProfile } from '../../api/auth'
 import Colors from '../../res/Theme/Colors'
 import AppContext from '../../Utils/Context'
+import messaging from '@react-native-firebase/messaging'
 
 function AuthLoading ({ navigation }) {
   // Context
@@ -14,7 +15,9 @@ function AuthLoading ({ navigation }) {
     setAdminProfile,
     _getAllSchedules,
     _getEarnings,
-    _getleaveRequest
+    _getleaveRequest,
+    _readDevice,
+    _getNotification
     // _getJourneys,
     // _getMyAddresses
   } = context
@@ -29,6 +32,7 @@ function AuthLoading ({ navigation }) {
         userData = JSON.parse(user)
         setUser(userData)
       }
+      _getNotification()
       console.warn('userData', user)
       if (res?.data?.response) {
         setAdminProfile(res?.data?.response)
@@ -70,6 +74,48 @@ function AuthLoading ({ navigation }) {
       _bootstrapAsync()
     })
   }, [])
+  useEffect(() => {
+    requestUserPermission()
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage))
+    })
+
+    messaging().setBackgroundMessageHandler(async remoteMessage => {
+      console.log('Message handled in the background!', remoteMessage)
+    })
+
+    return unsubscribe
+  }, [])
+
+  async function registerAppWithFCM () {
+    const getToken = await messaging().getToken()
+    await messaging().registerDeviceForRemoteMessages()
+    const token = await AsyncStorage.getItem('token')
+    const user = await AsyncStorage.getItem('user')
+    const userData = JSON.parse(user)
+    const payloadRead = {
+      device_id: '', // Send if you can otherwise remove field
+      registration_id: getToken,
+      active: true,
+      name: userData?.first_name,
+      type: Platform.OS
+    }
+    if (token && user) {
+      _readDevice(payloadRead)
+    }
+  }
+
+  async function requestUserPermission () {
+    const authStatus = await messaging().requestPermission()
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL
+
+    registerAppWithFCM()
+    if (enabled) {
+    }
+  }
+
   const _bootstrapAsync = async () => {
     const userUID = await AsyncStorage.getItem('token')
     if (userUID) {
