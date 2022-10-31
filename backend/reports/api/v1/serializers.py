@@ -9,7 +9,7 @@ from business.services import convert_image_from_bse64_to_blob
 class LocationVarianceReportSerializer(ModelSerializer):
     class Meta:
         model = Attendance
-        fields = ('event', 'clock_in_time', 'employee', 'location', 'latitude', 'longitude')
+        fields = ('event', 'clock_in_time', 'employee', 'location', 'latitude', 'longitude', 'created_at')
 
     def to_representation(self, data):
         data = super(LocationVarianceReportSerializer, self).to_representation(data)
@@ -32,7 +32,7 @@ class LocationVarianceReportSerializer(ModelSerializer):
 class ScheduleVarianceReportSerializer(ModelSerializer):
     class Meta:
         model = Attendance
-        fields = ('id', 'event', 'created_at', 'employee','clock_in_time')
+        fields = ('id', 'event', 'created_at', 'employee', 'clock_in_time')
 
     def to_representation(self, data):
         data = super(ScheduleVarianceReportSerializer, self).to_representation(data)
@@ -49,17 +49,14 @@ class ScheduleVarianceReportSerializer(ModelSerializer):
         except:
             data['actual_shift_duration'] = None
             data['variance'] = None
-        del data['created_at']
         del data['event']
         return data
-
-
 
 
 class PayrollReportSerializer(ModelSerializer):
     class Meta:
         model = Attendance
-        fields = ('employee', 'total_hours', 'earnings', 'updated_at')
+        fields = ('employee', 'total_hours', 'earnings', 'updated_at',)
 
 
 class WorksiteSerializer(ModelSerializer):
@@ -78,6 +75,7 @@ class InspectionAreaSerializer(ModelSerializer):
     class Meta:
         model = InspectionArea
         exclude = ('report', 'created_at', 'updated_at',)
+        depth = 1
 
 
 class InspectionReportMediaSerializer(ModelSerializer):
@@ -89,11 +87,13 @@ class InspectionReportMediaSerializer(ModelSerializer):
 class InspectionReportSerializer(ModelSerializer):
     class Meta:
         model = InspectionReport
-        fields = ('id', 'name', 'worksite')
+        fields = ('id', 'name', 'worksite', 'created_at',)
+        depth = 1
 
     def to_representation(self, data):
         data = super(InspectionReportSerializer, self).to_representation(data)
-        data['worksite'] = data['worksite']
+        request = self.context['request']
+        data['inspector'] = request.user
         data['areas'] = InspectionAreaSerializer(
             InspectionArea.objects.filter(report_id=data['id']),
             many=True
