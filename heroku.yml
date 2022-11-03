@@ -11,7 +11,7 @@ release:
 run:
   worker:
     command:
-      - celery -A smart_workhorse_33965 worker --loglevel=INFO --purge
+      - celery -A smart_workhorse_33965 worker --loglevel=INFO
     image: web
   beat:
     command:
