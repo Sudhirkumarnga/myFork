@@ -8,3 +8,12 @@ release:
   image: web
   command:
     - python3 manage.py migrate
+run:
+  worker:
+    command:
+      - celery -A smart_workhorse_33965 worker --loglevel=INFO --purge
+    image: web
+  beat:
+    command:
+      - celery -A smart_workhorse_33965 beat --loglevel=INFO
+    image: web
