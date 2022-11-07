@@ -78,6 +78,9 @@ export default class ChangePassword extends BaseScene {
           label="Current Password"
           correctPassword={this.state.passwordValidation}
           onChangeText={text => this.setState({ oldPassword: text })}
+          passwordPolicy={true}
+          regex={/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/}
+          onPasswordValidationCheck={true}
         />
         {this.forms.map(item => {
           return (
@@ -91,8 +94,11 @@ export default class ChangePassword extends BaseScene {
         <PrimaryTextInput
           onChangeText={text => this.isFormValid(text, "confirmPassword")}
           ref={o => (this.confirmPassword = o)}
+          passwordPolicy={true}
           label="Confirm Password"
+          regex={/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/}
           correctPassword={this.state.passwordValidation}
+          onPasswordValidationCheck={true}
         />
       </View>
     )

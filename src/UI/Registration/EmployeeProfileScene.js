@@ -164,7 +164,7 @@ export default function EmployeeProfileScene ({ navigation }) {
           !gender ||
           !first_name ||
           !last_name ||
-          !phone ||
+          // !phone ||
           !date_of_birth ||
           !profile_image
         }

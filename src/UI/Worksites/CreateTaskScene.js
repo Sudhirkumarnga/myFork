@@ -180,7 +180,7 @@ export default function CreateTaskScene ({ navigation, route }) {
         contentContainerStyle={{ flexGrow: 1 }}
       >
         <View style={styles.childContainer}>
-          <Text style={styles.title}>{Strings.worksiteNumber}</Text>
+          <Text style={styles.title}>{worksiteData?.personal_information?.name}</Text>
           {renderTaskInfoInput()}
           {renderFooterButtons()}
         </View>

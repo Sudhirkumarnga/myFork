@@ -12,12 +12,13 @@ import {
 import { Fonts, Colors, Images } from '../../res'
 import RNPickerSelect from 'react-native-picker-select'
 import DatePicker from 'react-native-datepicker'
+import { Icon } from 'react-native-elements'
 
 class PrimaryTextInput extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
-      text: this.props.text,
+      text: this.props.text || '',
       isFocused: false,
       isValid: false,
       isPwdVisible: false,
@@ -28,15 +29,15 @@ class PrimaryTextInput extends Component {
     this.onBlur = this.onBlur.bind(this)
   }
 
-  text() {
+  text () {
     return this.state.text ? this.state.text : ''
   }
 
-  clear() {
+  clear () {
     this.setState({ text: '' })
   }
 
-  isValid(text, countryCodeInput) {
+  isValid (text, countryCodeInput) {
     if (!!text || !!this.state.text) {
       let inputText = text || this.state.text
       const regex = this.props.regex
@@ -51,7 +52,7 @@ class PrimaryTextInput extends Component {
     return false
   }
 
-  onFocus() {
+  onFocus () {
     if (this.props.handleFocus) {
       Keyboard.dismiss()
       this.txtInput.blur()
@@ -68,11 +69,11 @@ class PrimaryTextInput extends Component {
     }
   }
 
-  onBlur() {
+  onBlur () {
     this.setState({ isFocused: false })
   }
 
-  borderColor() {
+  borderColor () {
     return this.state.isFocused
       ? this.state.text
         ? this.state.isValid && !this.props.isPassInValid
@@ -82,13 +83,13 @@ class PrimaryTextInput extends Component {
       : Colors.TEXT_INPUT_BORDER
   }
 
-  onChangeText(text) {
+  onChangeText (text) {
     const isValid = this.isValid(text)
     this.props.onChangeText(text, isValid)
     this.setState({ text, isValid })
   }
 
-  renderDatePicker() {
+  renderDatePicker () {
     if (this.props.dateType) {
       return (
         <DatePicker
@@ -107,6 +108,7 @@ class PrimaryTextInput extends Component {
           confirmBtnText={'Confirm'}
           cancelBtnText={'Cancel'}
           format=' MM/DD/YYYY'
+          date={new Date(this.props.text ? this.props.text : Date.now())}
           maxDate={this.props.maxDate || new Date()}
           customStyles={{
             dateInput: [
@@ -129,7 +131,7 @@ class PrimaryTextInput extends Component {
     }
   }
 
-  renderDropDownPicker() {
+  renderDropDownPicker () {
     if (this.props.dropdown) {
       return (
         <RNPickerSelect
@@ -143,11 +145,13 @@ class PrimaryTextInput extends Component {
           ref={el => {
             this.inputRefs = el
           }}
-          placeholder={{ label: '', value: null }}
+          placeholder={{ label: this.props.label, value: null }}
           fixAndroidTouchableBug
           Icon={() => {
             return <Image {...Images.downArrow} />
           }}
+          doneText={this.props.text}
+          // value={this.props.text}
           style={{
             inputIOS: styles.inputIOS,
             iconContainer: styles.iconContainer,
@@ -162,7 +166,7 @@ class PrimaryTextInput extends Component {
     }
   }
 
-  renderRightInputView() {
+  renderRightInputView () {
     if (this.props.passwordPolicy) {
       return (
         <TouchableOpacity
@@ -172,10 +176,14 @@ class PrimaryTextInput extends Component {
             this.setState({ isPwdVisible: !this.state.isPwdVisible })
           }}
         >
-          <Image
-            {...Images.hide}
-            style={{ resizeMode: 'contain', width: 20, height: 20 }}
-          />
+          {this.state.isPwdVisible ? (
+            <Icon name='eye' type='feather' color={'#818080'} size={20} />
+          ) : (
+            <Image
+              {...Images.hide}
+              style={{ resizeMode: 'contain', width: 20, height: 20 }}
+            />
+          )}
         </TouchableOpacity>
       )
     } else if (this.props.dateType) {
@@ -212,11 +220,19 @@ class PrimaryTextInput extends Component {
           { borderColor: this.borderColor() },
           this.props.inputStyle
         ]}
-        placeholder={this.props.label}
+        ref={ref =>
+          ref &&
+          ref.props &&
+          ref.setNativeProps({
+            text: ref.props.value,
+            style: { fontFamily: 'Poppins-Regular' }
+          })
+        }
+        placeholder={!this.props.dropdown ? this.props.label : ''}
         textAlignVertical='top'
         multiline={this.props.multiline}
         onFocus={() => this.onFocus()}
-        ref={o => (this.txtInput = o)}
+        // ref={o => (this.txtInput = o)}
         onBlur={() => this.onBlur()}
         maxLength={this.props.maxLength}
         onChangeText={text => this.onChangeText(text)}
@@ -229,7 +245,7 @@ class PrimaryTextInput extends Component {
     )
   }
 
-  primaryTextInput(inputStyle) {
+  primaryTextInput (inputStyle) {
     if (this.props.dropdown) {
       return (
         <TouchableOpacity
@@ -243,7 +259,7 @@ class PrimaryTextInput extends Component {
     return this.renderTextInput(inputStyle)
   }
 
-  render() {
+  render () {
     return (
       <View style={[styles.container, this.props.style]}>
         {this.renderTextInput(styles)}
@@ -290,14 +306,14 @@ const styles = StyleSheet.create({
     ...Fonts.poppinsRegular(14)
   },
   inputAndroid: {
-    height: 44,
+    // height: 44,
     position: 'absolute',
     bottom: 0,
-    left: 20,
+    left: 25,
     width: '90%',
-    paddingHorizontal: 20,
-    color: Colors.TEXT_INPUT_COLOR
-  }
+    paddingHorizontal: 20
+  },
+  dateText: { display: 'none' }
 })
 
 export default PrimaryTextInput

@@ -33,7 +33,7 @@ function AuthLoading ({ navigation }) {
         setUser(userData)
       }
       _getNotification()
-      console.warn('userData', user)
+      console.warn('userData', res?.data?.response)
       if (res?.data?.response) {
         setAdminProfile(res?.data?.response)
       }

@@ -157,7 +157,7 @@ const fields = {
   address_line_two: {
     key: 'address_line_two',
     dateType: false,
-    label: Strings.addressLine1,
+    label: Strings.addressLine2,
     placeholder: '',
     textInputProps: { autoCapitalize: 'none' }
   },
@@ -222,7 +222,7 @@ const fields = {
   pay_frequency: {
     key: 'pay_frequency',
     dateType: false,
-    label: Strings.payFreq,
+    label: 'Pay Frequency',
     placeholder: '',
     dropdown: true,
     items: [

@@ -17,10 +17,19 @@ import Toast from 'react-native-simple-toast'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { createEmployee, updateEmployee } from '../../api/business'
 import moment from 'moment'
+import AppContext from '../../Utils/Context'
+import { useContext } from 'react'
 
 export default function AddEmployeeScene ({ navigation, route }) {
   const item = route?.params?.item
   console.warn('item', item)
+  const {
+    _getProfile,
+    _getCountries,
+    cities,
+    states,
+    adminProfile
+  } = useContext(AppContext)
   // State
   const [state, setState] = useState({
     name: '',
@@ -119,7 +128,7 @@ export default function AddEmployeeScene ({ navigation, route }) {
         address_information: {
           address_line_one,
           address_line_two,
-          city: 1
+          city:  getCityTValue(city),
         },
         work_information: {
           position,
@@ -145,6 +154,12 @@ export default function AddEmployeeScene ({ navigation, route }) {
       }
     }
   }
+
+  const getCityTValue = value => {
+    const filtered = cities?.filter(e => e.name === value)
+    return filtered.length > 0 ? filtered[0].id : ''
+  }
+
 
   const renderPersonalInfoInput = () => {
     return Forms.fields('employeePersonalInfo')?.map(fields => {
@@ -188,17 +203,46 @@ export default function AddEmployeeScene ({ navigation, route }) {
     })
   }
 
+  const getDropdownItem = list => {
+    const newList = []
+    list?.forEach(element => {
+      newList.push({ label: element?.name, value: element?.name })
+    })
+    return newList
+  }
+
+  const getStateText = (list, value) => {
+    const filtered = list?.filter(e => e?.name === value)
+    return filtered?.length > 0 ? filtered[0]?.name : ''
+  }
+
+
+  console.warn('city',city);
   const renderAddressInfo = () => {
     return Forms?.fields('employeeAddress')?.map(fields => {
-      return (
-        <PrimaryTextInput
-          {...fields}
-          text={state[fields.key]}
-          // ref={o => (this[fields.key] = o)}
-          key={fields.key}
-          onChangeText={(text, isValid) => handleChange(fields.key, text)}
-        />
-      )
+      if (fields.key === 'city') {
+        return (
+          <PrimaryTextInput
+            text={getStateText(cities, city)}
+            dropdown={true}
+            items={getDropdownItem(cities)}
+            label={'City'}
+            key='city'
+            // placeholder='City'
+            onChangeText={(text, isValid) => handleChange('city', text)}
+          />
+        )
+      } else {
+        return (
+          <PrimaryTextInput
+            {...fields}
+            text={state[fields.key]}
+            // ref={o => (this[fields.key] = o)}
+            key={fields.key}
+            onChangeText={(text, isValid) => handleChange(fields.key, text)}
+          />
+        )
+      }
     })
   }
 

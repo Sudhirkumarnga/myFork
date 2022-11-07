@@ -32,6 +32,7 @@ import userProfile from '../../res/Images/common/sample.png'
 export default function AddEvents ({ navigation, route }) {
   const selectedEvent = route?.params?.selectedEvent
   const { schedules } = useContext(AppContext)
+  const [worksite, setWorksite] = useState('')
   const [state, setState] = useState({
     mode: 'week',
     worksite: '',
@@ -62,7 +63,7 @@ export default function AddEvents ({ navigation, route }) {
   })
   const {
     end_date,
-    worksite,
+    // worksite,
     start_date,
     end_time,
     endStart,
@@ -103,6 +104,7 @@ export default function AddEvents ({ navigation, route }) {
   }
 
   const handleChange = (key, value) => {
+    console.warn('key', key)
     setState(pre => ({ ...pre, [key]: value }))
   }
 
@@ -163,7 +165,7 @@ export default function AddEvents ({ navigation, route }) {
       handleChange('loading', true)
       const token = await AsyncStorage.getItem('token')
       const res = await getAllEmployee(token)
-      console.warn('getAllEmployee', res?.data)
+      // console.warn('getAllEmployee', res?.data)
       handleChange('loading', false)
       handleChange('allEmployee', res?.data?.results)
     } catch (error) {
@@ -183,10 +185,9 @@ export default function AddEvents ({ navigation, route }) {
       handleChange('loadingMain', true)
       const token = await AsyncStorage.getItem('token')
       const res = await getEventDetails(selectedEvent?.id, token)
-      console.warn('getEventDetails', res?.data)
       handleChange('loadingMain', false)
       handleChange('eventDetails', res?.data)
-      handleChange('worksite', res?.data?.worksite)
+      setWorksite(res?.data?.worksite)
       handleChange(
         'start_date',
         moment(res?.data?.start_time).format('YYYY-MM-DD')
@@ -277,6 +278,8 @@ export default function AddEvents ({ navigation, route }) {
     )
   }
 
+  // console.warn('allWorksites',allWorksites);
+
   const getWorksiteTask = id => {
     const filtered = allWorksites?.filter(e => e.id === id)
     return (filtered?.length > 0 && filtered[0]?.tasks) || []
@@ -295,21 +298,27 @@ export default function AddEvents ({ navigation, route }) {
       </View>
     )
   }
+
+  console.warn('worksite', worksite)
   return (
     <KeyboardAwareScrollView
       style={styles.container}
       contentContainerStyle={{ alignItems: 'center' }}
     >
-      <Header leftButton title={eventDetails ? 'Edit Event' : 'Create Event'} />
+      <Header
+        leftButton
+        onLeftPress={() => navigation.goBack()}
+        title={eventDetails ? 'Edit Event' : 'Create Event'}
+      />
       <Text style={styles.title}>{'Event information'}</Text>
       <PrimaryTextInput
         dropdown={true}
-        text={getWorksiteText(worksite)}
+        // text={getWorksiteText(worksite)}
         items={worksiteOptions}
         label={getWorksiteText(worksite) || 'Worksite'}
         key='worksite'
-        placeholder='worksite'
-        onChangeText={(text, isValid) => handleChange('worksite', text)}
+        // placeholder='worksite'
+        onChangeText={(text, isValid) => setWorksite(text)}
       />
       <View
         style={{
@@ -463,10 +472,16 @@ export default function AddEvents ({ navigation, route }) {
         <BouncyCheckbox
           size={20}
           fillColor={Colors.BACKGROUND_BG}
+          unfillColor={Colors.WHITE}
           disableBuiltInState
+          innerIconStyle={{
+            borderColor: Colors.BLUR_TEXT,
+            borderRadius: 5,
+            marginBottom: 2
+          }}
           iconStyle={{
-            borderColor: Colors.BLACK,
-            borderRadius: 1,
+            borderColor: Colors.BLUR_TEXT,
+            borderRadius: 5,
             marginBottom: 2
           }}
           onPress={() => handleChange('reminder', !reminder)}
@@ -486,9 +501,14 @@ export default function AddEvents ({ navigation, route }) {
           size={20}
           fillColor={Colors.BACKGROUND_BG}
           disableBuiltInState
+          innerIconStyle={{
+            borderColor: Colors.BLUR_TEXT,
+            borderRadius: 5,
+            marginBottom: 2
+          }}
           iconStyle={{
-            borderColor: Colors.BLACK,
-            borderRadius: 1,
+            borderColor: Colors.BLUR_TEXT,
+            borderRadius: 5,
             marginBottom: 2
           }}
           onPress={() =>
@@ -510,9 +530,14 @@ export default function AddEvents ({ navigation, route }) {
           size={20}
           fillColor={Colors.BACKGROUND_BG}
           disableBuiltInState
+          innerIconStyle={{
+            borderColor: Colors.BLUR_TEXT,
+            borderRadius: 5,
+            marginBottom: 2
+          }}
           iconStyle={{
-            borderColor: Colors.BLACK,
-            borderRadius: 1,
+            borderColor: Colors.BLUR_TEXT,
+            borderRadius: 5,
             marginBottom: 2
           }}
           onPress={() => {
@@ -554,9 +579,14 @@ export default function AddEvents ({ navigation, route }) {
               size={20}
               fillColor={Colors.BACKGROUND_BG}
               disableBuiltInState
+              innerIconStyle={{
+                borderColor: Colors.BLUR_TEXT,
+                borderRadius: 5,
+                marginBottom: 2
+              }}
               iconStyle={{
-                borderColor: Colors.BLACK,
-                borderRadius: 1,
+                borderColor: Colors.BLUR_TEXT,
+                borderRadius: 5,
                 marginBottom: 2
               }}
               onPress={() => {
@@ -574,7 +604,9 @@ export default function AddEvents ({ navigation, route }) {
               }}
               isChecked={selected_tasks?.includes(Number(task?.id))}
             />
-            <Text style={styles.inputText}>{task?.name}</Text>
+            <Text style={[styles.inputText, { width: '90%' }]}>
+              {task?.name}
+            </Text>
           </View>
         ))}
       <Text style={styles.title}>{'Assign Employees'}</Text>
@@ -612,9 +644,14 @@ export default function AddEvents ({ navigation, route }) {
               size={20}
               fillColor={Colors.BACKGROUND_BG}
               disableBuiltInState
+              innerIconStyle={{
+                borderColor: Colors.BLUR_TEXT,
+                borderRadius: 5,
+                marginBottom: 2
+              }}
               iconStyle={{
-                borderColor: Colors.BLACK,
-                borderRadius: 1,
+                borderColor: Colors.BLUR_TEXT,
+                borderRadius: 5,
                 marginBottom: 2
               }}
               style={{ right: 0, position: 'absolute' }}
@@ -643,9 +680,14 @@ export default function AddEvents ({ navigation, route }) {
           size={20}
           fillColor={Colors.BACKGROUND_BG}
           disableBuiltInState
+          innerIconStyle={{
+            borderColor: Colors.BLUR_TEXT,
+            borderRadius: 20,
+            marginBottom: 2
+          }}
           iconStyle={{
-            borderColor: Colors.BLACK,
-            borderRadius: 1,
+            borderColor: Colors.BLUR_TEXT,
+            borderRadius: 20,
             marginBottom: 2
           }}
           onPress={() => {
@@ -671,9 +713,14 @@ export default function AddEvents ({ navigation, route }) {
           size={20}
           fillColor={Colors.BACKGROUND_BG}
           disableBuiltInState
+          innerIconStyle={{
+            borderColor: Colors.BLUR_TEXT,
+            borderRadius: 20,
+            marginBottom: 2
+          }}
           iconStyle={{
-            borderColor: Colors.BLACK,
-            borderRadius: 1,
+            borderColor: Colors.BLUR_TEXT,
+            borderRadius: 20,
             marginBottom: 2
           }}
           onPress={() => {

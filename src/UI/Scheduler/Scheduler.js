@@ -147,7 +147,11 @@ export default function Scheduler ({ navigation }) {
   console.warn('selectedEvent', selectedEvent)
   return (
     <View style={styles.container}>
-      <Header leftButton title={'Scheduler'} />
+      <Header
+        leftButton
+        onLeftPress={() => navigation.goBack()}
+        title={'Scheduler'}
+      />
       <View
         style={{
           width: '90%',
@@ -286,7 +290,7 @@ export default function Scheduler ({ navigation }) {
             </View>
             <Text style={styles.title}>{selectedEvent?.title}</Text>
             <Text style={{ ...Fonts.poppinsRegular(12), marginBottom: 20 }}>
-              {selectedEvent?.start_time}
+              Scheduled Date: {selectedEvent?.start_time}
             </Text>
             <Text style={styles.title}>{'Tasks'}</Text>
             {selectedEvent?.selected_tasks?.map((task, index) => (
@@ -308,7 +312,7 @@ export default function Scheduler ({ navigation }) {
               <>
                 <Text style={styles.title}>{'Assigned Employees'}</Text>
                 <FlatList
-                  data={[0]}
+                  data={selectedEvent?.employees}
                   style={{ width: '100%', marginTop: 20 }}
                   renderItem={({ item, index }) => (
                     <View

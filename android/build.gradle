@@ -22,6 +22,11 @@ buildscript {
 }
 
 allprojects {
+    configurations.all {
+        resolutionStrategy {
+            force 'com.facebook.react:react-native:0.64.0' //select Version you used
+        }
+    }
     repositories {
         mavenLocal()
         maven {

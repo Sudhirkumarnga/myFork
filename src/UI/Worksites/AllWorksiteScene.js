@@ -65,6 +65,15 @@ export default function AllWorksiteScene ({ navigation }) {
     return (
       <ScrollView style={styles.childContainer}>
         {!isEmp && <Text style={styles.title}>{Strings.listWorksites}</Text>}
+        {!isEmp && allWorksites?.length === 0 && (
+          <View style={{ width: '100%', alignItems: 'center' }}>
+            <Text
+              style={{ ...Fonts.poppinsRegular(14), color: Colors.BLUR_TEXT }}
+            >
+              No List
+            </Text>
+          </View>
+        )}
         {allWorksites?.map(item => (
           <View style={styles.cellContainer}>
             <View>

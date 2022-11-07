@@ -65,7 +65,7 @@ export default function AddWorksiteScene ({ navigation, route }) {
     logo,
     instruction_video
   } = state
-
+console.warn('logo',worksiteData);
   const handleChange = (name, value) => {
     setState(pre => ({ ...pre, [name]: value }))
   }
@@ -234,7 +234,7 @@ export default function AddWorksiteScene ({ navigation, route }) {
           color={Colors.BUTTON_BG}
           title={Strings.uploadVideo}
         />
-        <Button
+        {/* <Button
           style={[styles.footerWhiteButton]}
           isWhiteBg
           icon={'add'}
@@ -246,7 +246,7 @@ export default function AddWorksiteScene ({ navigation, route }) {
           }}
           color={Colors.BUTTON_BG}
           title={Strings.createTask}
-        />
+        /> */}
         {/* <Button
           style={[styles.footerWhiteButton]}
           title={Strings.edit}

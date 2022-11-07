@@ -46,6 +46,11 @@ export default function WorksiteDetailScene ({ navigation, route }) {
       {
         title: 'Desired time:',
         description: worksiteData?.personal_information?.desired_time
+      },
+      {
+        title: 'Number of workers needed:',
+        description:
+          worksiteData?.personal_information?.number_of_workers_needed
       }
     ]
   })
@@ -171,7 +176,7 @@ export default function WorksiteDetailScene ({ navigation, route }) {
               }
             ]}
           >
-            <View>
+            <View style={{ width: '70%', marginRight: 10 }}>
               <Text style={styles.cellTitle}>{task?.name}</Text>
             </View>
             <TouchableOpacity
@@ -212,7 +217,7 @@ export default function WorksiteDetailScene ({ navigation, route }) {
     <View style={styles.container}>
       <Header
         onLeftPress={() => navigation.goBack()}
-        title={Strings.worksites}
+        title={worksiteData?.personal_information?.name}
         leftButton
       />
       {renderContent()}

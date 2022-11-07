@@ -64,6 +64,15 @@ export default function EmployeeListScene ({ navigation }) {
         scrollEnabled={false}
         style={{ width: '100%' }}
         data={allEmployee}
+        ListEmptyComponent={() => (
+          <View style={{ width: '100%', alignItems: 'center' }}>
+            <Text
+              style={{ ...Fonts.poppinsRegular(14), color: Colors.BLUR_TEXT }}
+            >
+              No List
+            </Text>
+          </View>
+        )}
         renderItem={({ item, index }) => (
           <TouchableOpacity
             onPress={() => navigation.navigate('employeesView', { item })}
@@ -85,12 +94,12 @@ export default function EmployeeListScene ({ navigation }) {
               />
               <View>
                 <Text style={styles.title}>
-                  {item?.personal_information?.first_name}
+                  {item?.personal_information?.first_name + " " + item?.personal_information?.last_name}
                 </Text>
                 <Text style={styles.job}>
                   {item?.work_information?.position}
                 </Text>
-                {/* <Text style={styles.location}>{item?.}</Text> */}
+                <Text style={styles.location}>{item?.address_information?.address_line_one + ' ' +item?.address_information?.address_line_two}</Text>
               </View>
             </View>
             <View
@@ -124,7 +133,7 @@ const styles = StyleSheet.create({
     height: 70,
     padding: 10,
     borderRadius: 10,
-    marginBottom: 20,
+    marginBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between'
