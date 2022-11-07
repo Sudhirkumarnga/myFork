@@ -3,6 +3,7 @@ from smart_workhorse_33965.celery import app
 from workside import models
 from django.core.mail import send_mail
 from smart_workhorse_33965.settings import EMAIL_HOST_USER
+from workside.models import *
 
 
 @app.task(name="event_publishing_reminder_task")
@@ -27,7 +28,9 @@ def event_publishing_reminder_task(event_id, reminder_date):
 
 
 @app.task(name="event_start_notification_task")
-def event_start_notification_task(start_time, employees, worksite):
+def event_start_notification_task(start_time, employees, worksite_id):
+    worksite = WorkSite.objects.get(id=worksite_id)
+    employees = Employee.objects.filter(id__in=employees)
     for employee in employees:
         create_notification({
             "name": "Event Started",

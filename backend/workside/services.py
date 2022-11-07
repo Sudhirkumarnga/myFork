@@ -136,5 +136,5 @@ def send_notification_to_employees(employees):
         )
 
 
-def send_event_reminder_to_employees(start_time, employees, worksite):
-    event_start_notification_task.apply_async((start_time, employees, worksite), eta=start_time)
+def send_event_reminder_to_employees(start_time, employees, worksite_id):
+    event_start_notification_task.apply_async((start_time, employees, worksite_id), eta=start_time)

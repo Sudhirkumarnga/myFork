@@ -1,6 +1,6 @@
 from django.core.mail import send_mail
 from allauth.utils import email_address_exists, generate_unique_username
-
+from allauth.account.models import EmailAddress
 from push_notification.services import create_notification
 from smart_workhorse_33965.settings import EMAIL_HOST_USER
 from users.models import User
@@ -53,6 +53,12 @@ def create_user_for_employee(data):
     )
     user.set_password(password)
     user.save()
+    EmailAddress.objects.create(
+        email=data['contact']['email'],
+        user=user,
+        primary=True,
+        verified=True
+    )
     return user, password
 
 

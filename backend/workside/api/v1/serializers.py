@@ -43,6 +43,13 @@ class WorksiteSerializer(ModelSerializer):
         model = WorkSite
         fields = ('id', 'business', 'personal_information', 'contact_person', 'is_active', 'show_dtails', 'tasks', 'location', 'longitude', 'latitude')
 
+    def to_representation(self, data):
+        data = super(WorksiteSerializer, self).to_representation(data)
+        worksite = WorkSite.objects.get(id=data['id'])
+        data['logo'] = worksite.logo.url
+        data['instruction_video'] = worksite.instruction_video.url
+        return data
+
     @staticmethod
     def get_personal_information(obj):
         return WorksitePersonalInformationSerializer(
@@ -198,7 +205,12 @@ class EventSerializer(ModelSerializer):
                 worksite__business__user=request.user
             )
         if event.exists():
-            raise serializers.ValidationError(_("Event is already created between these time range."))
+            raise serializers.ValidationError (
+                {"start time & end time": _(
+                    "Event is already created between these time range."
+                )
+                }
+            )
         return data
 
     @staticmethod

@@ -121,7 +121,10 @@ class Event(TimeStampedModel):
     def save(self, *args, **kwargs):
         super(Event, self).save(*args, **kwargs)
         if self.event_status == "PUBLISHED":
-            send_event_reminder_to_employees(self.start_time, self.employees, self.worksite)
+            send_event_reminder_to_employees(
+                self.start_time,
+                [employee.id for employee in self.employees.all()],
+                self.worksite.id)
         if self.event_status == "DRAFT":
             self.reminder_date = calculate_reminder_date(
                 self.id,
