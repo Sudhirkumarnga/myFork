@@ -1,4 +1,5 @@
 from django.db import models
+from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from business.models import Business
 from home.models import TimeStampedModel
@@ -13,8 +14,9 @@ from workside.enums import (
     EventPublishingReminder
 )
 from workside.services import (
-    calculate_reminder_date, send_event_reminder_to_employees
+    calculate_reminder_date, send_event_reminder_to_employees, send_notify_to_employees
 )
+from django.db.models.signals import m2m_changed, post_save
 
 
 def business_directory_path(instance, filename):
@@ -110,6 +112,7 @@ class Event(TimeStampedModel):
         null=True, blank=True
     )
     reminder_date = models.DateField(null=True, blank=True)
+    notify = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Event"
@@ -120,11 +123,6 @@ class Event(TimeStampedModel):
 
     def save(self, *args, **kwargs):
         super(Event, self).save(*args, **kwargs)
-        if self.event_status == "PUBLISHED":
-            send_event_reminder_to_employees(
-                self.start_time,
-                [employee.id for employee in self.employees.all()],
-                self.worksite.id)
         if self.event_status == "DRAFT":
             self.reminder_date = calculate_reminder_date(
                 self.id,

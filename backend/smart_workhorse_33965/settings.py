@@ -272,7 +272,7 @@ if DEBUG or not (EMAIL_HOST_USER and EMAIL_HOST_PASSWORD):
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 
-# GCP config 
+# GCP config
 GS_BUCKET_NAME = env.str("GS_BUCKET_NAME", "")
 if GS_BUCKET_NAME:
     DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
@@ -331,7 +331,6 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
 TIME_INPUT_FORMATS = ('%I:%M %p',)
 
-
 STRIPE_TEST_PUBLIC_KEY ='pk_test_51JDWfKLVgVGgnNunjyDVTn1130UQqbfHWZcdlphQIVRd41r1emuzvUBjgZMviWJsqpwGNyUQxj6V2FGimiwWLtX200LqYNJmuf' # add here
 STRIPE_TEST_SECRET_KEY ='sk_test_51JDWfKLVgVGgnNund39HhzNCPDef1TcR3ZnjbYcz6rhvz6mmDT1qXPSp7WuETKREmaA37YpUTR9Agar7vXHYOR4c00q27I500E' # add here
 STRIPE_LIVE_SECRET_KEY = 'asdasdasdasd'
@@ -352,3 +351,5 @@ FCM_DJANGO_SETTINGS = {
     # default: False
     "DELETE_INACTIVE_DEVICES": False,
 }
+
+OLD_PASSWORD_FIELD_ENABLED = True

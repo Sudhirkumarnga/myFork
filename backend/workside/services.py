@@ -6,9 +6,10 @@ from django.core.files.base import ContentFile
 
 from push_notification.services import create_notification
 from workside import models
+from workside.models import *
 from workside.tasks import event_publishing_reminder_task, event_start_notification_task
 from business.models import (
-    Business
+    Business, Employee
 )
 
 
@@ -138,3 +139,14 @@ def send_notification_to_employees(employees):
 
 def send_event_reminder_to_employees(start_time, employees, worksite_id):
     event_start_notification_task.apply_async((start_time, employees, worksite_id), eta=start_time)
+
+
+def send_notify_to_employees(employees, worksite):
+    employees = Employee.objects.filter(id__in=employees)
+    for employee in employees:
+        create_notification({
+            "name": "Event Update",
+            "description": f'{worksite.name} event is update plz Check it out',
+            "user": employee.user
+        }
+        )

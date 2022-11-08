@@ -41,7 +41,9 @@ class WorksiteSerializer(ModelSerializer):
 
     class Meta:
         model = WorkSite
-        fields = ('id', 'business', 'personal_information', 'contact_person', 'is_active', 'show_dtails', 'tasks', 'location', 'longitude', 'latitude')
+        fields = (
+        'id', 'business', 'personal_information', 'contact_person', 'is_active', 'show_dtails', 'tasks', 'location',
+        'longitude', 'latitude')
 
     def to_representation(self, data):
         data = super(WorksiteSerializer, self).to_representation(data)
@@ -186,7 +188,7 @@ class EventSerializer(ModelSerializer):
             "id", "worksite", "start_time", "end_time",
             "frequency", "description", "notes", "reminder",
             "schedule_inspection", "event_status", "employees",
-            "publishing_reminder", "tasks", "selected_tasks"
+            "publishing_reminder", "tasks", "selected_tasks", "notify"
         )
 
     def validate(self, data):
@@ -205,7 +207,7 @@ class EventSerializer(ModelSerializer):
                 worksite__business__user=request.user
             )
         if event.exists():
-            raise serializers.ValidationError (
+            raise serializers.ValidationError(
                 {"start time & end time": _(
                     "Event is already created between these time range."
                 )
@@ -219,6 +221,64 @@ class EventSerializer(ModelSerializer):
             obj.worksite.business,
             many=False
         ).data
+
+    def create(self, validated_data):
+        employees = validated_data['employees']
+        selected_tasks = validated_data['selected_tasks']
+        del validated_data['employees']
+        del validated_data['selected_tasks']
+        event = Event.objects.create(**validated_data)
+        event.employees.set(
+            employees
+        )
+        event.selected_tasks.set(
+            selected_tasks
+        )
+        if event.notify:
+            send_notify_to_employees(
+                [employee.id for employee in event.employees.all()],
+                event.worksite
+            )
+        if event.event_status == "PUBLISHED":
+            send_event_reminder_to_employees(
+                self.start_time,
+                [employee.id for employee in event.employees.all()],
+                event.worksite.id
+            )
+        return event
+
+    def update(self, instance, validated_data):
+        if validated_data.__contains__('employees'):
+            Event.objects.get(id=instance.id).employees.set(
+                validated_data['employees']
+            )
+            del validated_data['employees']
+
+        if validated_data.__contains__('selected_tasks'):
+            Event.objects.get(id=instance.id).selected_tasks.set(
+                validated_data['selected_tasks']
+            )
+            del validated_data['selected_tasks']
+
+        if validated_data.__contains__('notify'):
+            if validated_data['notify']:
+                send_notify_to_employees(
+                    [employee.id for employee in Event.objects.get(id=instance.id).employees.all()],
+                    Event.objects.get(id=instance.id).worksite
+                )
+
+        if validated_data.__contains__('event_status'):
+            if validated_data['event_status'] == "PUBLISHED":
+                send_event_reminder_to_employees(
+                    Event.objects.get(id=instance.id).start_time,
+                    [employee.id for employee in Event.objects.get(id=instance.id).employees.all()],
+                    Event.objects.get(id=instance.id).worksite.id
+                )
+
+        Event.objects.filter(id=instance.id).update(
+           **validated_data
+        )
+        return Event.objects.get(id=instance.id)
 
 
 class SchedularSerializer(ModelSerializer):
