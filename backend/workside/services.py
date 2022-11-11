@@ -6,7 +6,6 @@ from django.core.files.base import ContentFile
 
 from push_notification.services import create_notification
 from workside import models
-from workside.models import *
 from workside.tasks import event_publishing_reminder_task, event_start_notification_task
 from business.models import (
     Business, Employee
@@ -23,10 +22,15 @@ def create_worksite(user, data):
         **data['worksite_information'],
         **data['contact_person'],
         show_dtails=data['show_dtails'],
-        logo=convert_file_from_bse64_to_blob(data['logo']),
-        instruction_video=convert_file_from_bse64_to_blob(data['instruction_video']),
         business=Business.objects.get(user=user),
     )
+    if data.__contains__("logo"):
+        worksite.logo = convert_file_from_bse64_to_blob(data['logo'])
+
+    if data.__contains__("instruction_video"):
+        worksite.instruction_video = convert_file_from_bse64_to_blob(data['instruction_video'])
+
+    worksite.save()
     return worksite
 
 

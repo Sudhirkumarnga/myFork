@@ -47,10 +47,7 @@ class WorkSiteViewSet(ModelViewSet):
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
-            queryset = WorkSite.objects.get(id=serializer.data['id'])
             serializer_data = serializer.data
-            serializer_data['logo'] = queryset.logo.url
-            serializer_data['instruction_video'] = queryset.instruction_video.url
             return Response(
                 SmartWorkHorseResponse.get_response(
                     success=True,

@@ -48,8 +48,8 @@ class WorksiteSerializer(ModelSerializer):
     def to_representation(self, data):
         data = super(WorksiteSerializer, self).to_representation(data)
         worksite = WorkSite.objects.get(id=data['id'])
-        data['logo'] = worksite.logo.url
-        data['instruction_video'] = worksite.instruction_video.url
+        data['logo'] = worksite.logo.url if worksite.logo else None
+        data['instruction_video'] = worksite.instruction_video.url if worksite.instruction_video else None
         return data
 
     @staticmethod
