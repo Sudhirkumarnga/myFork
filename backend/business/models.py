@@ -56,6 +56,14 @@ class Business(TimeStampedModel):
     )
     business_code = models.CharField(_('Business Code'), max_length=255, blank=True, null=True)
     employe_types = models.CharField(_('How do you refer to your employees'), max_length=255, blank=True, null=True)
+    customer = models.ForeignKey(
+        'djstripe.Customer', null=True, blank=True, on_delete=models.SET_NULL,
+        help_text="The user's Stripe Customer object, if it exists"
+    )
+    subscription = models.ForeignKey(
+        'djstripe.Subscription', null=True, blank=True, on_delete=models.SET_NULL,
+        help_text="The Business's Stripe Subscription object, if it exists"
+    )
     is_active = models.BooleanField(default=True)
 
     class Meta:

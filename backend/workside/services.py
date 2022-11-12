@@ -24,10 +24,10 @@ def create_worksite(user, data):
         show_dtails=data['show_dtails'],
         business=Business.objects.get(user=user),
     )
-    if data.__contains__("logo"):
+    if data.__contains__("logo") and data['logo'] is not None:
         worksite.logo = convert_file_from_bse64_to_blob(data['logo'])
 
-    if data.__contains__("instruction_video"):
+    if data.__contains__("instruction_video") and data['instruction_video'] is not None:
         worksite.instruction_video = convert_file_from_bse64_to_blob(data['instruction_video'])
 
     worksite.save()
