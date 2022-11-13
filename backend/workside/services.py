@@ -46,11 +46,11 @@ def update_worksite(user, data, instance):
         worksite.show_dtails = data['show_dtails']
     if data.__contains__("logo") and data['logo'] is not None:
         worksite.logo = convert_file_from_bse64_to_blob(data['logo'])
-    if data.__contains__("instruction_video") in data and data['instruction_video'] is not None:
+    if data.__contains__("instruction_video") and data['instruction_video'] is not None:
         worksite.instruction_video = convert_file_from_bse64_to_blob(data['instruction_video'])
     if data.__contains__("logo") and data['logo'] is None:
         worksite.logo = data['logo']
-    if data.__contains__("instruction_video") in data and data['instruction_video'] is None:
+    if data.__contains__("instruction_video")  and data['instruction_video'] is None:
         worksite.instruction_video = data['instruction_video']
 
     worksite.save()
