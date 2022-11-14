@@ -377,14 +377,6 @@
             "markers": "python_version >= '3.6'",
             "version": "==2.0.0"
         },
-        "django-multiselectfield": {
-            "hashes": [
-                "sha256:c270faa7f80588214c55f2d68cbddb2add525c2aa830c216b8a198de914eb470",
-                "sha256:d0a4c71568fb2332c71478ffac9f8708e01314a35cf923dfd7a191343452f9f9"
-            ],
-            "index": "pypi",
-            "version": "==0.1.12"
-        },
         "django-phonenumber-field": {
             "hashes": [
                 "sha256:dab78094e83f4b1276effca9903e6728e940d055b00cc8589ad5b8a22cb6a03b",
