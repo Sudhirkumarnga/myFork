@@ -1,5 +1,5 @@
 from django.db import models
-from django.dispatch import receiver
+from multiselectfield import MultiSelectField
 from django.utils.translation import gettext_lazy as _
 from business.models import Business
 from home.models import TimeStampedModel
@@ -31,7 +31,7 @@ class WorkSite(TimeStampedModel):
     description = models.TextField(_("WorkSide Description"), blank=True, null=True)
     notes = models.TextField(_("WorkSide Notes"), blank=True, null=True)
     monthly_rates = models.CharField(_("WorkSide Monthly Rates"), max_length=10, blank=True, null=True)
-    clear_frequency_by_day = models.CharField(_("WorkSide Monthly Rates"), max_length=10, choices=Weekday.choices(),
+    clear_frequency_by_day = MultiSelectField(_("Clear Frequency by day"), max_length=100, choices=Weekday.choices(),
                                               null=True, blank=True)
     desired_time = models.TimeField(null=True, blank=True)
     number_of_workers_needed = models.IntegerField(_("WorkSide Num Of Workers Needed"), blank=True, null=True)
