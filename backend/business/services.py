@@ -45,6 +45,7 @@ def create_user_for_employee(data):
         email=data['contact']['email'],
         phone=data['contact']['phone'],
         role="Employee",
+        is_read_terms=True,
         username=generate_unique_username([
             data['personal_information']['first_name'],
             data['contact']['email'],

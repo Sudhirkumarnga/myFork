@@ -9,13 +9,14 @@ User = get_user_model()
 
 @admin.register(User)
 class UserAdmin(auth_admin.UserAdmin):
-
     form = UserChangeForm
     add_form = UserCreationForm
-    fieldsets = (("User", {"fields": ("date_of_birth", "gender", "role")}),) + auth_admin.UserAdmin.fieldsets
+    fieldsets = (("User",
+                  {"fields": ("date_of_birth", "gender", "role", "is_read_terms")}),) + auth_admin.UserAdmin.fieldsets
     list_display = ["username", "first_name", "last_name", "is_superuser"]
     search_fields = ["name"]
 
+
 @admin.register(User_OTP)
-class UserOTPADmin(admin.ModelAdmin):
+class UserOTPAdmin(admin.ModelAdmin):
     list_display = ('user', 'otp', 'is_expire')
