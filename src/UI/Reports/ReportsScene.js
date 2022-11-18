@@ -7,10 +7,10 @@ export default function ReportsScene ({ navigation }) {
   const reportList = [
     { title: 'Schedule Variances' },
     { title: 'Location Variances' },
-    { title: 'Employee Time-off Requests' },
+    // { title: 'Employee Time-off Requests' },
     { title: 'Payroll Reports' },
-    { title: 'Mindset Reports' },
-    { title: 'Employee Skill Reports' },
+    // { title: 'Mindset Reports' },
+    // { title: 'Employee Skill Reports' },
     { title: 'Inspection' }
   ]
   return (

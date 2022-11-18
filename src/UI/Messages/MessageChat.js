@@ -8,13 +8,14 @@ import {
   TouchableOpacity,
   FlatList,
   Image,
-  BackHandler
+  BackHandler,
+  Platform,
+  ActivityIndicator
 } from 'react-native'
 import { Icon, Input } from 'react-native-elements'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-// import database from '@react-native-firebase/database'
-// import Toast from 'react-native-simple-toast'
-// import AppContext from '../../store/Context'
+import database from '@react-native-firebase/database'
+import Toast from 'react-native-simple-toast'
 // import { COLORS, FONT1REGULAR, FONT2REGULAR } from '../../constants'
 import userProfile from '../../res/Images/common/sample.png'
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
@@ -25,24 +26,42 @@ import smileIcon from '../../res/Svgs/smileIcon.svg'
 import insertIcon from '../../res/Svgs/galleryIcon.svg'
 import Colors from '../../res/Theme/Colors'
 import { Fonts } from '../../res'
-// import { Header } from '../../components'
+import AppContext from '../../Utils/Context'
+import { useRef } from 'react'
+import EmojiPicker from 'react-native-emoji-picker-staltz'
+import ImagePicker from 'react-native-image-crop-picker'
+import storage from '@react-native-firebase/storage'
 
 function MessageChat ({ navigation, route }) {
-  const orderID = route?.params?.orderID
+  const messageuid = route?.params?.messageuid
   const orderData = route?.params?.orderData
+  const inputRef = useRef()
   // Context
-  // const context = useContext(AppContext)
-  // const { user } = context
-  const user = ''
-  const messageuid = orderID
+  const context = useContext(AppContext)
+  const { user } = context
+  // const user = ''
   let scrollView
   const [state, setState] = useState({
     listHeight: 0,
     scrollViewHeight: 0,
-    messages: [0, 0, 0, 0],
+    uploading: false,
+    messages: [],
     messageText: '',
     messageData: null
   })
+
+  const { messageData, show } = state
+
+  const handleChange = (key, value) => {
+    setState(pre => ({ ...pre, [key]: value }))
+  }
+
+  const onClickEmoji = emoji => {
+    setState(prevState => ({
+      ...prevState,
+      messageText: prevState.messageText + emoji
+    }))
+  }
 
   const downButtonHandler = () => {
     if (scrollView !== null) {
@@ -64,45 +83,45 @@ function MessageChat ({ navigation, route }) {
   }, [])
 
   useEffect(() => {
-    // const db = database()
-    // if (user) {
-    //   db.ref('Messages/' + messageuid).on('value', snapshot => {
-    //     if (snapshot.val()) {
-    //       if (snapshot.val().senderId === user.uid) {
-    //         db.ref('Messages/' + messageuid)
-    //           .update({ senderRead: 0 })
-    //           .then(res => {
-    //             db.ref('Messages/' + messageuid).once('value', snapshot => {
-    //               if (snapshot.val()) {
-    //                 // getMessages()
-    //                 setState(prevState => ({
-    //                   ...prevState,
-    //                   messages: snapshot.val().messages,
-    //                   messageData: snapshot.val()
-    //                 }))
-    //               }
-    //             })
-    //           })
-    //       }
-    //       if (snapshot.val().receiverId === user.uid) {
-    //         db.ref('Messages/' + messageuid)
-    //           .update({ receiverRead: 0 })
-    //           .then(res => {
-    //             db.ref('Messages/' + messageuid).once('value', snapshot => {
-    //               if (snapshot.val()) {
-    //                 // getMessages()
-    //                 setState(prevState => ({
-    //                   ...prevState,
-    //                   messages: snapshot.val().messages,
-    //                   messageData: snapshot.val()
-    //                 }))
-    //               }
-    //             })
-    //           })
-    //       }
-    //     }
-    //   })
-    // }
+    const db = database()
+    if (user && messageuid) {
+      db.ref('Messages/' + messageuid).on('value', snapshot => {
+        if (snapshot.val()) {
+          if (snapshot.val()?.senderId === user?.id) {
+            db.ref('Messages/' + messageuid)
+              .update({ senderRead: 0 })
+              .then(res => {
+                db.ref('Messages/' + messageuid).once('value', snapshot => {
+                  if (snapshot.val()) {
+                    // getMessages()
+                    setState(prevState => ({
+                      ...prevState,
+                      messages: snapshot.val().messages || [],
+                      messageData: snapshot.val()
+                    }))
+                  }
+                })
+              })
+          }
+          if (snapshot.val()?.receiverId === user?.id) {
+            db.ref('Messages/' + messageuid)
+              .update({ receiverRead: 0 })
+              .then(res => {
+                db.ref('Messages/' + messageuid).once('value', snapshot => {
+                  if (snapshot.val()) {
+                    // getMessages()
+                    setState(prevState => ({
+                      ...prevState,
+                      messages: snapshot.val()?.messages || [],
+                      messageData: snapshot.val()
+                    }))
+                  }
+                })
+              })
+          }
+        }
+      })
+    }
   }, [user])
 
   useEffect(() => {
@@ -111,11 +130,61 @@ function MessageChat ({ navigation, route }) {
     }
   })
 
-  const onSend = e => {
+  const _uploadImage = async type => {
+    handleChange('uploading', true)
+    let OpenImagePicker =
+      type == 'camera'
+        ? ImagePicker.openCamera
+        : type == ''
+        ? ImagePicker.openPicker
+        : ImagePicker.openPicker
+
+    OpenImagePicker({
+      cropping: true
+    })
+      .then(async response => {
+        if (!response.path) {
+          handleChange('uploading', false)
+        } else {
+          const uri = response.path
+          const filename = Date.now()
+          const uploadUri =
+            Platform.OS === 'ios' ? uri.replace('file://', '') : uri
+          const task = storage()
+            .ref('Chat/' + filename)
+            .putFile(uploadUri)
+          // set progress state
+          task.on('state_changed', snapshot => {})
+          try {
+            const durl = await task
+            task.snapshot.ref.getDownloadURL().then(downloadURL => {
+              onSend(downloadURL, 'image')
+            })
+          } catch (e) {
+            console.error(e)
+          }
+          handleChange('uploading', false)
+        }
+      })
+      .catch(err => {
+        handleChange('showAlert', false)
+        handleChange('uploading', false)
+      })
+  }
+
+  function onlySpaces (str) {
+    return /^\s*$/.test(str)
+  }
+
+  const onSend = (text, type) => {
+    if (onlySpaces(text || state.messageText)) {
+      Toast.show('Please enter any character', Toast.LONG)
+      return
+    }
     const data = {
-      text: state.messageText,
+      text: text || state.messageText,
       timeStamp: Date.now(),
-      type: 'text',
+      type: type || 'text',
       senderId: user?.id
     }
     let messages = state.messages.concat(data)
@@ -131,21 +200,21 @@ function MessageChat ({ navigation, route }) {
           : 1
     }
 
-    // database()
-    //   .ref('Messages/' + messageuid)
-    //   .update(values)
-    //   .then(res => {
-    //     setState(prevState => ({
-    //       ...prevState,
-    //       loading: false,
-    //       messageText: ''
-    //     }))
-    //     downButtonHandler()
-    //   })
-    //   .catch(err => {
-    //     console.log(err)
-    //     Toast.show('Something went wrong!', Toast.LONG)
-    //   })
+    database()
+      .ref('Messages/' + messageuid)
+      .update(values)
+      .then(res => {
+        setState(prevState => ({
+          ...prevState,
+          loading: false,
+          messageText: ''
+        }))
+        downButtonHandler()
+      })
+      .catch(err => {
+        console.log(err)
+        Toast.show('Something went wrong!', Toast.LONG)
+      })
   }
 
   const _handleSend = (message, id) => {
@@ -215,15 +284,36 @@ function MessageChat ({ navigation, route }) {
               marginLeft: 20
             }}
             resizeMode='cover'
-            source={userProfile}
+            source={
+              messageData?.senderId === user?.id
+                ? messageData?.receiver?.personal_information?.profile_image
+                  ? {
+                      uri:
+                        messageData?.receiver?.personal_information
+                          ?.profile_image
+                    }
+                  : userProfile
+                : messageData?.sender?.personal_information?.profile_image
+                ? {
+                    uri:
+                      messageData?.sender?.personal_information?.profile_image
+                  }
+                : userProfile
+            }
           />
           <View>
             <Text style={{ color: Colors.WHITE, ...Fonts.poppinsRegular(12) }}>
-              John Doe
+              {messageData
+                ? messageData?.senderId === user?.id
+                  ? messageData?.receiver?.personal_information?.first_name +
+                    ' ' +
+                    messageData?.receiver?.personal_information?.last_name
+                  : messageData?.sender?.name
+                : ''}
             </Text>
-            <Text style={{ color: Colors.WHITE, ...Fonts.poppinsRegular(9) }}>
+            {/* <Text style={{ color: Colors.WHITE, ...Fonts.poppinsRegular(9) }}>
               Last seen 9:15 PM
-            </Text>
+            </Text> */}
           </View>
         </View>
       </View>
@@ -244,7 +334,7 @@ function MessageChat ({ navigation, route }) {
           }}
         >
           <FlatList
-            data={state.messages}
+            data={state?.messages}
             keyboardDismissMode='on-drag'
             onContentSizeChange={(contentWidth, contentHeight) => {
               setState(prevState => ({
@@ -268,9 +358,9 @@ function MessageChat ({ navigation, route }) {
               scrollView = ref
             }}
             showsVerticalScrollIndicator={false}
-            keyExtractor={(item, index) => index.toString()}
+            keyExtractor={(item, index) => index?.toString()}
             renderItem={({ item, index }) => {
-              if (item.senderId !== user?.id) {
+              if (item?.senderId !== user?.id) {
                 return (
                   <View
                     key={index}
@@ -296,7 +386,25 @@ function MessageChat ({ navigation, route }) {
                           marginRight: 10
                         }}
                         resizeMode='cover'
-                        source={userProfile}
+                        source={
+                          messageData?.senderId === user?.id
+                            ? messageData?.receiver?.personal_information
+                                ?.profile_image
+                              ? {
+                                  uri:
+                                    messageData?.receiver?.personal_information
+                                      ?.profile_image
+                                }
+                              : userProfile
+                            : messageData?.sender?.personal_information
+                                ?.profile_image
+                            ? {
+                                uri:
+                                  messageData?.sender?.personal_information
+                                    ?.profile_image
+                              }
+                            : userProfile
+                        }
                       />
                       <View
                         style={{
@@ -306,19 +414,26 @@ function MessageChat ({ navigation, route }) {
                           padding: 15
                         }}
                       >
-                        <Text
-                          style={{
-                            color: Colors.BLACK,
-                            ...Fonts.poppinsRegular(12),
-                            lineHeight: 20
-                          }}
-                        >
-                          {/* {item?.text} */}
-                          Hello guys, we have discussed about post-corona
-                          vacation plan and our decision is to go to Bali. We
-                          will have a very big party after this corona ends!
-                          These are some images about our destination
-                        </Text>
+                        {item?.type === 'image' ? (
+                          <Image
+                            source={{ uri: item?.text }}
+                            style={{
+                              width: 200,
+                              height: 200,
+                              resizeMode: 'contain'
+                            }}
+                          />
+                        ) : (
+                          <Text
+                            style={{
+                              color: Colors.BLACK,
+                              ...Fonts.poppinsRegular(12),
+                              lineHeight: 20
+                            }}
+                          >
+                            {item?.text}
+                          </Text>
+                        )}
                         <View
                           style={{
                             width: '100%',
@@ -372,20 +487,27 @@ function MessageChat ({ navigation, route }) {
                           padding: 10
                         }}
                       >
-                        <Text
-                          style={{
-                            color: Colors.WHITE,
-                            // fontFamily: FONT1REGULAR,
-                            lineHeight: 20,
-                            ...Fonts.poppinsRegular(12)
-                          }}
-                        >
-                          {/* {item.text} */}
-                          Hello guys, we have discussed about post-corona
-                          vacation plan and our decision is to go to Bali. We
-                          will have a very big party after this corona ends!
-                          These are some images about our destination
-                        </Text>
+                        {item?.type === 'image' ? (
+                          <Image
+                            source={{ uri: item?.text }}
+                            style={{
+                              width: 200,
+                              height: 200,
+                              resizeMode: 'contain'
+                            }}
+                          />
+                        ) : (
+                          <Text
+                            style={{
+                              color: Colors.WHITE,
+                              // fontFamily: FONT1REGULAR,
+                              lineHeight: 20,
+                              ...Fonts.poppinsRegular(12)
+                            }}
+                          >
+                            {item?.text}
+                          </Text>
+                        )}
                         <Text
                           style={{
                             color: Colors.WHITE,
@@ -403,6 +525,13 @@ function MessageChat ({ navigation, route }) {
               }
             }}
           />
+          {state?.uploading && (
+            <View
+              style={{ width: '100%', alignItems: 'center', marginBottom: 10 }}
+            >
+              <ActivityIndicator size={'small'} color={Colors.BACKGROUND_BG} />
+            </View>
+          )}
           <View
             style={{
               width: '100%',
@@ -417,16 +546,20 @@ function MessageChat ({ navigation, route }) {
               style={{
                 marginRight: 8
               }}
-              onPress={() => {
-                // state.messageText ? onSend() : console.log('')
-              }}
+              onPress={_uploadImage}
             >
               <SvgXml xml={insertIcon} />
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                inputRef.current?.blur()
+                handleChange('show', !show)
+              }}
+            >
               <SvgXml xml={smileIcon} />
             </TouchableOpacity>
             <Input
+              ref={inputRef}
               placeholderTextColor='#58595B'
               inputStyle={{
                 ...Fonts.poppinsRegular(12),
@@ -438,6 +571,7 @@ function MessageChat ({ navigation, route }) {
                 borderBottomWidth: 0,
                 borderRadius: 50
               }}
+              onFocus={() => handleChange('show', false)}
               containerStyle={{
                 paddingLeft: 0,
                 height: 40,
@@ -467,6 +601,28 @@ function MessageChat ({ navigation, route }) {
               <SvgXml xml={sendIcon} />
             </TouchableOpacity>
           </View>
+          {show && (
+            <EmojiPicker
+              onEmojiSelected={onClickEmoji}
+              rows={6}
+              hideClearButton
+              modalStyle={{ height: '50%' }}
+              backgroundStyle={{ backgroundColor: '#fff', height: '50%' }}
+              onPressOutside={() => handleChange('show', false)}
+              containerStyle={{ height: '100%' }}
+              localizedCategories={[
+                // Always in this order:
+                'Smileys and emotion',
+                'People and body',
+                'Animals and nature',
+                'Food and drink',
+                'Activities',
+                'Travel and places',
+                'Objects',
+                'Symbols'
+              ]}
+            />
+          )}
         </KeyboardAwareScrollView>
       </View>
     </View>

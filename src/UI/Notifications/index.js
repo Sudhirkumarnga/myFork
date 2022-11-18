@@ -9,14 +9,9 @@ import {
   Text,
   ActivityIndicator
 } from 'react-native'
-// import { colors } from '../utils/colors'
-// import Header from '../components/Header'
 import NotificationIcon from '../../res/Images/common/notificationIcon.png'
-// import { FONT1BOLD, FONT1MEDIUM, FONT1REGULAR } from '../utils/fonts'
-import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import { Icon, CheckBox } from 'react-native-elements'
 import moment from 'moment'
-// import { readNotification } from '../api/notifications'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Toast from 'react-native-simple-toast'
 import { useFocusEffect } from '@react-navigation/native'
@@ -27,7 +22,7 @@ import Colors from '../../res/Theme/Colors'
 import { readNotification } from '../../api/auth'
 
 const Notifications = ({ navigation }) => {
-  const { _user, notifications, _getNotification } = useContext(AppContext)
+  const { notifications, _getNotification } = useContext(AppContext)
   const [state, setState] = useState({
     loading: false,
     readed: [],
@@ -65,8 +60,6 @@ const Notifications = ({ navigation }) => {
       Toast.show(`Error: ${error.message}`)
     }
   }
-
-  console.warn('notifications', notifications)
 
   const _renderItem = (item, index) => {
     return (
