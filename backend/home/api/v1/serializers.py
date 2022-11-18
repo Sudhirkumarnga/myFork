@@ -18,7 +18,7 @@ from home.services import (
     create_organization_employee,
     create_employee,
     generate_user_otp,
-    create_emergency_contact
+    create_emergency_contact, update_subscription, get_remaining_employee_limit
 )
 
 User = get_user_model()
@@ -66,9 +66,13 @@ class SignupSerializer(serializers.ModelSerializer):
                 business_code=data['business_code']
             )
             if business.exists():
+                count = get_remaining_employee_limit(business.first())
+                if count < 1:
+                    raise serializers.ValidationError(_("Employee account limit exceeds, plz contact to Business "
+                                                        "Administrator"))
                 return data
             else:
-                raise serializers.ValidationError(_("Invalid Origanization Code"))
+                raise serializers.ValidationError(_("Invalid Organization Code"))
         return data
 
     def create(self, validated_data):
@@ -109,6 +113,7 @@ class SignupSerializer(serializers.ModelSerializer):
         if validated_data.__contains__("business_code"):
             employee = create_organization_employee(user, validated_data)
             create_emergency_contact(employee)
+            update_subscription(validated_data['business_code'])
 
         else:
             business = create_business_and_business_address(user, validated_data)

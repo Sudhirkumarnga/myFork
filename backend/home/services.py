@@ -107,3 +107,13 @@ def send_new_otp(user, otp):
         [user.email],
         html_message=msg_html,
     )
+
+
+def update_subscription(business_code):
+    business = Business.objects.get(business_code=business_code)
+    business.subscription.metadata['remaining_employees'] = int(business.subscription.metadata['allowed_employees']) - 1
+    business.subscription.save()
+
+
+def get_remaining_employee_limit(business):
+    return int(business.subscription.metadata['remaining_employees'])

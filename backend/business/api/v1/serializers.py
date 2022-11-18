@@ -5,6 +5,8 @@ from rest_framework.serializers import ModelSerializer
 from django_countries.serializers import CountryFieldMixin
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
+
+from home.services import get_remaining_employee_limit, update_subscription
 from users.models import User
 from datetime import datetime
 from workside.models import Event
@@ -131,9 +133,17 @@ class EmployeeSerializer(ModelSerializer):
 
     def create(self, validated_data):
         request = self.context['request']
+        business = Business.objects.get(user=request.user)
+        count = get_remaining_employee_limit(business)
+        print('==============================')
+        print(count)
+        print('==============================')
+        if count < 1:
+            raise serializers.ValidationError(_("Employee account limit exceeds, plz contact to Business Administrator"))
         employee_user, password = create_user_for_employee(request.data)
         employee = create_employee(employee_user, request.data, request.user)
         send_email_to_employee(employee_user, password)
+        update_subscription(business.business_code)
         return employee
 
     def update(self, instance, validated_data):

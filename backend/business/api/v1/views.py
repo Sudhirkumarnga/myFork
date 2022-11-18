@@ -129,7 +129,7 @@ class EmployeeViewset(ModelViewSet):
             )
 
     def create(self, request, *args, **kwargs):
-        try:
+        # try:
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
@@ -144,16 +144,16 @@ class EmployeeViewset(ModelViewSet):
                 status=status.HTTP_201_CREATED,
                 headers={},
             )
-        except Exception as e:
-            return Response(
-                SmartWorkHorseResponse.get_response(
-                    success=False,
-                    message="Something went wrong in creating employee",
-                    status=SmartWorkHorseStatus.Error.value,
-                    error={str(e)},
-                ),
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        # except Exception as e:
+        #     return Response(
+        #         SmartWorkHorseResponse.get_response(
+        #             success=False,
+        #             message="Something went wrong in creating employee",
+        #             status=SmartWorkHorseStatus.Error.value,
+        #             error={str(e)},
+        #         ),
+        #         status=status.HTTP_400_BAD_REQUEST,
+        #     )
 
     def update(self, request, *args, **kwargs):
         try:
