@@ -59,8 +59,7 @@ class EmployeeViewset(ModelViewSet):
     queryset = Employee.objects.filter(is_owner=False)
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     permission_classes = [
-        IsAuthenticated,
-        IsOrganizationAdmin
+        IsAuthenticated
     ]
 
     def get_queryset(self):
