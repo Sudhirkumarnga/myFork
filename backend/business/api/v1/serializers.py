@@ -100,6 +100,7 @@ class EmployeeSerializer(ModelSerializer):
         model = Employee
         fields = ['id', 'personal_information', 'contact', 'address_information', 'work_information']
 
+
     @staticmethod
     def get_personal_information(obj):
         data = EmployeePersonalInformationSerializer(obj.user, many=False).data
@@ -134,10 +135,11 @@ class EmployeeSerializer(ModelSerializer):
     def create(self, validated_data):
         request = self.context['request']
         business = Business.objects.get(user=request.user)
+        if not business.subscription:
+            raise serializers.ValidationError(
+                {"subscription": _("Plz Active You subscription in order to create Employee.")}
+            )
         count = get_remaining_employee_limit(business)
-        print('==============================')
-        print(count)
-        print('==============================')
         if count < 1:
             raise serializers.ValidationError(_("Employee account limit exceeds, plz contact to Business Administrator"))
         employee_user, password = create_user_for_employee(request.data)
