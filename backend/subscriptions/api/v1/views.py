@@ -8,7 +8,7 @@ from subscriptions.api.v1.serializers import (
 )
 from rest_framework import status
 from rest_framework.response import Response
-from djstripe.models import Product, Price, Plan, Customer, Subscription
+from djstripe.models import Product, Plan
 import stripe
 import djstripe
 from django.db import transaction

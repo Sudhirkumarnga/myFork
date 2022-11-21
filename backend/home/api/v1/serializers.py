@@ -66,7 +66,7 @@ class SignupSerializer(serializers.ModelSerializer):
                 business_code=data['business_code']
             )
             if business.exists():
-                if not business.subscription:
+                if not business.first().subscription:
                     raise serializers.ValidationError(_("The Business you want use is not currently active. please "
                                                         "contact to business administrator"))
                 count = get_remaining_employee_limit(business.first())
