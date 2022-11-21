@@ -55,13 +55,13 @@ class PrimaryTextInput extends Component {
   onFocus () {
     if (this.props.handleFocus) {
       Keyboard.dismiss()
-      this.txtInput.blur()
+      // this.txtInput?.blur()
     } else if (this.props.dateType) {
-      this.txtInput.blur()
+      // this.txtInput.blur()
       Keyboard.dismiss()
       this.datePicker.onPressDate()
     } else if (this.props.dropdown) {
-      this.txtInput.blur()
+      // this.txtInput.blur()
       Keyboard.dismiss()
       this.inputRefs.togglePicker(true)
     } else {
@@ -300,12 +300,12 @@ const styles = StyleSheet.create({
     top: 15
   },
   inputIOS: {
-    height: 44,
+    height: 50,
     position: 'absolute',
     bottom: 0,
-    width: '100%',
+    width: '90%',
     paddingHorizontal: 10,
-    color: Colors.TEXT_INPUT_COLOR,
+    color: 'transparent',
     ...Fonts.poppinsRegular(14)
   },
   inputAndroid: {
