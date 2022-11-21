@@ -241,7 +241,7 @@ class EventSerializer(ModelSerializer):
             )
         if event.event_status == "PUBLISHED":
             send_event_reminder_to_employees(
-                self.start_time,
+                event.start_time,
                 [employee.id for employee in event.employees.all()],
                 event.worksite.id
             )
