@@ -43,13 +43,13 @@ const fields = {
     placeholder: '',
     dropdown: true,
     items: [
-      { label: 'Sunday', value: 'Sunday' },
-      { label: 'Monday', value: 'Monday' },
-      { label: 'Tuesday', value: 'Tuesday' },
-      { label: 'Wednesday', value: 'Wednesday' },
-      { label: 'Thursday', value: 'Thursday' },
-      { label: 'Friday', value: 'Friday' },
-      { label: 'Saturday', value: 'Saturday' }
+      { label: 'Sunday', value: 'SUNDAY' },
+      { label: 'Monday', value: 'MONDAY' },
+      { label: 'Tuesday', value: 'TUESDAY' },
+      { label: 'Wednesday', value: 'WEDNESDAY' },
+      { label: 'Thursday', value: 'THURSDAY' },
+      { label: 'Friday', value: 'FRIDAY' },
+      { label: 'Saturday', value: 'SATURDAY' }
     ]
   },
   desiredTime: {

@@ -25,6 +25,7 @@ import {
   SignupComplete,
   EmployeesView,
   MessageChat,
+  GroupMessageChat,
   GroupMessageScene,
   VerifyAccount,
   AddEvents,
@@ -89,6 +90,7 @@ export const AuthNavigator = props => {
       <Stack.Screen name={'createTask'} component={CreateTaskScene} />
       <Stack.Screen name={'addEvents'} component={AddEvents} />
       <Stack.Screen name={'MessageChat'} component={MessageChat} />
+      <Stack.Screen name={'GroupMessageChat'} component={GroupMessageChat} />
       <Stack.Screen name={'GroupMessageScene'} component={GroupMessageScene} />
 
       {/* Settings Screens */}

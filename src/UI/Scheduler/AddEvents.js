@@ -6,6 +6,7 @@ import Header from '../Common/Header'
 import { Icon } from 'react-native-elements'
 import Button from '../Common/Button'
 import moment from 'moment'
+import momenttimezone from 'moment-timezone'
 import { useContext } from 'react'
 import AppContext from '../../Utils/Context'
 import PrimaryTextInput from '../Common/PrimaryTextInput'
@@ -32,7 +33,6 @@ import userProfile from '../../res/Images/common/sample.png'
 export default function AddEvents ({ navigation, route }) {
   const selectedEvent = route?.params?.selectedEvent
   const { schedules } = useContext(AppContext)
-  const [worksite, setWorksite] = useState('')
   const [state, setState] = useState({
     mode: 'week',
     worksite: '',
@@ -53,6 +53,7 @@ export default function AddEvents ({ navigation, route }) {
     loadingDelete: false,
     loadingMain: false,
     openEnd: false,
+    visible1: false,
     worksiteOptions: [],
     selected_tasks: [],
     allEmployee: [],
@@ -63,7 +64,7 @@ export default function AddEvents ({ navigation, route }) {
   })
   const {
     end_date,
-    // worksite,
+    worksite,
     start_date,
     end_time,
     endStart,
@@ -86,6 +87,7 @@ export default function AddEvents ({ navigation, route }) {
     loading,
     eventDetails,
     visible,
+    visible1,
     loadingDelete,
     loadingMain
   } = state
@@ -104,7 +106,6 @@ export default function AddEvents ({ navigation, route }) {
   }
 
   const handleChange = (key, value) => {
-    console.warn('key', key)
     setState(pre => ({ ...pre, [key]: value }))
   }
 
@@ -117,18 +118,44 @@ export default function AddEvents ({ navigation, route }) {
       }
     }, [selectedEvent])
   )
+
+  function convertLocalDateToUTCDate (time, toLocal) {
+    const todayDate = moment(new Date()).format('YYYY-MM-DD')
+    if (toLocal) {
+      const today = momenttimezone.tz.guess()
+      const timeUTC = momenttimezone.tz(`${time}`, today).format()
+      let date = new Date(timeUTC)
+      const milliseconds = Date.UTC(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        date.getHours(),
+        date.getMinutes(),
+        date.getSeconds()
+      )
+      const localTime = new Date(milliseconds)
+      const todayDate1 = momenttimezone.tz(localTime, today).format()
+      return todayDate1
+    } else {
+      const today = momenttimezone.tz.guess()
+      const todayDate1 = momenttimezone.tz(time, today).format()
+      const utcTime = moment.utc(todayDate1).format('YYYY-MM-DD HH:mm:ss')
+      return utcTime
+    }
+  }
+
   const handleSubmit = async () => {
     try {
       handleChange('loading', true)
       const token = await AsyncStorage.getItem('token')
       const payload = {
         worksite,
-        start_time: moment(
+        start_time: convertLocalDateToUTCDate(
           start_date + ' ' + moment(start_time).format('HH:mm:ss')
-        ).format('YYYY-MM-DD HH:mm:ss'),
-        end_time: moment(
+        ),
+        end_time: convertLocalDateToUTCDate(
           end_date + ' ' + moment(end_time).format('HH:mm:ss')
-        ).format('YYYY-MM-DD HH:mm:ss'),
+        ),
         frequency,
         description,
         notes,
@@ -147,6 +174,7 @@ export default function AddEvents ({ navigation, route }) {
         Toast.show('Event has been created')
       }
       handleChange('loading', false)
+      handleChange('visible1', false)
       navigation.goBack()
     } catch (error) {
       handleChange('loading', false)
@@ -180,6 +208,35 @@ export default function AddEvents ({ navigation, route }) {
     }
   }
 
+  const _getAllWorksites = async () => {
+    try {
+      handleChange('loading', true)
+      const token = await AsyncStorage.getItem('token')
+      const res = await getAllWorksites(token)
+      console.warn('getAllWorksites', res?.data)
+      handleChange('allWorksites', res?.data?.results)
+      const list = []
+      res?.data?.results?.forEach(element => {
+        if (element) {
+          list.push({
+            value: element?.id,
+            label: element?.personal_information?.name
+          })
+        }
+      })
+      handleChange('worksiteOptions', list)
+    } catch (error) {
+      handleChange('loading', false)
+      console.warn('err', error?.response?.data)
+      const showWError = Object.values(error.response?.data?.error)
+      if (showWError.length > 0) {
+        Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
+      } else {
+        Toast.show(`Error: ${JSON.stringify(error)}`)
+      }
+    }
+  }
+
   const _getEventDetails = async () => {
     try {
       handleChange('loadingMain', true)
@@ -187,7 +244,7 @@ export default function AddEvents ({ navigation, route }) {
       const res = await getEventDetails(selectedEvent?.id, token)
       handleChange('loadingMain', false)
       handleChange('eventDetails', res?.data)
-      setWorksite(res?.data?.worksite)
+      handleChange('worksite', res?.data?.worksite)
       handleChange(
         'start_date',
         moment(res?.data?.start_time).format('YYYY-MM-DD')
@@ -224,35 +281,6 @@ export default function AddEvents ({ navigation, route }) {
     }
   }
 
-  const _getAllWorksites = async () => {
-    try {
-      handleChange('loading', true)
-      const token = await AsyncStorage.getItem('token')
-      const res = await getAllWorksites(token)
-      console.warn('getAllWorksites', res?.data)
-      handleChange('loading', false)
-      handleChange('allWorksites', res?.data?.results)
-      const list = []
-      res?.data?.results?.forEach(element => {
-        if (element) {
-          list.push({
-            value: element?.id,
-            label: element?.personal_information?.name
-          })
-        }
-      })
-      handleChange('worksiteOptions', list)
-    } catch (error) {
-      handleChange('loading', false)
-      console.warn('err', error?.response?.data)
-      const showWError = Object.values(error.response?.data?.error)
-      if (showWError.length > 0) {
-        Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
-      } else {
-        Toast.show(`Error: ${JSON.stringify(error)}`)
-      }
-    }
-  }
   const _deleteEvent = async () => {
     try {
       handleChange('loadingDelete', true)
@@ -299,7 +327,6 @@ export default function AddEvents ({ navigation, route }) {
     )
   }
 
-  console.warn('worksite', worksite)
   return (
     <KeyboardAwareScrollView
       style={styles.container}
@@ -313,12 +340,12 @@ export default function AddEvents ({ navigation, route }) {
       <Text style={styles.title}>{'Event information'}</Text>
       <PrimaryTextInput
         dropdown={true}
-        // text={getWorksiteText(worksite)}
+        text={getWorksiteText(worksite)}
         items={worksiteOptions}
         label={getWorksiteText(worksite) || 'Worksite'}
         key='worksite'
         // placeholder='worksite'
-        onChangeText={(text, isValid) => setWorksite(text)}
+        onChangeText={(text, isValid) => handleChange('worksite', text)}
       />
       <View
         style={{
@@ -777,7 +804,11 @@ export default function AddEvents ({ navigation, route }) {
             employees.length === 0 ||
             selected_tasks.length === 0
           }
-          onPress={handleSubmit}
+          onPress={() =>
+            event_status === 'PUBLISHED'
+              ? handleChange('visible1', true)
+              : handleSubmit()
+          }
           title={selectedEvent ? 'Save' : 'Create'}
         />
       </View>
@@ -814,6 +845,52 @@ export default function AddEvents ({ navigation, route }) {
           </View>
         </View>
       </Modal>
+      <Modal
+        visible={visible1}
+        transparent
+        onDismiss={() => handleChange('visible1', false)}
+        onRequestClose={() => handleChange('visible1', false)}
+      >
+        <View style={styles.centerMode}>
+          <View style={styles.modal}>
+            <View style={{ alignItems: 'flex-end' }}>
+              <TouchableOpacity onPress={() => handleChange('visible1', false)}>
+                <Icon name='close' type='antdesign' />
+              </TouchableOpacity>
+            </View>
+            <Text style={[styles.title, { marginTop: -20 }]}>Message</Text>
+            <Text
+              style={[
+                styles.title,
+                { marginTop: 10, ...Fonts.poppinsRegular(14) }
+              ]}
+            >
+              {
+                'All impacted employees will receive a notification regarding the shift change'
+              }
+            </Text>
+            <Button
+              style={{ height: 40 }}
+              onPress={handleSubmit}
+              disabled={loading}
+              title={'Publish'}
+            />
+            <Button
+              onPress={handleSubmit}
+              disabled={loading}
+              isWhiteBg
+              style={{
+                height: 40,
+                marginTop: 10,
+                borderWidth: 1,
+                borderColor: Colors.BACKGROUND_BG
+              }}
+              color={Colors.GREEN_COLOR}
+              title={'Do not notify'}
+            />
+          </View>
+        </View>
+      </Modal>
     </KeyboardAwareScrollView>
   )
 }
@@ -830,7 +907,7 @@ const styles = StyleSheet.create({
     marginRight: 'auto'
   },
   title: {
-    ...Fonts.poppinsMedium(22),
+    ...Fonts.poppinsMedium(20),
     color: Colors.TEXT_COLOR,
     margin: 20,
     width: '90%'

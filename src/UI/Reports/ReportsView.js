@@ -29,7 +29,9 @@ import Fab from '../Common/Fab'
 import PieChart from 'react-native-pie-chart'
 import { Modal } from 'react-native'
 import PrimaryTextInput from '../Common/PrimaryTextInput'
-import moment from 'moment-timezone'
+import momenttimezone from 'moment-timezone'
+import moment from 'moment'
+// import { convertLocalDateToUTCDate } from '../../Utils'
 
 export default function ReportsView ({ navigation, route }) {
   const title = route?.params?.title
@@ -46,6 +48,33 @@ export default function ReportsView ({ navigation, route }) {
   const { loading, visible, reports, from, to } = state
   const handleChange = (name, value) => {
     setState(pre => ({ ...pre, [name]: value }))
+  }
+
+  function convertLocalDateToUTCDate (time, toLocal) {
+    const todayDate = moment(new Date()).format('YYYY-MM-DD')
+    if (toLocal) {
+      const today = momenttimezone.tz.guess()
+      const timeUTC = momenttimezone.tz(`${time}`, today).format()
+      let date = new Date(timeUTC)
+      const milliseconds = Date.UTC(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        date.getHours(),
+        date.getMinutes(),
+        date.getSeconds()
+      )
+      const localTime = new Date(milliseconds)
+      const todayDate1 = momenttimezone.tz(localTime, today).format()
+      return todayDate1
+    } else {
+      const today = momenttimezone.tz.guess()
+      const todayDate1 = momenttimezone
+        .tz(`${todayDate} ${time}`, today)
+        .format()
+      const utcTime = moment.utc(todayDate1).format('YYYY-MM-DDTHH:mm')
+      return utcTime
+    }
   }
 
   useFocusEffect(
@@ -245,7 +274,10 @@ export default function ReportsView ({ navigation, route }) {
                   <View />
                 )}
                 <Text style={[styles.description, { marginTop: 0 }]}>
-                  {'May 27th, 2022'}
+                  {item?.created_at &&
+                    moment(
+                      convertLocalDateToUTCDate(item?.created_at, true)
+                    ).fromNow()}
                 </Text>
               </View>
               <Text

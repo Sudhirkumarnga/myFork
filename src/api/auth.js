@@ -20,8 +20,8 @@ export const setPassword = (payload, token) => {
   return API.post('api/v1/auth/confirm_reset_password/', payload, token)
 }
 
-export const changePassword = (payload, token) => {
-  return API.post('rest-auth/password/change/', payload, token)
+export const _changePassword = (payload, token) => {
+  return API.post('api/v1/auth/password/change/', payload, token)
 }
 
 export const updateProfile = async (payload, user_id, token) => {

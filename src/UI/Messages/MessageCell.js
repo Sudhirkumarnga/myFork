@@ -1,9 +1,9 @@
 import moment from 'moment-timezone'
-import React, { Component } from 'react'
+import React from 'react'
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native'
 import { Colors, Fonts } from '../../res'
 import userProfile from '../../res/Images/common/sample.png'
-import { BaseComponent } from '../Common'
+import groupAvatar from '../../res/Images/common/groupAvatar.png'
 
 function MessageCell ({ navigation, item, user }) {
   const renderTime = () => {
@@ -55,7 +55,9 @@ function MessageCell ({ navigation, item, user }) {
   const renderTitle = () => {
     return (
       <Text style={styles.title}>
-        {item?.senderId === user?.id
+        {item?.type === 'group'
+          ? item?.name
+          : item?.senderId === user?.id
           ? item?.receiver?.personal_information?.first_name +
             ' ' +
             item?.receiver?.personal_information?.last_name
@@ -70,12 +72,17 @@ function MessageCell ({ navigation, item, user }) {
     <TouchableOpacity
       style={[styles.container]}
       onPress={() =>
-        navigation.navigate('MessageChat', { messageuid: item?.id })
+        navigation.navigate(
+          item?.type === 'group' ? 'GroupMessageChat' : 'MessageChat',
+          { messageuid: item?.id }
+        )
       }
     >
       <Image
         source={
-          item?.senderId === user?.id
+          item?.type === 'group'
+            ? groupAvatar
+            : item?.senderId === user?.id
             ? item?.receiver?.personal_information?.profile_image
               ? { uri: item?.receiver?.personal_information?.profile_image }
               : userProfile

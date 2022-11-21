@@ -14,6 +14,7 @@ import { Icon, CheckBox } from 'react-native-elements'
 import moment from 'moment'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Toast from 'react-native-simple-toast'
+import { Images } from '../../res'
 import { useFocusEffect } from '@react-navigation/native'
 import AppContext from '../../Utils/Context'
 import Header from '../Common/Header'
@@ -144,6 +145,7 @@ const Notifications = ({ navigation }) => {
       <Header
         leftButton
         title={'Notifications'}
+        rightIcon={{ ...Images.bell }}
         onLeftPress={() => navigation.goBack()}
       />
       <View style={styles.listContainer}>

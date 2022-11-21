@@ -208,7 +208,8 @@ export default class LoginScene extends BaseScene {
               }}
             >
               Password must be atleast 8 characters which contain at least one
-              lowercase letter, one uppercase letter, and one numeric digit
+              lowercase letter, one uppercase letter,at least one alphanumeric
+              letter and one numeric digit
             </Text>
           )}
           {env == 'employee' && this.renderTermsView()}

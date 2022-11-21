@@ -41,7 +41,7 @@ export default function WorksiteDetailScene ({ navigation, route }) {
       },
       {
         title: 'Cleaning rate by day:',
-        description: worksiteData?.personal_information?.clear_frequency_by_day
+        description: worksiteData?.personal_information?.clear_frequency_by_day?.toString()
       },
       {
         title: 'Desired time:',

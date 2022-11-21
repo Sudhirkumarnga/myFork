@@ -109,7 +109,9 @@ export default function MessagesScene ({ navigation }) {
     if (value) {
       const re = new RegExp(value, 'i')
       var filtered = allList?.filter(entry =>
-        entry?.senderId !== user?.id
+        entry?.type === 'group'
+          ? entry?.name?.includes(value)
+          : entry?.senderId !== user?.id
           ? entry?.sender?.personal_information?.first_name?.includes(value)
           : entry?.receiver?.personal_information?.first_name?.includes(value)
       )

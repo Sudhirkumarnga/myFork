@@ -27,7 +27,7 @@ import { SvgXml } from 'react-native-svg'
 
 export default function ShiftView () {
   const navigation = useNavigation()
-  const { _getUpcomingShift, upcomingShiftData } = useContext(AppContext)
+  const { _getUpcomingShift, upcomingShiftData, user } = useContext(AppContext)
   const [state, setState] = useState({
     loading: false,
     visible: false,
@@ -76,6 +76,7 @@ export default function ShiftView () {
     handleChange('visible1', false)
   }
 
+  console.warn('user',user?.role === 'Organization Admin');
   const _createAttendance = async () => {
     try {
       handleChange('loadingSubmit', true)
@@ -121,7 +122,7 @@ export default function ShiftView () {
     return (
       <Button
         onPress={() =>
-          upcomingShiftData?.status === 'CLOCK_IN'
+          upcomingShiftData?.status === 'CLOCK_OUT'
             ? navigation.navigate('ShiftDetails', { upcomingShiftData })
             : handleChange('visible', true)
         }
@@ -135,6 +136,7 @@ export default function ShiftView () {
             ? Colors.RED_COLOR
             : Colors.BACKGROUND_BG
         }
+        disabled={!upcomingShiftData?.status}
         style={{
           marginTop: 30
         }}
@@ -187,7 +189,7 @@ export default function ShiftView () {
         </View>
         <Image {...Images.calendar} style={styles.image} />
       </View>
-      {renderClockButton()}
+      {user?.role !== 'Organization Admin' && renderClockButton()}
       <Modal
         visible={visible}
         transparent

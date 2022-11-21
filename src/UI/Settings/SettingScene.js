@@ -65,9 +65,10 @@ export default class SettingScene extends BaseScene {
   }
 
   logout = async () => {
-    const { setUser } = this.context
+    const { setAdminProfile, setUser } = this.context
     const navigation = this.props.navigation
     setUser(null)
+    setAdminProfile(null)
     await AsyncStorage.removeItem('token')
     await AsyncStorage.removeItem('user')
     navigation.navigate('AuthLoading')

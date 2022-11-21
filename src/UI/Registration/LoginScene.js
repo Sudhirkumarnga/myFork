@@ -13,6 +13,7 @@ import Toast from 'react-native-simple-toast'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import AppContext from '../../Utils/Context'
 import { loginUser } from '../../api/auth'
+import AsyncHelper from '../../Utils/AsyncHelper'
 
 export default class LoginScene extends BaseScene {
   static contextType = AppContext
@@ -68,6 +69,7 @@ export default class LoginScene extends BaseScene {
 
   handleLogin = async () => {
     try {
+      const env = await AsyncHelper.getEnv()
       const { setUser } = this.context
       this.handleChange('loading', true, true)
       const payload = {
@@ -77,6 +79,14 @@ export default class LoginScene extends BaseScene {
       const res = await loginUser(payload)
       this.handleChange('loading', false, true)
       console.warn('signupUser', res?.data)
+      if (env === 'admin' && res?.data?.user?.role !== 'Organization Admin') {
+        alert('Please use business user')
+        return
+      }
+      if (env === 'employee' && res?.data?.user?.role === 'Organization Admin') {
+        alert('Please use employee user')
+        return
+      }
       await AsyncStorage.setItem('token', res?.data?.key)
       if (res?.data?.user) {
         setUser(res?.data?.user)

@@ -1,6 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { useContext, useEffect } from 'react'
-import { StyleSheet, View, ActivityIndicator, Platform } from 'react-native'
+import {
+  StyleSheet,
+  View,
+  ActivityIndicator,
+  Platform,
+  Alert
+} from 'react-native'
 import Toast from 'react-native-simple-toast'
 import { getProfile } from '../../api/auth'
 import Colors from '../../res/Theme/Colors'
@@ -17,8 +23,8 @@ function AuthLoading ({ navigation }) {
     _getEarnings,
     _getleaveRequest,
     _readDevice,
-    _getNotification
-    // _getJourneys,
+    _getNotification,
+    _getCountries
     // _getMyAddresses
   } = context
 
@@ -50,12 +56,16 @@ function AuthLoading ({ navigation }) {
         return
       } else if (
         userData?.role !== 'Organization Admin' &&
+        !res?.data?.response?.business_information &&
         !res?.data?.response?.emergency_contact?.first_name
       ) {
         navigation.navigate('EmployeeProfileScene')
         return
       }
-      if (userData?.role === 'Organization Admin') {
+      if (
+        userData?.role === 'Organization Admin' ||
+        res?.data?.response?.emergency_contact?.first_name
+      ) {
         navigation.navigate('home')
         return
       } else {
@@ -117,6 +127,7 @@ function AuthLoading ({ navigation }) {
   }
 
   const _bootstrapAsync = async () => {
+    _getCountries()
     const userUID = await AsyncStorage.getItem('token')
     if (userUID) {
       _getProfile()

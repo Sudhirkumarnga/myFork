@@ -18,6 +18,13 @@ import Toast from 'react-native-simple-toast'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import RNFS from 'react-native-fs'
+import {
+  Menu,
+  MenuOptions,
+  MenuOption,
+  MenuTrigger
+} from 'react-native-popup-menu'
+import { Icon } from 'react-native-elements'
 
 export default function AddWorksiteScene ({ navigation, route }) {
   const worksiteData = route?.params?.worksiteData
@@ -30,7 +37,7 @@ export default function AddWorksiteScene ({ navigation, route }) {
     notes: worksiteData?.personal_information?.notes || '',
     monthly_rates: worksiteData?.personal_information?.monthly_rates || '',
     clear_frequency_by_day:
-      worksiteData?.personal_information?.clear_frequency_by_day || '',
+      worksiteData?.personal_information?.clear_frequency_by_day || [],
     desired_time: worksiteData?.personal_information?.desired_time || '',
     number_of_workers_needed:
       worksiteData?.personal_information?.number_of_workers_needed?.toString() ||
@@ -45,7 +52,8 @@ export default function AddWorksiteScene ({ navigation, route }) {
     // profile_image: worksiteData?.personal_information?.profile_image || '',
     logo: worksiteData?.logo || null,
     instruction_video: worksiteData?.instruction_video || null,
-    loading: false
+    loading: false,
+    opened: false
   })
 
   const {
@@ -63,9 +71,10 @@ export default function AddWorksiteScene ({ navigation, route }) {
     contact_phone_number,
     show_dtails,
     logo,
-    instruction_video
+    instruction_video,
+    opened
   } = state
-console.warn('logo',worksiteData);
+  console.warn('logo', worksiteData)
   const handleChange = (name, value) => {
     setState(pre => ({ ...pre, [name]: value }))
   }
@@ -90,10 +99,10 @@ console.warn('logo',worksiteData);
           contact_person_name,
           contact_phone_number
         },
-        show_dtails,
-        logo,
-        instruction_video
+        show_dtails
       }
+      logo && (formData.logo = logo)
+      instruction_video && (formData.instruction_video = instruction_video)
       if (worksiteData) {
         await updateWorksite(worksiteData?.id, formData, token)
         Toast.show(`Worksite has been updated!`)
@@ -179,14 +188,112 @@ console.warn('logo',worksiteData);
 
   const renderPersonalInfoInput = () => {
     return WorksiteForms.fields('addWorksite')?.map(fields => {
-      return (
-        <PrimaryTextInput
-          {...fields}
-          text={state[fields.key]}
-          key={fields.key}
-          onChangeText={(text, isValid) => handleChange(fields.key, text)}
-        />
-      )
+      if (fields?.key === 'clear_frequency_by_day') {
+        return (
+          <Menu
+            opened={opened}
+            style={{ width: '100%' }}
+            onBackdropPress={() => handleChange('opened', !opened)}
+          >
+            <MenuTrigger
+              onPress={() => handleChange('opened', !opened)}
+              style={{ width: '100%', alignItems: 'center', marginTop: 10 }}
+            >
+              <View
+                style={[
+                  {
+                    alignItems: 'center',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    width: '90%',
+                    height: 50,
+                    width: '90%',
+                    borderRadius: 10,
+                    color: Colors.TEXT_INPUT_COLOR,
+                    paddingHorizontal: 15,
+                    ...Fonts.poppinsRegular(14),
+                    borderWidth: 1,
+                    backgroundColor: Colors.TEXT_INPUT_BG,
+                    borderColor: Colors.TEXT_INPUT_BORDER,
+                    paddingHorizontal: 15,
+                    marginBottom: 10
+                  }
+                ]}
+              >
+                <Text
+                  style={{
+                    ...Fonts.poppinsRegular(12),
+                    color:
+                      clear_frequency_by_day?.length > 0
+                        ? Colors.BLACK
+                        : Colors.BLUR_TEXT
+                  }}
+                >
+                  {clear_frequency_by_day?.length > 0
+                    ? clear_frequency_by_day?.toString()
+                    : Strings.cleaningFreq}
+                </Text>
+                <Icon
+                  name='down'
+                  size={12}
+                  color={Colors.BLUR_TEXT}
+                  style={{ marginLeft: 10 }}
+                  type='antdesign'
+                />
+              </View>
+            </MenuTrigger>
+            <MenuOptions style={{ width: '100%' }}>
+              {fields?.items?.map(item => {
+                const isSelected = clear_frequency_by_day?.some(
+                  e => e === item?.value
+                )
+                return (
+                  <MenuOption
+                    style={{ width: '100%' }}
+                    onSelect={() => {
+                      if (isSelected) {
+                        const removed = clear_frequency_by_day?.filter(
+                          e => e !== item?.value
+                        )
+                        handleChange(fields?.key, removed)
+                      } else {
+                        handleChange(fields?.key, [
+                          ...clear_frequency_by_day,
+                          item?.value
+                        ])
+                      }
+                    }}
+                  >
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        width: '100%',
+                        justifyContent: 'space-between',
+                        paddingHorizontal: 10
+                      }}
+                    >
+                      <Text style={{ ...Fonts.poppinsRegular(14) }}>
+                        {item?.label}
+                      </Text>
+                      <Image {...Images[isSelected ? 'checked' : 'checkbox']} />
+                    </View>
+                  </MenuOption>
+                )
+              })}
+            </MenuOptions>
+          </Menu>
+        )
+      } else {
+        return (
+          <PrimaryTextInput
+            {...fields}
+            text={state[fields.key]}
+            key={fields.key}
+            onChangeText={(text, isValid) => handleChange(fields.key, text)}
+          />
+        )
+      }
     })
   }
 
@@ -267,8 +374,8 @@ console.warn('logo',worksiteData);
             !location ||
             !description ||
             !notes ||
-            !monthly_rates ||
-            !clear_frequency_by_day ||
+            // !monthly_rates ||
+            clear_frequency_by_day.length === 0 ||
             !desired_time ||
             !number_of_workers_needed ||
             !supplies_needed ||
@@ -300,8 +407,8 @@ console.warn('logo',worksiteData);
   const renderContent = () => {
     return (
       <KeyboardAwareScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ flexGrow: 1 }}
+        style={{ flex: 1, width: '100%' }}
+        contentContainerStyle={{ flexGrow: 1, width: '100%' }}
       >
         <View style={styles.childContainer}>
           {/* <TouchableOpacity style={styles.imageView} onPress={_uploadImage}>
@@ -317,7 +424,7 @@ console.warn('logo',worksiteData);
               </>
             )}
           </TouchableOpacity> */}
-          <Text style={styles.title}>{'Worksitesite Information'}</Text>
+          <Text style={styles.title}>{'Worksite Information'}</Text>
           {renderPersonalInfoInput()}
           <Text style={styles.title}>{Strings.contactInfo}</Text>
           {renderEmployeeContactInput()}
@@ -330,7 +437,8 @@ console.warn('logo',worksiteData);
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={{ flex: 1, width: '100%' }}
+      contentContainerStyle={{ width: '100%' }}
       behavior={Platform.OS === 'ios' ? 'padding' : null}
     >
       <View style={styles.container}>
@@ -348,6 +456,7 @@ console.warn('logo',worksiteData);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: '100%',
     backgroundColor: Colors.WHITE
   },
   title: {
@@ -356,7 +465,8 @@ const styles = StyleSheet.create({
     margin: 20
   },
   childContainer: {
-    flex: 1
+    flex: 1,
+    width: '100%'
   },
   footerButton: {
     marginTop: '5%',

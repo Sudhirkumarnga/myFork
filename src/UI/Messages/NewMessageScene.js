@@ -24,13 +24,14 @@ import { ActivityIndicator } from 'react-native'
 const screenWidth = Dimensions.get('window').width
 
 export default function NewMessageScene ({ navigation }) {
-  const { user } = useContext(AppContext)
+  const { user, adminProfile } = useContext(AppContext)
   const [state, setState] = useState({
     loading: false,
     allEmployee: [],
+    List: [],
     searchText: ''
   })
-  const { loading, searchText, allEmployee } = state
+  const { loading, searchText, allEmployee, List } = state
 
   const handleChange = (key, value) => {
     setState(pre => ({ ...pre, [key]: value }))
@@ -66,14 +67,14 @@ export default function NewMessageScene ({ navigation }) {
     handleChange(key, value)
     if (value) {
       const re = new RegExp(value, 'i')
-      var filtered = allList?.filter(entry =>
+      var filtered = allEmployee?.filter(entry =>
         entry?.senderId !== user?.id
-          ? entry?.sender?.personal_information?.first_name?.includes(value)
-          : entry?.receiver?.personal_information?.first_name?.includes(value)
+          ? entry?.personal_information?.first_name?.includes(value)
+          : entry?.personal_information?.first_name?.includes(value)
       )
       handleChange('List', filtered)
     } else {
-      handleChange('List', allList)
+      handleChange('List', allEmployee)
     }
   }
 
@@ -84,7 +85,7 @@ export default function NewMessageScene ({ navigation }) {
     db.ref('Messages/' + id).once('value', snapshot => {
       if (snapshot.val()) {
         let value = {
-          sender: user,
+          sender: { ...user, ...adminProfile },
           senderId: user?.id,
           id: id,
           timeStamp: Date.now(),
@@ -192,7 +193,7 @@ export default function NewMessageScene ({ navigation }) {
         </Text>
         {loading && <ActivityIndicator size='small' color={Colors.BUTTON_BG} />}
         <FlatList
-          data={allEmployee}
+          data={List}
           style={{ width: '90%', marginTop: 20 }}
           renderItem={({ item, index }) => (
             <TouchableOpacity

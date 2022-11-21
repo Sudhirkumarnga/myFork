@@ -145,7 +145,10 @@ class PrimaryTextInput extends Component {
           ref={el => {
             this.inputRefs = el
           }}
-          placeholder={{ label: this.props.label, value: null }}
+          placeholder={{
+            label: !this.props.text ? this.props.label : null,
+            value: null
+          }}
           fixAndroidTouchableBug
           Icon={() => {
             return <Image {...Images.downArrow} />

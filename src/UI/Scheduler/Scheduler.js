@@ -132,9 +132,9 @@ export default function Scheduler ({ navigation }) {
             title: element?.worksite_name,
             color: '#FDB48B',
             start: new Date(
-              convertLocalDateToUTCDate(element?.start_time, true)
+              moment(element?.start_time).format()
             ),
-            end: new Date(convertLocalDateToUTCDate(element?.end_time, true))
+            end: new Date(moment(element?.end_time).format())
           })
         }
       })
@@ -327,8 +327,8 @@ export default function Scheduler ({ navigation }) {
                     >
                       <Image
                         source={
-                          item?.personal_information?.profile_image
-                            ? { uri: item?.personal_information?.profile_image }
+                          item?.profile_image
+                            ? { uri: item?.profile_image }
                             : userProfile
                         }
                         style={{
@@ -339,7 +339,7 @@ export default function Scheduler ({ navigation }) {
                         }}
                       />
                       <Text style={{ ...Fonts.poppinsRegular(12) }}>
-                        {item?.personal_information?.first_name}
+                        {item?.first_name}
                       </Text>
                       <Text
                         style={{
@@ -347,7 +347,7 @@ export default function Scheduler ({ navigation }) {
                           color: Colors.BLUR_TEXT
                         }}
                       >
-                        Phone Number:
+                        Phone Number:{item?.mobile}
                       </Text>
                     </View>
                   )}

@@ -19,6 +19,8 @@ export default function EmpProfileView ({ navigation }) {
     setState(pre => ({ ...pre, [name]: value }))
   }
 
+  console.warn('adminProfile',adminProfile);
+
   return (
     <View style={styles.container}>
       <Header
@@ -33,8 +35,8 @@ export default function EmpProfileView ({ navigation }) {
       >
         <Image
           source={
-            adminProfile?.emergency_contact?.profile_image
-              ? { uri: adminProfile?.emergency_contact?.profile_image }
+            adminProfile?.personal_information?.profile_image
+              ? { uri: adminProfile?.personal_information?.profile_image }
               : Sample
           }
           style={styles.picture}

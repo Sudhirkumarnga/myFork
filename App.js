@@ -52,8 +52,16 @@ const App = () => {
       setCities(cities?.data?.results)
       setStates(states?.data?.results)
     } catch (error) {
-      const showWError = Object.values(error.response?.data?.error)
-      Toast.show(`Error: ${showWError[0]}`)
+      const showWError = error.response?.data?.error
+        ? Object.values(error.response?.data?.error)
+        : error.response?.data
+        ? Object.values(error.response?.data)
+        : ''
+      if (showWError.length > 0) {
+        Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
+      } else {
+        Toast.show(`Error: ${JSON.stringify(error)}`)
+      }
     }
   }
 
@@ -65,7 +73,11 @@ const App = () => {
       console.warn('getAllWorksites', res?.data)
       setSchedules(res?.data?.response)
     } catch (error) {
-      const showWError = Object.values(error.response?.data?.error)
+      const showWError = error.response?.data?.error
+        ? Object.values(error.response?.data?.error)
+        : error.response?.data
+        ? Object.values(error.response?.data)
+        : ''
       if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
       } else {
@@ -80,7 +92,12 @@ const App = () => {
       const res = await getEarnings(token)
       setEarnings(res?.data)
     } catch (error) {
-      const showWError = Object.values(error.response?.data?.error)
+      console.warn('error.response?.data',error.response?.data);
+      const showWError = error.response?.data?.error
+        ? Object.values(error.response?.data?.error)
+        : error.response?.data
+        ? Object.values(error.response?.data)
+        : ''
       if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
       } else {
@@ -96,9 +113,13 @@ const App = () => {
       console.log('getleaveRequest', res?.data?.results)
       setLeaveRequest(res?.data?.results)
     } catch (error) {
-      const showWError = Object.values(error.response?.data?.error)
+      const showWError = error.response?.data?.error
+        ? Object.values(error.response?.data?.error)
+        : error.response?.data
+        ? Object.values(error.response?.data)
+        : ''
       if (showWError.length > 0) {
-        Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
+        Toast.show(`Error: ${JSON.stringify(showWError)}`)
       } else {
         Toast.show(`Error: ${JSON.stringify(error)}`)
       }
@@ -111,7 +132,11 @@ const App = () => {
       const res = await getProfile(token)
       setAdminProfile(res?.data?.response)
     } catch (error) {
-      const showWError = Object.values(error.response?.data?.error)
+      const showWError = error.response?.data?.error
+        ? Object.values(error.response?.data?.error)
+        : error.response?.data
+        ? Object.values(error.response?.data)
+        : ''
       if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
       } else {
@@ -127,8 +152,11 @@ const App = () => {
       console.warn('getUpcomingShift', res?.data)
       setUpcomingShiftData(res?.data)
     } catch (error) {
-      console.warn('err', error?.response?.data)
-      const showWError = Object.values(error.response?.data?.error)
+      const showWError = error.response?.data?.error
+        ? Object.values(error.response?.data?.error)
+        : error.response?.data
+        ? Object.values(error.response?.data)
+        : ''
       if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
       } else {
@@ -142,8 +170,17 @@ const App = () => {
       const token = await AsyncStorage.getItem('token')
       const res = await readDevice(payload, token)
     } catch (error) {
-      console.warn('error', error?.response?.data?.detail)
-      Toast.show(`Error: ${error?.response?.data?.detail}`)
+      const showWError = error.response?.data?.error
+        ? Object.values(error.response?.data?.error)
+        : error.response?.data
+        ? Object.values(error.response?.data)
+        : ''
+      if (showWError.length > 0) {
+        Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
+      } else {
+        // Toast.show(`Error: ${JSON.stringify(error)}`)
+        Toast.show(`Error: ${error?.response?.data?.detail}`)
+      }
     }
   }
 
@@ -154,8 +191,16 @@ const App = () => {
       console.warn('_getNotification', res?.data?.results)
       setNotifications(res?.data?.results)
     } catch (error) {
-      console.warn('_getNotification', JSON.stringify(error?.response?.data))
-      Toast.show(`Error: ${error?.response?.data?.detail}`)
+      const showWError = error.response?.data?.error
+        ? Object.values(error.response?.data?.error)
+        : error.response?.data
+        ? Object.values(error.response?.data)
+        : ''
+      if (showWError.length > 0) {
+        Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
+      } else {
+        Toast.show(`Error: ${JSON.stringify(error)}`)
+      }
     }
   }
 

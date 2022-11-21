@@ -19,6 +19,7 @@ import { createEmployee, updateEmployee } from '../../api/business'
 import moment from 'moment'
 import AppContext from '../../Utils/Context'
 import { useContext } from 'react'
+import { useEffect } from 'react'
 
 export default function AddEmployeeScene ({ navigation, route }) {
   const item = route?.params?.item
@@ -52,6 +53,10 @@ export default function AddEmployeeScene ({ navigation, route }) {
     gender: item?.personal_information?.gender || '',
     loading: false
   })
+
+  useEffect(() => {
+    // _getCountries()
+  }, [])
 
   const {
     loading,
@@ -128,7 +133,7 @@ export default function AddEmployeeScene ({ navigation, route }) {
         address_information: {
           address_line_one,
           address_line_two,
-          city:  getCityTValue(city),
+          city: getCityTValue(city)
         },
         work_information: {
           position,
@@ -146,8 +151,12 @@ export default function AddEmployeeScene ({ navigation, route }) {
     } catch (error) {
       handleChange('loading', false)
       console.warn('err', error?.response?.data)
-      const showWError = Object.values(error.response?.data?.error)
-      if (showWError.length > 0) {
+      const showWError =
+        error.response?.data?.error &&
+        Object.values(error.response?.data?.error)
+      if (error?.response?.data?.subscription) {
+        Toast.show(`Error: ${error?.response?.data?.subscription}`)
+      } else if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
       } else {
         Toast.show(`Error: ${JSON.stringify(error)}`)
@@ -159,7 +168,6 @@ export default function AddEmployeeScene ({ navigation, route }) {
     const filtered = cities?.filter(e => e.name === value)
     return filtered.length > 0 ? filtered[0].id : ''
   }
-
 
   const renderPersonalInfoInput = () => {
     return Forms.fields('employeePersonalInfo')?.map(fields => {
@@ -174,6 +182,8 @@ export default function AddEmployeeScene ({ navigation, route }) {
       )
     })
   }
+
+  console.warn('cities', cities)
 
   const renderWorkInfo = () => {
     return Forms?.fields('employeeWorkInfo')?.map(fields => {
@@ -212,12 +222,11 @@ export default function AddEmployeeScene ({ navigation, route }) {
   }
 
   const getStateText = (list, value) => {
-    const filtered = list?.filter(e => e?.name === value)
+    const filtered = list?.filter(e => e?.name === value || e?.id === value)
     return filtered?.length > 0 ? filtered[0]?.name : ''
   }
 
-
-  console.warn('city',city);
+  console.warn('city', city)
   const renderAddressInfo = () => {
     return Forms?.fields('employeeAddress')?.map(fields => {
       if (fields.key === 'city') {

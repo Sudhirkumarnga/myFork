@@ -25,6 +25,7 @@ export default function ReportsScene ({ navigation }) {
             animated: true
           })
         }
+        onRightPress={() => navigation.navigate('Notifications')}
         rightIcon={{ ...Images.bell }}
       />
       <View style={{ width: '100%', marginTop: 20, alignItems: 'center' }}>

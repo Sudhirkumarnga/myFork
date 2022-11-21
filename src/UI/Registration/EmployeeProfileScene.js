@@ -29,7 +29,7 @@ export default function EmployeeProfileScene ({ navigation }) {
     last_name: adminProfile?.personal_information?.last_name || '',
     phone: adminProfile?.personal_information?.phone || '',
     date_of_birth: adminProfile?.personal_information?.date_of_birth || '',
-    profile_image: adminProfile?.business_information?.profile_image || '',
+    profile_image: adminProfile?.personal_information?.profile_image || '',
     gender: adminProfile?.personal_information?.gender || '',
     first_name1: adminProfile?.emergency_contact?.first_name || '',
     last_name1: adminProfile?.emergency_contact?.last_name || '',
