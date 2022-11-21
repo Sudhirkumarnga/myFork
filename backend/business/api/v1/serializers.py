@@ -71,12 +71,6 @@ class EmployeePersonalInformationSerializer(ModelSerializer):
         model = User
         fields = ['id', 'first_name', 'last_name', 'gender', 'date_of_birth']
 
-    def to_representation(self, data):
-        data = super(EmployeePersonalInformationSerializer, self).to_representation(data)
-        data['user_id'] = data['id']
-        del data['id']
-        return data
-
 
 class EmployeeAddressInformationSerializer(ModelSerializer):
     class Meta:
@@ -105,6 +99,13 @@ class EmployeeSerializer(ModelSerializer):
     class Meta:
         model = Employee
         fields = ['id', 'is_owner', 'personal_information', 'contact', 'address_information', 'work_information']
+
+    def to_representation(self, data):
+        data = super(EmployeeSerializer, self).to_representation(data)
+        data['user_id'] = Employee.objects.get(
+            id = data['id']
+        ).user.id
+        return data
 
     @staticmethod
     def get_personal_information(obj):
