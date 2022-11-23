@@ -13,11 +13,11 @@ class IsActiveSubscription(BasePermission):
     def has_permission(self, request, view):
         if request.user.role == "Organization Admin":
             business = Business.objects.get(user=request.user)
-            if not business.subscription:
+            if not business.subscription or business.subscription.status != "active":
                 raise CustomForbidden
         if request.user.role == "Employee":
             employee = Employee.objects.get(user=request.user)
-            if not employee.business.subscription:
+            if not employee.business.subscription or employee.business.subscription.status != "active":
                 raise CustomForbidden
 
 
