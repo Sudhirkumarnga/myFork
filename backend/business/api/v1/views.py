@@ -447,7 +447,7 @@ class EarningsView(APIView):
             )
             data = EmployeeEarningSerializer(
                 queryset,
-                many=False,
+                many=True,
                 context={'request': request, 'queryset': queryset}
             ).data
 
