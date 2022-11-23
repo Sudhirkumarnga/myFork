@@ -103,7 +103,7 @@ class EmployeeSerializer(ModelSerializer):
     def to_representation(self, data):
         data = super(EmployeeSerializer, self).to_representation(data)
         data['user_id'] = Employee.objects.get(
-            id = data['id']
+            id=data['id']
         ).user.id
         return data
 
@@ -147,7 +147,8 @@ class EmployeeSerializer(ModelSerializer):
             )
         count = get_remaining_employee_limit(business)
         if count < 1:
-            raise serializers.ValidationError(_("Employee account limit exceeds, plz contact to Business Administrator"))
+            raise serializers.ValidationError(
+                _("Employee account limit exceeds, plz contact to Business Administrator"))
         employee_user, password = create_user_for_employee(request.data)
         employee = create_employee(employee_user, request.data, request.user)
         send_email_to_employee(employee_user, password)
@@ -165,7 +166,7 @@ class EmployeeSerializer(ModelSerializer):
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ['id','first_name', 'last_name', 'phone', 'gender', 'date_of_birth']
+        fields = ['id', 'first_name', 'last_name', 'phone', 'gender', 'date_of_birth']
 
 
 class EmergencyContactSerializer(ModelSerializer):
@@ -333,4 +334,21 @@ class EarningSerializer(serializers.ModelSerializer):
             employees.append(dict)
         data['employees'] = employees
         data['date'] = attendances.first().updated_at.date()
+        return data
+
+
+class EmployeeEarningSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attendance
+        fields = ()
+
+    def to_representation(self, data):
+        data = super(EmployeeEarningSerializer, self).to_representation(data)
+        attendances = self.context['queryset']
+        for attendance in attendances:
+            data['worksite'] = attendance.event.worksite.name
+            data['amount_clocked'] = attendance.total_hours
+            data['earned'] = attendance.earnings
+        if attendances.first():
+            data['date'] = attendances.first().updated_at.date()
         return data

@@ -23,7 +23,7 @@ from business.api.v1.serializers import (
     RegionSerializer,
     LeaveRequestSerializer,
     AttendanceSerializer,
-    EarningSerializer, AttendanceFeedbackSerializer
+    EarningSerializer, AttendanceFeedbackSerializer, EmployeeEarningSerializer
 )
 
 from business.services import (
@@ -378,7 +378,7 @@ class AttendanceFeedbackView(APIView):
 
 class EarningsView(APIView):
     queryset = Attendance.objects.filter()
-    permission_classes = [IsAuthenticated, IsOrganizationAdmin, IsActiveSubscription]
+    permission_classes = [IsAuthenticated, IsActiveSubscription]
 
     def put(self, request):
         try:
@@ -419,24 +419,38 @@ class EarningsView(APIView):
         date = self.request.query_params.get('date', None)
         month = self.request.query_params.get('month', None)
         year = self.request.query_params.get('year', None)
-        queryset = self.queryset.filter(
-            employee__business__user=request.user.id,
-            status="CLOCK_OUT"
-        )
-        if date:
-            queryset = queryset.filter(updated_at__day=date)
-        if month:
-            queryset = queryset.filter(updated_at__month=month)
-        if year:
-            queryset = queryset.filter(updated_at__year=year)
 
-        serializer = EarningSerializer(
-            queryset.first(),
-            many=False,
-            context={'request': request, 'queryset': queryset}
-        )
-        data = serializer.data
-        data['payroll_hours'] = get_payroll_hours(data)
+        if date:
+            queryset = self.queryset.filter(updated_at__day=date)
+        if month:
+            queryset = self.queryset.filter(updated_at__month=month)
+        if year:
+            queryset = self.queryset.filter(updated_at__year=year)
+
+        if request.user.role == "Organization Admin":
+            queryset = queryset.filter(
+                employee__business__user=request.user.id,
+                status="CLOCK_OUT"
+            )
+            serializer = EarningSerializer(
+                queryset.first(),
+                many=False,
+                context={'request': request, 'queryset': queryset}
+            )
+            data = serializer.data
+            data['payroll_hours'] = get_payroll_hours(data)
+
+        if request.user.role == "Employee":
+            queryset = self.queryset.filter(
+                employee__user=request.user.id,
+                status="CLOCK_OUT"
+            )
+            data = EmployeeEarningSerializer(
+                queryset,
+                many=False,
+                context={'request': request, 'queryset': queryset}
+            ).data
+
         return Response(data, status=status.HTTP_200_OK)
 
 
