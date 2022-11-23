@@ -100,6 +100,9 @@ def create_employee(user, data, business_user):
         position=data['work_information']['position'],
         hourly_rate=data['work_information']['hourly_rate']
     )
+    EmergencyContact.objects.create(
+        employee=employee
+    )
     return employee
 
 
