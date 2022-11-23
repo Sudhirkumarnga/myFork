@@ -15,10 +15,15 @@ class IsActiveSubscription(BasePermission):
             business = Business.objects.get(user=request.user)
             if not business.subscription or business.subscription.status != "active":
                 raise CustomForbidden
+            else:
+                return bool(request.user.is_authenticated)
+
         if request.user.role == "Employee":
             employee = Employee.objects.get(user=request.user)
             if not employee.business.subscription or employee.business.subscription.status != "active":
                 raise CustomForbidden
+            else:
+                return bool(request.user.is_authenticated)
 
 
 class IsOrganizationAdmin(BasePermission):
