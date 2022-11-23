@@ -420,31 +420,42 @@ class EarningsView(APIView):
         month = self.request.query_params.get('month', None)
         year = self.request.query_params.get('year', None)
 
-        if date:
-            queryset = self.queryset.filter(updated_at__day=date)
-        if month:
-            queryset = self.queryset.filter(updated_at__month=month)
-        if year:
-            queryset = self.queryset.filter(updated_at__year=year)
-
         if request.user.role == "Organization Admin":
-            queryset = queryset.filter(
+
+            queryset = self.queryset.filter(
                 employee__business__user=request.user.id,
                 status="CLOCK_OUT"
             )
+
+            if date:
+                queryset = self.queryset.filter(updated_at__day=date)
+            if month:
+                queryset = self.queryset.filter(updated_at__month=month)
+            if year:
+                queryset = self.queryset.filter(updated_at__year=year)
+
             serializer = EarningSerializer(
                 queryset.first(),
                 many=False,
                 context={'request': request, 'queryset': queryset}
             )
             data = serializer.data
-            data['payroll_hours'] = get_payroll_hours(data)
+            if data:
+                data['payroll_hours'] = get_payroll_hours(data)
 
         if request.user.role == "Employee":
             queryset = self.queryset.filter(
                 employee__user=request.user.id,
                 status="CLOCK_OUT"
             )
+
+            if date:
+                queryset = self.queryset.filter(updated_at__day=date)
+            if month:
+                queryset = self.queryset.filter(updated_at__month=month)
+            if year:
+                queryset = self.queryset.filter(updated_at__year=year)
+
             data = EmployeeEarningSerializer(
                 queryset,
                 many=True,
