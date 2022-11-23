@@ -3,7 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 
 from push_notification.services import create_notification
-from smart_workhorse_33965.permissions import IsOrganizationAdmin
+from smart_workhorse_33965.permissions import IsOrganizationAdmin, IsActiveSubscription
 from rest_framework.permissions import IsAuthenticated
 from smart_workhorse_33965.response import SmartWorkHorseResponse, SmartWorkHorseStatus
 from rest_framework.viewsets import ModelViewSet
@@ -59,7 +59,8 @@ class EmployeeViewset(ModelViewSet):
     queryset = Employee.objects.filter()
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     permission_classes = [
-        IsAuthenticated
+        IsAuthenticated,
+        IsActiveSubscription
     ]
 
     def get_queryset(self):
@@ -190,7 +191,7 @@ class EmployeeViewset(ModelViewSet):
 class ProfileView(APIView):
     queryset = User.objects.filter()
     http_method_names = ['get', 'post']
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated,IsActiveSubscription]
 
     def get(self, request, format=None):
         try:
@@ -255,7 +256,7 @@ class ProfileView(APIView):
 
 
 class LeaveRequestView(ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsActiveSubscription]
     serializer_class = LeaveRequestSerializer
     queryset = LeaveRequest.objects.filter()
     http_method_names = ['get', 'post', 'put']
@@ -276,7 +277,7 @@ class LeaveRequestView(ModelViewSet):
 
 
 class AttendanceView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsActiveSubscription]
     queryset = Attendance.objects.filter()
 
     def get(self, request):
@@ -343,7 +344,7 @@ class AttendanceView(APIView):
 
 
 class AttendanceFeedbackView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsActiveSubscription]
     queryset = Attendance.objects.filter()
 
     def put(self, request):
@@ -377,7 +378,7 @@ class AttendanceFeedbackView(APIView):
 
 class EarningsView(APIView):
     queryset = Attendance.objects.filter()
-    permission_classes = [IsAuthenticated, IsOrganizationAdmin]
+    permission_classes = [IsAuthenticated, IsOrganizationAdmin, IsActiveSubscription]
 
     def put(self, request):
         try:
@@ -441,7 +442,7 @@ class EarningsView(APIView):
 
 class DeleteAccountView(APIView):
     queryset = Business.objects.filter()
-    permission_classes = [IsAuthenticated, IsOrganizationAdmin]
+    permission_classes = [IsAuthenticated, IsOrganizationAdmin, IsActiveSubscription]
 
     def delete(self, request, *args, **kwargs):
         queryset = self.queryset.filter(

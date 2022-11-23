@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from smart_workhorse_33965.response import SmartWorkHorseResponse, SmartWorkHorseStatus
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from smart_workhorse_33965.permissions import IsOrganizationAdmin
+from smart_workhorse_33965.permissions import IsOrganizationAdmin, IsActiveSubscription
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.decorators import action
@@ -28,7 +28,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 
 class WorkSiteViewSet(ModelViewSet):
-    permission_classes = [IsAuthenticated, IsOrganizationAdmin]
+    permission_classes = [IsAuthenticated, IsOrganizationAdmin, IsActiveSubscription]
     serializer_class = WorksiteSerializer
     queryset = WorkSite.objects.filter()
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
@@ -100,7 +100,7 @@ class WorkSiteViewSet(ModelViewSet):
 
 
 class TaskViewSet(ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsActiveSubscription]
     serializer_class = TaskSerializer
     queryset = Task.objects.filter()
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
@@ -130,7 +130,7 @@ class TaskViewSet(ModelViewSet):
 
 
 class TaskAttachmentViewSet(ModelViewSet):
-    permission_classes = [IsAuthenticated, IsOrganizationAdmin]
+    permission_classes = [IsAuthenticated, IsOrganizationAdmin, IsActiveSubscription]
     serializer_class = TaskAttachmentSerializer
     queryset = TaskAttachments.objects.filter()
     http_method_names = ['get', 'post', 'delete']
@@ -235,7 +235,7 @@ class TaskAttachmentViewSet(ModelViewSet):
 class EventView(ModelViewSet):
     queryset = Event.objects.filter()
     serializer_class = EventSerializer
-    permission_classes = [IsAuthenticated, IsOrganizationAdmin]
+    permission_classes = [IsAuthenticated, IsOrganizationAdmin, IsActiveSubscription]
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
 
     def get_queryset(self):
@@ -248,7 +248,7 @@ class EventView(ModelViewSet):
         return context
 
     def create(self, request, *args, **kwargs):
-        # try:
+        try:
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
@@ -267,22 +267,21 @@ class EventView(ModelViewSet):
                 status=status.HTTP_201_CREATED,
                 headers={},
             )
-        # except Exception as e:
-        #     return Response(
-        #         SmartWorkHorseResponse.get_response(
-        #             success=False,
-        #             message="Something went wrong in creating Event.",
-        #             status=SmartWorkHorseStatus.Error.value,
-        #             error={str(e)},
-        #         ),
-        #         status=status.HTTP_400_BAD_REQUEST,
-        #     )
-
+        except Exception as e:
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=False,
+                    message="Something went wrong in creating Event.",
+                    status=SmartWorkHorseStatus.Error.value,
+                    error={str(e)},
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 class SchedularView(APIView):
     queryset = Event.objects.filter()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsActiveSubscription]
     http_method_names = ['get', 'post', 'put', 'patch']
 
     def get(self, request):
@@ -297,7 +296,7 @@ class SchedularView(APIView):
             serializer = SchedularSerializer(
                 queryset,
                 many=True,
-                context={'request':request}
+                context={'request': request}
             )
             return Response(
                 SmartWorkHorseResponse.get_response(
@@ -352,7 +351,7 @@ class SchedularView(APIView):
 
 class WorksiteListView(APIView):
     queryset = Event.objects.filter()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsActiveSubscription]
     http_method_names = ['get']
 
     def get(self, request):
@@ -384,7 +383,7 @@ class WorksiteListView(APIView):
 
 class UpcomingShiftView(APIView):
     queryset = Event.objects.filter()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsActiveSubscription]
 
     def get(self, request):
         employee = Employee.objects.filter(user=self.request.user)
@@ -400,7 +399,3 @@ class UpcomingShiftView(APIView):
             context={'request': request}
         )
         return Response(serializer.data)
-
-
-
-

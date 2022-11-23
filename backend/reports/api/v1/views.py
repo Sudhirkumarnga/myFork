@@ -7,7 +7,7 @@ from business.models import Attendance
 from reports.api.v1.serializers import PayrollReportSerializer, WorksiteSerializer, TaskSerializer, \
     InspectionReportSerializer, TaskFeedbackSerializer, LocationVarianceReportSerializer, \
     ScheduleVarianceReportSerializer
-from smart_workhorse_33965.permissions import IsOrganizationAdmin
+from smart_workhorse_33965.permissions import IsOrganizationAdmin, IsActiveSubscription
 from smart_workhorse_33965.response import SmartWorkHorseResponse, SmartWorkHorseStatus
 from workside.models import WorkSite, Task
 from reports.models import InspectionReport, TaskFeedback
@@ -15,7 +15,7 @@ from reports.models import InspectionReport, TaskFeedback
 
 class PayrollReport(APIView):
     queryset = Attendance.objects.filter()
-    permission_classes = [IsAuthenticated, IsOrganizationAdmin]
+    permission_classes = [IsAuthenticated, IsOrganizationAdmin, IsActiveSubscription]
     http_method_names = ['get']
 
     def get(self, request):
@@ -64,7 +64,7 @@ class PayrollReport(APIView):
 
 class GetWorksitesView(APIView):
     queryset = WorkSite.objects.filter()
-    permission_classes = [IsAuthenticated, IsOrganizationAdmin]
+    permission_classes = [IsAuthenticated, IsOrganizationAdmin, IsActiveSubscription]
     http_method_names = ['get']
 
     def get(self, request):
@@ -98,7 +98,7 @@ class GetWorksitesView(APIView):
 
 class GetWorksitesTasksView(APIView):
     queryset = Task.objects.filter()
-    permission_classes = [IsAuthenticated, IsOrganizationAdmin]
+    permission_classes = [IsAuthenticated, IsOrganizationAdmin, IsActiveSubscription]
     http_method_names = ['get']
 
     def get(self, request):
@@ -132,7 +132,7 @@ class GetWorksitesTasksView(APIView):
 
 
 class InspectionReportView(ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsActiveSubscription]
     serializer_class = InspectionReportSerializer
     queryset = InspectionReport.objects.filter()
     http_method_names = ['get', 'post']
@@ -158,7 +158,7 @@ class InspectionReportView(ModelViewSet):
 
 
 class TaskFeedbackView(ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsActiveSubscription]
     serializer_class = TaskFeedbackSerializer
     queryset = TaskFeedback.objects.filter()
     http_method_names = ['post']
@@ -166,7 +166,7 @@ class TaskFeedbackView(ModelViewSet):
 
 class LocationVarianceReport(APIView):
     queryset = Attendance.objects.filter()
-    permission_classes = [IsAuthenticated, IsOrganizationAdmin]
+    permission_classes = [IsAuthenticated, IsOrganizationAdmin, IsActiveSubscription]
     http_method_names = ['get']
 
     def get(self, request):
@@ -215,7 +215,7 @@ class LocationVarianceReport(APIView):
 
 class ScheduleVarianceReport(APIView):
     queryset = Attendance.objects.filter()
-    permission_classes = [IsAuthenticated, IsOrganizationAdmin]
+    permission_classes = [IsAuthenticated, IsOrganizationAdmin, IsActiveSubscription]
     http_method_names = ['get']
 
     def get(self, request):
