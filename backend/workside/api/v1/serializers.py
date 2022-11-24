@@ -329,11 +329,11 @@ class EventAssignedEmployeeSerializer(serializers.ModelSerializer):
 
 class AttendanceWorksiteSerializer(serializers.ModelSerializer):
     tasks = serializers.SerializerMethodField()
-    assigned_employee = serializers.SerializerMethodField()
+    #assigned_employee = serializers.SerializerMethodField()
 
     class Meta:
         model = WorkSite
-        fields = ('id', 'name', 'location', 'notes', 'instruction_video', 'tasks', 'assigned_employee')
+        fields = ('id', 'name', 'location', 'notes', 'instruction_video', 'tasks')
 
     @staticmethod
     def get_tasks(obj):
@@ -342,13 +342,13 @@ class AttendanceWorksiteSerializer(serializers.ModelSerializer):
             many=True
         ).data
 
-    @staticmethod
-    def get_assigned_employee(obj):
-        queryset = Event.objects.filter(worksite=obj).first()
-        return EventAssignedEmployeeSerializer(
-            queryset,
-            many=False
-        ).data['employee']
+    # @staticmethod
+    # def get_assigned_employee(obj):
+    #     queryset = Event.objects.filter(worksite=obj).first()
+    #     return EventAssignedEmployeeSerializer(
+    #         queryset,
+    #         many=False
+    #     ).data['employee']
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
@@ -381,10 +381,11 @@ class AttendanceEventSerializer(serializers.ModelSerializer):
     worksite = serializers.SerializerMethodField()
     active_employees = serializers.SerializerMethodField()
     total_hours = serializers.SerializerMethodField()
+    assigned_employees = serializers.SerializerMethodField()
 
     class Meta:
         model = Event
-        fields = ('id', 'worksite', 'active_employees', 'total_hours')
+        fields = ('id', 'worksite', 'assigned_employees', 'active_employees', 'total_hours')
 
     def to_representation(self, data):
         request = self.context['request']
@@ -412,6 +413,13 @@ class AttendanceEventSerializer(serializers.ModelSerializer):
             ).data
         except Exception as e:
             print(e)
+
+    @staticmethod
+    def get_assigned_employees(obj):
+        return EmployeeSerializer(
+            obj.employees.all(),
+            many=True
+        ).data
 
     @staticmethod
     def get_active_employees(obj):
