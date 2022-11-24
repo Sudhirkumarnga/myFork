@@ -8,7 +8,7 @@ from workside.models import *
 
 @app.task(name="event_publishing_reminder_task")
 def event_publishing_reminder_task(event_id, reminder_date):
-    event = models.Event.objects.filter(id=event_id)
+    event = Event.objects.filter(id=event_id)
     if event.exists():
         event = event.first()
         if event.event_status == "DRAFT":
