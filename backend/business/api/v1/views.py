@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from users.models import User
 from business.services import convert_image_from_bse64_to_blob, send_clock_in_notification_to_employee, \
-    send_clock_in_notification_to_business_owner
+    send_clock_in_notification_to_business_owner, get_total_amount
 from business.models import Employee, Country, City, Region, LeaveRequest, Attendance, Business
 from business.api.v1.serializers import (
     BusinessAdminProfileSerializer,
@@ -461,6 +461,9 @@ class EarningsView(APIView):
                 many=True,
                 context={'request': request, 'queryset': queryset}
             ).data
+
+            if data:
+                data['total_earned'] = get_total_amount(data)
 
         return Response(data, status=status.HTTP_200_OK)
 

@@ -170,3 +170,10 @@ def send_clock_in_notification_to_employee(request):
         "user": request.user
     }
     )
+
+
+def get_total_amount(serializer_data):
+    total_earned = 0
+    for data in serializer_data['worksite']:
+        total_earned += data['earned']
+    return total_earned

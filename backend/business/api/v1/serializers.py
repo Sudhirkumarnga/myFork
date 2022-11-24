@@ -323,8 +323,7 @@ class EarningSerializer(serializers.ModelSerializer):
         for attendance in attendances:
             dict = {}
             dict['employee_name'] = attendance.employee.user.get_full_name()
-            dict[
-                'employee_image'] = attendance.employee.profile_image.url if attendance.employee.profile_image else None
+            dict['employee_image'] = attendance.employee.profile_image.url if attendance.employee.profile_image else None
             dict['employee_position'] = attendance.employee.position
             dict['employee_hourly_rate'] = attendance.employee.hourly_rate
             dict['employee_hours'], dict['employee_earnings'] = 0, 0
@@ -345,10 +344,15 @@ class EmployeeEarningSerializer(serializers.ModelSerializer):
     def to_representation(self, data):
         data = super(EmployeeEarningSerializer, self).to_representation(data)
         attendances = self.context['queryset']
+        worksites = []
         for attendance in attendances:
-            data['worksite'] = attendance.event.worksite.name
-            data['amount_clocked'] = attendance.total_hours
-            data['earned'] = attendance.earnings
+            worksite = {
+                'worksite': attendance.event.worksite.name,
+                'amount_clocked': attendance.total_hours,
+                'earned': attendance.earnings
+            }
+            worksites.append(worksite)
+        data['worksites'] = worksites
         if attendances.first():
             data['date'] = attendances.first().updated_at.date()
         return data
