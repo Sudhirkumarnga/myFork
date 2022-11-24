@@ -457,8 +457,8 @@ class EarningsView(APIView):
                 queryset = self.queryset.filter(updated_at__year=year)
 
             data = EmployeeEarningSerializer(
-                queryset,
-                many=True,
+                queryset.first(),
+                many=False,
                 context={'request': request, 'queryset': queryset}
             ).data
 

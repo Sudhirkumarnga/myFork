@@ -174,6 +174,6 @@ def send_clock_in_notification_to_employee(request):
 
 def get_total_amount(serializer_data):
     total_earned = 0
-    for data in serializer_data['worksite']:
+    for data in serializer_data['worksites']:
         total_earned += data['earned']
     return total_earned
