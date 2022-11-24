@@ -16,7 +16,7 @@ def event_publishing_reminder_task(event_id, reminder_date):
             create_notification({
                 "name": "Event Publish Reminder",
                 "description": f'your worksite {event.worksite.name} event is schedule to published on this date:{event.start_time}',
-                "user": event.worksite.business.user.email
+                "user": event.worksite.business.user
             }
             )
             send_mail(
