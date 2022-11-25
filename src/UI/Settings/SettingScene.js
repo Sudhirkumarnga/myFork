@@ -30,11 +30,11 @@ export default class SettingScene extends BaseScene {
           screen: 'changePassword',
           title: 'Change Password'
         },
-        {
-          icon: 'lock',
-          screen: 'paymentScene',
-          title: 'Payments'
-        },
+        // {
+        //   icon: 'lock',
+        //   screen: 'paymentScene',
+        //   title: 'Payments'
+        // },
         {
           icon: 'terms',
           screen: 'termsPrivacy',
