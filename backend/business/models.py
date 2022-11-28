@@ -208,3 +208,26 @@ class LeaveRequest(TimeStampedModel):
 
     def __str__(self):
         return f'{self.employee.user.first_name} - {self.employee.user.last_name}'
+
+
+class Feedback(models.Model):
+    name = models.CharField(max_length=30, null=True, blank=True)
+    email = models.EmailField(max_length=255)
+    message = models.TextField()
+    is_visible = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    business = models.ForeignKey(Business, on_delete=models.CASCADE, null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Feedback"
+        verbose_name_plural = "Feedbacks"
+
+
+class FeedbackMedia(models.Model):
+    feedback = models.ForeignKey(Feedback, on_delete=models.CASCADE, null=True, blank=True)
+    file = models.FileField(upload_to='media/feedback/')
+
+    class Meta:
+        verbose_name = "Feedback Media"
+        verbose_name_plural = "Feedback Medias"

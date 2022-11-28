@@ -8,7 +8,7 @@ from business.api.v1.views import (
     RegionListAPIView,
     LeaveRequestView,
     AttendanceView,
-    EarningsView,
+    EarningsView, FeedbackView,
     AttendanceFeedbackView, DeleteAccountView
 )
 
@@ -28,6 +28,7 @@ urlpatterns = [
     path('attendance/', AttendanceView.as_view(), name='attendance'),
     path('attendance_feedback/', AttendanceFeedbackView.as_view(), name='attendance_feedback'),
     path('earnings/', EarningsView.as_view(), name='earnings'),
-    path('delete_account/', DeleteAccountView.as_view(), name='delete_account')
+    path('delete_account/', DeleteAccountView.as_view(), name='delete_account'),
+    path('app_feedback/', FeedbackView.as_view(), name='app_feedback')
 
 ] + router.urls

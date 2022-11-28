@@ -11,7 +11,7 @@ from business.models import (
     Employee,
     City,
     EmergencyContact,
-    BusinessAddress,
+    BusinessAddress, Feedback, FeedbackMedia,
 
 )
 from workside.models import Event
@@ -177,3 +177,19 @@ def get_total_amount(serializer_data):
     for data in serializer_data['worksites']:
         total_earned += data['earned']
     return total_earned
+
+
+def convert_file_from_bse64_to_blob(file, file_name):
+    data = ContentFile(base64.b64decode(file), name='{}.jpg'.format(file_name))
+    return data
+
+
+def create_feedback(validated_data, request):
+    feedback = Feedback.objects.create(
+        email=validated_data['email'],
+        message=validated_data['message'],
+        business=Business.objects.get(user=request.user)
+    )
+    for key, val in validated_data['files'].items():
+        FeedbackMedia.objects.create(feedback=feedback, file=convert_file_from_bse64_to_blob(val, key))
+    return feedback

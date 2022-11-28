@@ -13,7 +13,7 @@ from rest_framework.generics import ListAPIView
 from users.models import User
 from business.services import convert_image_from_bse64_to_blob, send_clock_in_notification_to_employee, \
     send_clock_in_notification_to_business_owner, get_total_amount
-from business.models import Employee, Country, City, Region, LeaveRequest, Attendance, Business
+from business.models import Employee, Country, City, Region, LeaveRequest, Attendance, Business, Feedback
 from business.api.v1.serializers import (
     BusinessAdminProfileSerializer,
     BusinessEmployeeProfileSerializer,
@@ -23,7 +23,7 @@ from business.api.v1.serializers import (
     RegionSerializer,
     LeaveRequestSerializer,
     AttendanceSerializer,
-    EarningSerializer, AttendanceFeedbackSerializer, EmployeeEarningSerializer
+    EarningSerializer, AttendanceFeedbackSerializer, EmployeeEarningSerializer, FeedbackSerializer
 )
 
 from business.services import (
@@ -480,3 +480,27 @@ class DeleteAccountView(APIView):
         queryset.delete()
         self.request.user.delete()
         return Response(status=status.HTTP_200_OK)
+
+
+class FeedbackView(APIView):
+    permission_classes = [IsAuthenticated, IsActiveSubscription]
+    queryset = Feedback.objects.filter()
+
+    def get(self, request):
+
+        serializer = FeedbackSerializer(
+            self.queryset.filter(business__user=self.request.user),
+            many=True,
+            context={'request': request}
+        )
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        serializer = FeedbackSerializer(
+            data=request.data, many=False,
+            context={"request": request}
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

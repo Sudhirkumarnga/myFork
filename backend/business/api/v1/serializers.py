@@ -19,7 +19,7 @@ from business.models import (
     Region,
     EmergencyContact,
     Attendance,
-    LeaveRequest
+    LeaveRequest, Feedback, FeedbackMedia
 )
 
 from business.services import (
@@ -27,7 +27,7 @@ from business.services import (
     create_employee,
     send_email_to_employee,
     update_user_for_employee,
-    update_employee
+    update_employee, create_feedback
 )
 
 
@@ -356,3 +356,33 @@ class EmployeeEarningSerializer(serializers.ModelSerializer):
         if attendances.first():
             data['date'] = attendances.first().updated_at.date()
         return data
+
+
+class FeedbackSerializer(serializers.ModelSerializer):
+    files = serializers.DictField(child=serializers.CharField(allow_null=True), write_only=True, required=False)
+    feedback_media = serializers.SerializerMethodField("get_feedback_media", read_only=True)
+
+    class Meta:
+        model = Feedback
+        fields = (
+            "id", "email", "message", "business", "files",
+            "feedback_media"
+        )
+
+    @staticmethod
+    def get_feedback_media(obj):
+        return FeedbackMediaSerializer(
+            FeedbackMedia.objects.filter(feedback=obj),
+            many=True
+        ).data
+
+    def create(self, validated_data):
+        request = self.context['request']
+        feedback = create_feedback(validated_data, request)
+        return feedback
+
+
+class FeedbackMediaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FeedbackMedia
+        fields = ('id', 'file')
