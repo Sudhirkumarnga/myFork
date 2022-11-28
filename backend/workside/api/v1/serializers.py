@@ -213,6 +213,26 @@ class EventSerializer(ModelSerializer):
                 )
                 }
             )
+
+        if self.instance:
+            event = Event.objects.filter(
+                ~Q(id=self.instance.id),
+                worksite_id=data['worksite']
+            )
+        else:
+            event = Event.objects.filter(
+                start_time__lte=data['start_time'],
+                end_time__gte=data['end_time'],
+                worksite_id=data['worksite']
+            )
+        if event.exists():
+            raise serializers.ValidationError(
+                {"worksite": _(
+                    "Event is already created for this worksite."
+                )
+                }
+            )
+
         return data
 
     @staticmethod
