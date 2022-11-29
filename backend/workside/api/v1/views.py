@@ -1,3 +1,5 @@
+import json
+
 from rest_framework import status
 from rest_framework.response import Response
 from smart_workhorse_33965.response import SmartWorkHorseResponse, SmartWorkHorseStatus
@@ -273,7 +275,7 @@ class EventView(ModelViewSet):
                     success=False,
                     message="Something went wrong in creating Event.",
                     status=SmartWorkHorseStatus.Error.value,
-                    error={str(e)},
+                    error=serializer.errors,
                 ),
                 status=status.HTTP_400_BAD_REQUEST,
             )
