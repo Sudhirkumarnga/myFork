@@ -217,13 +217,11 @@ class EventSerializer(ModelSerializer):
         if self.instance:
             event = Event.objects.filter(
                 ~Q(id=self.instance.id),
-                worksite_id=data['worksite']
+                worksite=data['worksite']
             )
         else:
             event = Event.objects.filter(
-                start_time__lte=data['start_time'],
-                end_time__gte=data['end_time'],
-                worksite_id=data['worksite']
+                worksite=data['worksite']
             )
         if event.exists():
             raise serializers.ValidationError(
