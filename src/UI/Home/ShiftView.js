@@ -199,458 +199,470 @@ export default function ShiftView() {
     { key: "Upset", icon: Upset }
   ]
 
-  console.warn('upcomingShiftData',upcomingShiftData);
+  console.warn("upcomingShiftData", upcomingShiftData)
 
   return (
-    <View style={styles.container}>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between"
-        }}
-      >
-        <View>
-          <Text style={styles.title}>{Strings.upcomingShift}</Text>
-          <Text style={styles.description}>
-            {upcomingShiftData?.worksite?.name}
-          </Text>
-          <Text
-            style={[
-              styles.description,
-              { fontSize: 14, color: Colors.HOME_DES }
-            ]}
+    <>
+      {upcomingShiftData?.status && (
+        <View style={styles.container}>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between"
+            }}
           >
-            Location: {upcomingShiftData?.worksite?.location}
-          </Text>
-          {upcomingShiftData?.status === "CLOCK_IN" && (
-            <Text
-              style={[
-                styles.description,
-                { fontSize: 14, color: Colors.HOME_DES }
-              ]}
-            >
-              Clock in time: {upcomingShiftData?.schedule_shift}
-            </Text>
-          )}
-        </View>
-        <Image {...Images.calendar} style={styles.image} />
-      </View>
-      {user?.role !== "Organization Admin" && renderClockButton()}
-      <Modal
-        visible={visible}
-        transparent
-        onDismiss={hideModal}
-        onRequestClose={hideModal}
-      >
-        <View style={styles.centerMode}>
-          <ScrollView style={styles.modal}>
-            <View style={{ alignItems: "flex-end", marginTop: 20 }}>
-              <TouchableOpacity onPress={hideModal}>
-                <Icon name="close" type="antdesign" />
-              </TouchableOpacity>
-            </View>
-            <Text style={styles.title}>Task check</Text>
-            <Text style={{ ...Fonts.poppinsRegular(12), marginBottom: 20 }}>
-              {upcomingShiftData?.worksite?.name}
-            </Text>
-
-            <Text
-              style={{
-                ...Fonts.poppinsRegular(12),
-                textTransform: "uppercase",
-                textAlign: "right",
-                width: "100%",
-                color: Colors.BLUR_TEXT
-              }}
-            >
-              {"Mark as done"}
-            </Text>
-            {upcomingShiftData?.worksite?.tasks?.map(task => (
-              <View
-                style={{
-                  flexDirection: "row",
-                  width: "100%",
-                  justifyContent: "space-between",
-                  marginVertical: 10,
-                  alignItems: "center",
-                  paddingBottom: 8,
-                  borderBottomColor: Colors.TEXT_INPUT_BORDER,
-                  borderBottomWidth: 1
-                }}
+            <View>
+              <Text style={styles.title}>{Strings.upcomingShift}</Text>
+              <Text style={styles.description}>
+                {upcomingShiftData?.worksite?.name}
+              </Text>
+              <Text
+                style={[
+                  styles.description,
+                  { fontSize: 14, color: Colors.HOME_DES }
+                ]}
               >
-                <Text style={styles.inputText}>{task?.name}</Text>
-                <BouncyCheckbox
-                  size={20}
-                  fillColor={Colors.BACKGROUND_BG}
-                  disableBuiltInState
-                  iconStyle={{
-                    borderColor: Colors.BLACK,
-                    borderRadius: 1,
-                    marginBottom: 2
-                  }}
-                  onPress={() => {
-                    if (completed_tasks?.some(e => e === task?.id)) {
-                      const removed = completed_tasks?.filter(
-                        e => e !== task?.id
-                      )
-                      handleChange("completed_tasks", removed)
-                    } else {
-                      handleChange("completed_tasks", [
-                        ...completed_tasks,
-                        task?.id
-                      ])
-                    }
-                  }}
-                  isChecked={completed_tasks?.includes(task?.id)}
-                />
-              </View>
-            ))}
-            <Text style={[styles.title, { marginTop: 30 }]}>Notes</Text>
-            <PrimaryTextInput
-              text={notes}
-              style={{ width: "110%" }}
-              label={"Notes"}
-              key="notes"
-              placeholder="Notes"
-              onChangeText={(text, isValid) => handleChange("notes", text)}
-            />
-
-            <Button
-              style={[styles.footerWhiteButton]}
-              onPress={() => _uploadImage("", "notes_media")}
-              title={"Upload media"}
-              icon={"upload"}
-              isWhiteBg
-              iconStyle={{
-                width: 20,
-                height: 20,
-                tintColor: Colors.GREEN_COLOR,
-                resizeMode: "contain"
-              }}
-              color={Colors.BUTTON_BG}
-            />
-            <Text style={[styles.title, { marginTop: 40 }]}>
-              Feedback/Requests
-            </Text>
-            <PrimaryTextInput
-              style={{ width: "110%" }}
-              text={feedback}
-              label={"Feedback/Requests"}
-              key="feedback"
-              placeholder="Feedback/Requests"
-              onChangeText={(text, isValid) => handleChange("feedback", text)}
-            />
-
-            <Button
-              style={[styles.footerWhiteButton]}
-              onPress={() => _uploadImage("", "feedback_media")}
-              title={"Upload media"}
-              icon={"upload"}
-              isWhiteBg
-              iconStyle={{
-                width: 20,
-                height: 20,
-                tintColor: Colors.GREEN_COLOR,
-                resizeMode: "contain"
-              }}
-              color={Colors.BUTTON_BG}
-            />
-            <View
-              style={{
-                flexDirection: "row",
-                marginVertical: 20,
-                alignItems: "center"
-              }}
-            >
-              <BouncyCheckbox
-                size={20}
-                fillColor={Colors.BACKGROUND_BG}
-                disableBuiltInState
-                iconStyle={{
-                  borderColor: Colors.BLACK,
-                  borderRadius: 1,
-                  marginBottom: 2
-                }}
-                onPress={() => handleChange("urgent", !urgent)}
-                isChecked={urgent}
-              />
-              <Text style={[styles.inputText]}>Urgent</Text>
-            </View>
-            <Text style={[styles.title, { marginTop: 20 }]}>Edit time</Text>
-            <View
-              style={{
-                flexDirection: "row",
-                width: "100%",
-                justifyContent: "space-between",
-                marginVertical: 10,
-                alignItems: "center"
-              }}
-            >
-              {is_clock_in_time ? (
-                <View style={{ width: "60%" }}>
-                  <TouchableOpacity
-                    style={styles.inputStyle}
-                    onPress={() => handleChange("openStart", true)}
-                  >
-                    <Text
-                      style={[
-                        styles.inputText,
-                        {
-                          color: clock_in_time
-                            ? Colors.TEXT_COLOR
-                            : Colors.BLUR_TEXT
-                        }
-                      ]}
-                    >
-                      {clock_in_time || "Clock In Time"}
-                    </Text>
-                    <Icon
-                      name={"time-outline"}
-                      type={"ionicon"}
-                      color={Colors.BLUR_TEXT}
-                    />
-                  </TouchableOpacity>
-                  <DatePicker
-                    modal
-                    open={openStart}
-                    mode={"time"}
-                    date={clock_in_timeDate}
-                    onConfirm={date => {
-                      handleChange("openStart", false)
-                      handleChange("clock_in_timeDate", date)
-                      handleChange(
-                        "clock_in_time",
-                        moment(date).format("hh:mm A")
-                      )
-                    }}
-                    onCancel={() => {
-                      handleChange("openStart", false)
-                    }}
-                  />
-                </View>
-              ) : (
-                // <PrimaryTextInput
-                //   style={{ width: "60%", marginTop: 20 }}
-                //   text={clock_in_time}
-                //   label={"Clock In Time"}
-                //   key="clock_in_time"
-                //   placeholder="Clock In Time"
-                //   onChangeText={(text, isValid) =>
-                //     handleChange("clock_in_time", text)
-                //   }
-                // />
-                <Text style={[styles.inputText, { marginTop: 10 }]}>
-                  Clock in time: {clock_in_time}
+                Location: {upcomingShiftData?.worksite?.location}
+              </Text>
+              {upcomingShiftData?.status === "CLOCK_IN" && (
+                <Text
+                  style={[
+                    styles.description,
+                    { fontSize: 14, color: Colors.HOME_DES }
+                  ]}
+                >
+                  Clock in time: {upcomingShiftData?.schedule_shift}
                 </Text>
               )}
-              <Button
-                onPress={() =>
-                  handleChange("is_clock_in_time", !is_clock_in_time)
-                }
-                title={is_clock_in_time ? "Save" : "Edit"}
-                icon={is_clock_in_time ? "" : "edit"}
-                iconStyle={{ width: 15, height: 15, color: "#fff" }}
-                backgroundColor={
-                  is_clock_in_time ? Colors.BACKGROUND_BG : Colors.BUTTON_BG1
-                }
-                style={{
-                  width: "30%"
-                }}
-              />
             </View>
-            <View
-              style={{
-                flexDirection: "row",
-                width: "100%",
-                justifyContent: "space-between",
-                marginBottom: 10,
-                alignItems: "center",
-                paddingBottom: 8
-              }}
-            >
-              {is_clock_out_time ? (
-                <View style={{ width: "60%" }}>
-                  <TouchableOpacity
-                    style={styles.inputStyle}
-                    onPress={() => handleChange("openEnd", true)}
-                  >
-                    <Text
-                      style={[
-                        styles.inputText,
-                        {
-                          color: clock_out_time
-                            ? Colors.TEXT_COLOR
-                            : Colors.BLUR_TEXT
-                        }
-                      ]}
-                    >
-                      {clock_out_time || "Clock Out Time"}
-                    </Text>
-                    <Icon
-                      name={"time-outline"}
-                      type={"ionicon"}
-                      color={Colors.BLUR_TEXT}
-                    />
+            <Image {...Images.calendar} style={styles.image} />
+          </View>
+          {user?.role !== "Organization Admin" && renderClockButton()}
+          <Modal
+            visible={visible}
+            transparent
+            onDismiss={hideModal}
+            onRequestClose={hideModal}
+          >
+            <View style={styles.centerMode}>
+              <ScrollView style={styles.modal}>
+                <View style={{ alignItems: "flex-end", marginTop: 20 }}>
+                  <TouchableOpacity onPress={hideModal}>
+                    <Icon name="close" type="antdesign" />
                   </TouchableOpacity>
-                  <DatePicker
-                    modal
-                    open={openEnd}
-                    mode={"time"}
-                    date={clock_out_timeDate}
-                    onConfirm={date => {
-                      handleChange("openEnd", false)
-                      handleChange("clock_out_timeDate", date)
-                      handleChange(
-                        "clock_out_time",
-                        moment(date).format("hh:mm A")
-                      )
-                    }}
-                    onCancel={() => {
-                      handleChange("openEnd", false)
-                    }}
-                  />
                 </View>
-              ) : (
-                // <PrimaryTextInput
-                //   style={{ width: "60%", marginTop: 20 }}
-                //   text={clock_out_time}
-                //   label={"Clock In Time"}
-                //   key="clock_out_time"
-                //   placeholder="Clock In Time"
-                //   onChangeText={(text, isValid) =>
-                //     handleChange("clock_out_time", text)
-                //   }
-                // />
-                <Text style={[styles.inputText, { marginTop: 10 }]}>
-                  Clock out time: {clock_out_time}
+                <Text style={styles.title}>Task check</Text>
+                <Text style={{ ...Fonts.poppinsRegular(12), marginBottom: 20 }}>
+                  {upcomingShiftData?.worksite?.name}
                 </Text>
-              )}
-              <Button
-                onPress={() =>
-                  handleChange("is_clock_out_time", !is_clock_out_time)
-                }
-                title={is_clock_out_time ? "Save" : "Edit"}
-                icon={is_clock_out_time ? "" : "edit"}
-                iconStyle={{ width: 15, height: 15, color: "#fff" }}
-                backgroundColor={
-                  is_clock_out_time ? Colors.BACKGROUND_BG : Colors.BUTTON_BG1
-                }
-                style={{
-                  width: "30%"
-                }}
-              />
-            </View>
-            <Button
-              onPress={() => {
-                handleChange("visible", false)
-                handleChange("visible1", true)
-              }}
-              disabled={
-                !notes ||
-                !feedback ||
-                !clock_in_time ||
-                !notes_media ||
-                !feedback_media ||
-                !clock_out_time ||
-                completed_tasks.length === 0
-              }
-              title={"Submit"}
-              style={{
-                width: "100%"
-              }}
-            />
-            <Button
-              onPress={() => handleChange("visible", false)}
-              title={"Cancel"}
-              isWhiteBg
-              color={Colors.BACKGROUND_BG}
-              style={{
-                width: "100%",
-                marginBottom: 20
-              }}
-            />
-          </ScrollView>
-        </View>
-      </Modal>
-      <Modal
-        visible={visible1}
-        transparent
-        onDismiss={hideModal}
-        onRequestClose={hideModal}
-      >
-        <View style={[styles.centerMode, { justifyContent: "center" }]}>
-          <View style={[styles.modal, { borderRadius: 10 }]}>
-            <View style={{ alignItems: "flex-end", marginTop: 20 }}>
-              <TouchableOpacity onPress={hideModal}>
-                <Icon name="close" type="antdesign" />
-              </TouchableOpacity>
-            </View>
-            <Text style={styles.title}>How are you feeling today?</Text>
-            <FlatList
-              data={feelings}
-              numColumns={3}
-              style={{ width: "100%" }}
-              columnWrapperStyle={{ justifyContent: "space-between" }}
-              renderItem={({ item }) => (
-                <View
+
+                <Text
                   style={{
-                    width: "30%",
-                    marginRight: 5,
-                    marginTop: 5,
-                    marginLeft: 5
+                    ...Fonts.poppinsRegular(12),
+                    textTransform: "uppercase",
+                    textAlign: "right",
+                    width: "100%",
+                    color: Colors.BLUR_TEXT
                   }}
                 >
-                  <TouchableOpacity
-                    onPress={() => handleChange("selectedFeeling", item.key)}
+                  {"Mark as done"}
+                </Text>
+                {upcomingShiftData?.worksite?.tasks?.map(task => (
+                  <View
                     style={{
-                      height: 80,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      backgroundColor:
-                        selectedFeeling === item.key
-                          ? Colors.TEXT_INPUT_BORDER
-                          : Colors.WHITE,
-                      borderRadius: 10,
-                      shadowColor: "#000",
-                      shadowOffset: {
-                        width: 0,
-                        height: 2
-                      },
-                      shadowOpacity: 0.25,
-                      shadowRadius: 3.84,
-                      elevation: 5
-                    }}
-                  >
-                    <SvgXml xml={item.icon} />
-                  </TouchableOpacity>
-                  <Text
-                    style={{
-                      ...Fonts.poppinsRegular(12),
-                      textAlign: "center",
+                      flexDirection: "row",
                       width: "100%",
-                      color: Colors.BLACK,
-                      marginTop: 5
+                      justifyContent: "space-between",
+                      marginVertical: 10,
+                      alignItems: "center",
+                      paddingBottom: 8,
+                      borderBottomColor: Colors.TEXT_INPUT_BORDER,
+                      borderBottomWidth: 1
                     }}
                   >
-                    {item.key}
-                  </Text>
-                </View>
-              )}
-            />
+                    <Text style={styles.inputText}>{task?.name}</Text>
+                    <BouncyCheckbox
+                      size={20}
+                      fillColor={Colors.BACKGROUND_BG}
+                      disableBuiltInState
+                      iconStyle={{
+                        borderColor: Colors.BLACK,
+                        borderRadius: 1,
+                        marginBottom: 2
+                      }}
+                      onPress={() => {
+                        if (completed_tasks?.some(e => e === task?.id)) {
+                          const removed = completed_tasks?.filter(
+                            e => e !== task?.id
+                          )
+                          handleChange("completed_tasks", removed)
+                        } else {
+                          handleChange("completed_tasks", [
+                            ...completed_tasks,
+                            task?.id
+                          ])
+                        }
+                      }}
+                      isChecked={completed_tasks?.includes(task?.id)}
+                    />
+                  </View>
+                ))}
+                <Text style={[styles.title, { marginTop: 30 }]}>Notes</Text>
+                <PrimaryTextInput
+                  text={notes}
+                  style={{ width: "110%" }}
+                  label={"Notes"}
+                  key="notes"
+                  placeholder="Notes"
+                  onChangeText={(text, isValid) => handleChange("notes", text)}
+                />
 
-            <Button
-              onPress={_createAttendance}
-              loading={loadingSubmit}
-              title={"Submit"}
-              style={{
-                width: "100%",
-                marginBottom: 20
-              }}
-            />
-          </View>
+                <Button
+                  style={[styles.footerWhiteButton]}
+                  onPress={() => _uploadImage("", "notes_media")}
+                  title={"Upload media"}
+                  icon={"upload"}
+                  isWhiteBg
+                  iconStyle={{
+                    width: 20,
+                    height: 20,
+                    tintColor: Colors.GREEN_COLOR,
+                    resizeMode: "contain"
+                  }}
+                  color={Colors.BUTTON_BG}
+                />
+                <Text style={[styles.title, { marginTop: 40 }]}>
+                  Feedback/Requests
+                </Text>
+                <PrimaryTextInput
+                  style={{ width: "110%" }}
+                  text={feedback}
+                  label={"Feedback/Requests"}
+                  key="feedback"
+                  placeholder="Feedback/Requests"
+                  onChangeText={(text, isValid) =>
+                    handleChange("feedback", text)
+                  }
+                />
+
+                <Button
+                  style={[styles.footerWhiteButton]}
+                  onPress={() => _uploadImage("", "feedback_media")}
+                  title={"Upload media"}
+                  icon={"upload"}
+                  isWhiteBg
+                  iconStyle={{
+                    width: 20,
+                    height: 20,
+                    tintColor: Colors.GREEN_COLOR,
+                    resizeMode: "contain"
+                  }}
+                  color={Colors.BUTTON_BG}
+                />
+                <View
+                  style={{
+                    flexDirection: "row",
+                    marginVertical: 20,
+                    alignItems: "center"
+                  }}
+                >
+                  <BouncyCheckbox
+                    size={20}
+                    fillColor={Colors.BACKGROUND_BG}
+                    disableBuiltInState
+                    iconStyle={{
+                      borderColor: Colors.BLACK,
+                      borderRadius: 1,
+                      marginBottom: 2
+                    }}
+                    onPress={() => handleChange("urgent", !urgent)}
+                    isChecked={urgent}
+                  />
+                  <Text style={[styles.inputText]}>Urgent</Text>
+                </View>
+                <Text style={[styles.title, { marginTop: 20 }]}>Edit time</Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    width: "100%",
+                    justifyContent: "space-between",
+                    marginVertical: 10,
+                    alignItems: "center"
+                  }}
+                >
+                  {is_clock_in_time ? (
+                    <View style={{ width: "60%" }}>
+                      <TouchableOpacity
+                        style={styles.inputStyle}
+                        onPress={() => handleChange("openStart", true)}
+                      >
+                        <Text
+                          style={[
+                            styles.inputText,
+                            {
+                              color: clock_in_time
+                                ? Colors.TEXT_COLOR
+                                : Colors.BLUR_TEXT
+                            }
+                          ]}
+                        >
+                          {clock_in_time || "Clock In Time"}
+                        </Text>
+                        <Icon
+                          name={"time-outline"}
+                          type={"ionicon"}
+                          color={Colors.BLUR_TEXT}
+                        />
+                      </TouchableOpacity>
+                      <DatePicker
+                        modal
+                        open={openStart}
+                        mode={"time"}
+                        date={clock_in_timeDate}
+                        onConfirm={date => {
+                          handleChange("openStart", false)
+                          handleChange("clock_in_timeDate", date)
+                          handleChange(
+                            "clock_in_time",
+                            moment(date).format("hh:mm A")
+                          )
+                        }}
+                        onCancel={() => {
+                          handleChange("openStart", false)
+                        }}
+                      />
+                    </View>
+                  ) : (
+                    // <PrimaryTextInput
+                    //   style={{ width: "60%", marginTop: 20 }}
+                    //   text={clock_in_time}
+                    //   label={"Clock In Time"}
+                    //   key="clock_in_time"
+                    //   placeholder="Clock In Time"
+                    //   onChangeText={(text, isValid) =>
+                    //     handleChange("clock_in_time", text)
+                    //   }
+                    // />
+                    <Text style={[styles.inputText, { marginTop: 10 }]}>
+                      Clock in time: {clock_in_time}
+                    </Text>
+                  )}
+                  <Button
+                    onPress={() =>
+                      handleChange("is_clock_in_time", !is_clock_in_time)
+                    }
+                    title={is_clock_in_time ? "Save" : "Edit"}
+                    icon={is_clock_in_time ? "" : "edit"}
+                    iconStyle={{ width: 15, height: 15, color: "#fff" }}
+                    backgroundColor={
+                      is_clock_in_time
+                        ? Colors.BACKGROUND_BG
+                        : Colors.BUTTON_BG1
+                    }
+                    style={{
+                      width: "30%"
+                    }}
+                  />
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    width: "100%",
+                    justifyContent: "space-between",
+                    marginBottom: 10,
+                    alignItems: "center",
+                    paddingBottom: 8
+                  }}
+                >
+                  {is_clock_out_time ? (
+                    <View style={{ width: "60%" }}>
+                      <TouchableOpacity
+                        style={styles.inputStyle}
+                        onPress={() => handleChange("openEnd", true)}
+                      >
+                        <Text
+                          style={[
+                            styles.inputText,
+                            {
+                              color: clock_out_time
+                                ? Colors.TEXT_COLOR
+                                : Colors.BLUR_TEXT
+                            }
+                          ]}
+                        >
+                          {clock_out_time || "Clock Out Time"}
+                        </Text>
+                        <Icon
+                          name={"time-outline"}
+                          type={"ionicon"}
+                          color={Colors.BLUR_TEXT}
+                        />
+                      </TouchableOpacity>
+                      <DatePicker
+                        modal
+                        open={openEnd}
+                        mode={"time"}
+                        date={clock_out_timeDate}
+                        onConfirm={date => {
+                          handleChange("openEnd", false)
+                          handleChange("clock_out_timeDate", date)
+                          handleChange(
+                            "clock_out_time",
+                            moment(date).format("hh:mm A")
+                          )
+                        }}
+                        onCancel={() => {
+                          handleChange("openEnd", false)
+                        }}
+                      />
+                    </View>
+                  ) : (
+                    // <PrimaryTextInput
+                    //   style={{ width: "60%", marginTop: 20 }}
+                    //   text={clock_out_time}
+                    //   label={"Clock In Time"}
+                    //   key="clock_out_time"
+                    //   placeholder="Clock In Time"
+                    //   onChangeText={(text, isValid) =>
+                    //     handleChange("clock_out_time", text)
+                    //   }
+                    // />
+                    <Text style={[styles.inputText, { marginTop: 10 }]}>
+                      Clock out time: {clock_out_time}
+                    </Text>
+                  )}
+                  <Button
+                    onPress={() =>
+                      handleChange("is_clock_out_time", !is_clock_out_time)
+                    }
+                    title={is_clock_out_time ? "Save" : "Edit"}
+                    icon={is_clock_out_time ? "" : "edit"}
+                    iconStyle={{ width: 15, height: 15, color: "#fff" }}
+                    backgroundColor={
+                      is_clock_out_time
+                        ? Colors.BACKGROUND_BG
+                        : Colors.BUTTON_BG1
+                    }
+                    style={{
+                      width: "30%"
+                    }}
+                  />
+                </View>
+                <Button
+                  onPress={() => {
+                    handleChange("visible", false)
+                    handleChange("visible1", true)
+                  }}
+                  disabled={
+                    !notes ||
+                    !feedback ||
+                    !clock_in_time ||
+                    !notes_media ||
+                    !feedback_media ||
+                    !clock_out_time ||
+                    completed_tasks.length === 0
+                  }
+                  title={"Submit"}
+                  style={{
+                    width: "100%"
+                  }}
+                />
+                <Button
+                  onPress={() => handleChange("visible", false)}
+                  title={"Cancel"}
+                  isWhiteBg
+                  color={Colors.BACKGROUND_BG}
+                  style={{
+                    width: "100%",
+                    marginBottom: 20
+                  }}
+                />
+              </ScrollView>
+            </View>
+          </Modal>
+          <Modal
+            visible={visible1}
+            transparent
+            onDismiss={hideModal}
+            onRequestClose={hideModal}
+          >
+            <View style={[styles.centerMode, { justifyContent: "center" }]}>
+              <View style={[styles.modal, { borderRadius: 10 }]}>
+                <View style={{ alignItems: "flex-end", marginTop: 20 }}>
+                  <TouchableOpacity onPress={hideModal}>
+                    <Icon name="close" type="antdesign" />
+                  </TouchableOpacity>
+                </View>
+                <Text style={styles.title}>How are you feeling today?</Text>
+                <FlatList
+                  data={feelings}
+                  numColumns={3}
+                  style={{ width: "100%" }}
+                  columnWrapperStyle={{ justifyContent: "space-between" }}
+                  renderItem={({ item }) => (
+                    <View
+                      style={{
+                        width: "30%",
+                        marginRight: 5,
+                        marginTop: 5,
+                        marginLeft: 5
+                      }}
+                    >
+                      <TouchableOpacity
+                        onPress={() =>
+                          handleChange("selectedFeeling", item.key)
+                        }
+                        style={{
+                          height: 80,
+                          alignItems: "center",
+                          justifyContent: "center",
+                          backgroundColor:
+                            selectedFeeling === item.key
+                              ? Colors.TEXT_INPUT_BORDER
+                              : Colors.WHITE,
+                          borderRadius: 10,
+                          shadowColor: "#000",
+                          shadowOffset: {
+                            width: 0,
+                            height: 2
+                          },
+                          shadowOpacity: 0.25,
+                          shadowRadius: 3.84,
+                          elevation: 5
+                        }}
+                      >
+                        <SvgXml xml={item.icon} />
+                      </TouchableOpacity>
+                      <Text
+                        style={{
+                          ...Fonts.poppinsRegular(12),
+                          textAlign: "center",
+                          width: "100%",
+                          color: Colors.BLACK,
+                          marginTop: 5
+                        }}
+                      >
+                        {item.key}
+                      </Text>
+                    </View>
+                  )}
+                />
+
+                <Button
+                  onPress={_createAttendance}
+                  loading={loadingSubmit}
+                  title={"Submit"}
+                  style={{
+                    width: "100%",
+                    marginBottom: 20
+                  }}
+                />
+              </View>
+            </View>
+          </Modal>
         </View>
-      </Modal>
-    </View>
+      )}
+    </>
   )
 }
 
