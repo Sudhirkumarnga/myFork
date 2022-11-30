@@ -122,17 +122,17 @@ export default function ShiftView () {
     return (
       <Button
         onPress={() =>
-          upcomingShiftData?.status === 'CLOCK_OUT'
+          upcomingShiftData?.status === 'CLOCK_IN'
             ? navigation.navigate('ShiftDetails', { upcomingShiftData })
             : handleChange('visible', true)
         }
         title={
-          upcomingShiftData?.status === 'CLOCK_IN'
+          upcomingShiftData?.status === 'CLOCK_OUT'
             ? 'Clock Out'
             : Strings.clockIn
         }
         backgroundColor={
-          upcomingShiftData?.status === 'CLOCK_IN'
+          upcomingShiftData?.status === 'CLOCK_OUT'
             ? Colors.RED_COLOR
             : Colors.BACKGROUND_BG
         }

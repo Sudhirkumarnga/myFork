@@ -166,14 +166,6 @@ export default function AddEvents({ navigation, route }) {
         selected_tasks,
         publishing_reminder
       }
-      console.warn(
-        "start_time_text",
-        moment
-          .utc(moment(start_date + " " + start_time_text))
-          .format("YYYY-MM-DD HH:mm:ss")
-      )
-      console.warn("start_date", start_date)
-      console.warn("payload", payload)
       if (selectedEvent) {
         await updateEvent(selectedEvent?.id, payload, token)
         Toast.show("Event has been updated")
@@ -186,9 +178,13 @@ export default function AddEvents({ navigation, route }) {
       navigation.goBack()
     } catch (error) {
       handleChange("loading", false)
-      console.warn("error", error?.message)
       const showWError = Object.values(error.response?.data)
-      if (showWError.length > 0) {
+      const showWError1 = Object.values(error.response?.data?.error)
+      console.warn("showWError", showWError)
+      console.warn("showWError1", showWError1)
+      if (showWError1?.length > 0) {
+        Toast.show(`Error: ${JSON.stringify(showWError1[0])}`)
+      } else if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
       } else {
         Toast.show(`Error: ${JSON.stringify(error)}`)
@@ -257,7 +253,10 @@ export default function AddEvents({ navigation, route }) {
         "start_date",
         moment.utc(res?.data?.start_time).local().format("MM/DD/YYYY")
       )
-      handleChange("start_time", new Date(moment.utc(res?.data?.start_time).local().format()))
+      handleChange(
+        "start_time",
+        new Date(moment.utc(res?.data?.start_time).local().format())
+      )
       handleChange(
         "start_time_text",
         moment.utc(res?.data?.start_time).local().format("hh:mm A")
@@ -266,7 +265,10 @@ export default function AddEvents({ navigation, route }) {
         "end_date",
         moment.utc(res?.data?.end_time).local().format("MM/DD/YYYY")
       )
-      handleChange("end_time", new Date(moment.utc(res?.data?.end_time).local().format()))
+      handleChange(
+        "end_time",
+        new Date(moment.utc(res?.data?.end_time).local().format())
+      )
       handleChange(
         "end_time_text",
         moment.utc(res?.data?.end_time).local().format("hh:mm A")

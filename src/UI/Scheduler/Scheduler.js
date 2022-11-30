@@ -125,15 +125,14 @@ export default function Scheduler({ navigation }) {
   const getEvents = events => {
     if (events?.length > 0) {
       const list = []
-      console.warn("eventsbase", events[0]?.start_time)
-      console.warn("events", moment.utc(events[0]?.start_time).local().format())  
       events?.forEach(element => {
-        if (element) {
+        console.warn('element?.start_time',element?.start_time);
+        if (element?.start_time) {
           list.push({
             ...element,
             title: element?.worksite_name,
             color: "#FDB48B",
-            start:  moment.utc(element?.start_time).local(),
+            start: new Date(moment.utc(element?.start_time).local()),
             end: moment.utc(element?.end_time).local()
           })
         }
@@ -144,7 +143,7 @@ export default function Scheduler({ navigation }) {
     }
   }
 
-  console.warn("selectedEvent", selectedEvent)
+  console.warn("selectedEvent", selectedEvent?.employees)
   return (
     <View style={styles.container}>
       <Header
@@ -290,7 +289,11 @@ export default function Scheduler({ navigation }) {
             </View>
             <Text style={styles.title}>{selectedEvent?.title}</Text>
             <Text style={{ ...Fonts.poppinsRegular(12), marginBottom: 20 }}>
-              Scheduled Date: {selectedEvent?.start_time}
+              Scheduled Date:{" "}
+              {moment
+                .utc(selectedEvent?.start_time)
+                .local()
+                .format("YYYY-MM-DD h:mm:A")}
             </Text>
             <Text style={styles.title}>{"Tasks"}</Text>
             {selectedEvent?.selected_tasks?.map((task, index) => (
@@ -338,17 +341,19 @@ export default function Scheduler({ navigation }) {
                           marginRight: 20
                         }}
                       />
-                      <Text style={{ ...Fonts.poppinsRegular(12) }}>
-                        {item?.first_name}
-                      </Text>
-                      <Text
-                        style={{
-                          ...Fonts.poppinsRegular(12),
-                          color: Colors.BLUR_TEXT
-                        }}
-                      >
-                        Phone Number:{item?.mobile}
-                      </Text>
+                      <View>
+                        <Text style={{ ...Fonts.poppinsRegular(12) }}>
+                          {item?.user?.first_name + " " +item?.user?.last_name}
+                        </Text>
+                        <Text
+                          style={{
+                            ...Fonts.poppinsRegular(12),
+                            color: Colors.BLUR_TEXT
+                          }}
+                        >
+                          Phone Number:{item?.mobile}
+                        </Text>
+                      </View>
                     </View>
                   )}
                 />
