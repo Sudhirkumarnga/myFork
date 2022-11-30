@@ -445,12 +445,13 @@ class AttendanceEventSerializer(serializers.ModelSerializer):
     def get_active_employees(obj):
         attendance = Attendance.objects.filter(event=obj)
         if attendance.exists():
-            data = AttendanceActiveEmployeeSerializer(
+            employees = AttendanceActiveEmployeeSerializer(
                 attendance.first(),
                 many=False
             ).data['employee']
-            data['worksite'] = obj.worksite.name
-            return data
+            for employee in employees:
+                employee['worksite'] = obj.worksite.name
+            return employees
         else:
             return []
 
