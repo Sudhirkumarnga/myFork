@@ -450,6 +450,7 @@ class AttendanceEventSerializer(serializers.ModelSerializer):
                 many=False
             ).data['employee']
             data['worksite'] = obj.worksite.name
+            return data
         else:
             return []
 
