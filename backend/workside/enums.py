@@ -42,7 +42,8 @@ class Frequency(Enum):
 class EventFrequency(Enum):
     DAILY = "DAILY"
     WEEKLY = "WEEKLY"
-    ONE_TIME = "ONE_TIME"
+    MONTHLY = "MONTHLY"
+    YEARLY = "YEARLY"
 
     @classmethod
     def choices(cls):
