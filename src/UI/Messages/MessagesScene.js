@@ -57,7 +57,6 @@ export default function MessagesScene ({ navigation }) {
         .on('value', snapshot => {
           if (snapshot.val()) {
             const messages = snapshotToArray(snapshot.val())
-            console.warn('messages', messages)
             handleChange('allList', messages)
             unreadList(messages)
             handleChange('loading', false)

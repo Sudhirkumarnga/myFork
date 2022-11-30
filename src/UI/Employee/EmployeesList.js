@@ -38,7 +38,6 @@ export default function EmployeeListScene ({ navigation }) {
       handleChange('loading', true)
       const token = await AsyncStorage.getItem('token')
       const res = await getAllEmployee(token)
-      console.warn('getAllEmployee', res?.data)
       handleChange('loading', false)
       handleChange('allEmployee', res?.data?.results)
     } catch (error) {

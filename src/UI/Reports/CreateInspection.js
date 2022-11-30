@@ -1,16 +1,16 @@
-import React, { useState } from 'react'
-import { View, StyleSheet, ScrollView, Text } from 'react-native'
-import { Header } from '../Common'
-import { Fonts, Images, Colors } from '../../res'
-import { Button } from '../Common'
+import React, { useState } from "react"
+import { View, StyleSheet, ScrollView, Text } from "react-native"
+import { Header } from "../Common"
+import { Fonts, Images, Colors } from "../../res"
+import { Button } from "../Common"
 import {
   Menu,
   MenuOptions,
   MenuOption,
   MenuTrigger
-} from 'react-native-popup-menu'
-import { Icon } from 'react-native-elements'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+} from "react-native-popup-menu"
+import { Icon } from "react-native-elements"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 import {
   createInspectionReport,
   getWorksitesInspection,
@@ -18,26 +18,26 @@ import {
   locationVarianceReports,
   payrollReports,
   scheduleVarianceReports
-} from '../../api/business'
-import { useFocusEffect } from '@react-navigation/native'
-import ImagePicker from 'react-native-image-crop-picker'
-import { useCallback } from 'react'
-import Fab from '../Common/Fab'
-import PrimaryTextInput from '../Common/PrimaryTextInput'
-import Toast from 'react-native-simple-toast'
-import { Platform } from 'react-native'
+} from "../../api/business"
+import { useFocusEffect } from "@react-navigation/native"
+import ImagePicker from "react-native-image-crop-picker"
+import { useCallback } from "react"
+import Fab from "../Common/Fab"
+import PrimaryTextInput from "../Common/PrimaryTextInput"
+import Toast from "react-native-simple-toast"
+import { Platform } from "react-native"
 
-export default function CreateInspection ({ navigation, route }) {
+export default function CreateInspection({ navigation, route }) {
   const [state, setState] = useState({
     loading: false,
     allWorksites: [],
     worksiteTasks: [],
     areas: [],
-    worksite: '',
-    name: '',
-    area_name: '',
-    task: '',
-    photo: '',
+    worksite: "",
+    name: "",
+    area_name: "",
+    task: "",
+    photo: "",
     loadingCreate: false
   })
 
@@ -64,11 +64,11 @@ export default function CreateInspection ({ navigation, route }) {
   )
 
   const _uploadImage = async type => {
-    handleChange('uploading', true)
+    handleChange("uploading", true)
     let OpenImagePicker =
-      type == 'camera'
+      type == "camera"
         ? ImagePicker.openCamera
-        : type == ''
+        : type == ""
         ? ImagePicker.openPicker
         : ImagePicker.openPicker
     OpenImagePicker({
@@ -77,29 +77,28 @@ export default function CreateInspection ({ navigation, route }) {
     })
       .then(async response => {
         if (!response.path) {
-          handleChange('uploading', false)
+          handleChange("uploading", false)
         } else {
           const uri = response.path
           const uploadUri =
-            Platform.OS === 'ios' ? uri.replace('file://', '') : uri
-          handleChange('profile_image', uploadUri)
-          handleChange('photo', response.data)
-          handleChange('uploading', false)
-          Toast.show('Media uploaded')
+            Platform.OS === "ios" ? uri.replace("file://", "") : uri
+          handleChange("profile_image", uploadUri)
+          handleChange("photo", response.data)
+          handleChange("uploading", false)
+          Toast.show("Media uploaded")
         }
       })
       .catch(err => {
-        handleChange('showAlert', false)
-        handleChange('uploading', false)
+        handleChange("showAlert", false)
+        handleChange("uploading", false)
       })
   }
 
   const _getReports = async () => {
     try {
-      handleChange('loading', true)
-      const token = await AsyncStorage.getItem('token')
+      handleChange("loading", true)
+      const token = await AsyncStorage.getItem("token")
       const res = await getWorksitesInspection(token)
-      console.warn('res?.data?.response', res?.data)
       const list = []
       res?.data?.response?.forEach(element => {
         if (element) {
@@ -109,20 +108,19 @@ export default function CreateInspection ({ navigation, route }) {
           })
         }
       })
-      handleChange('allWorksites', list)
-      handleChange('loading', false)
+      handleChange("allWorksites", list)
+      handleChange("loading", false)
     } catch (error) {
-      handleChange('loading', false)
+      handleChange("loading", false)
       Toast.show(`Error: ${error.message}`)
     }
   }
 
   const _getWorksiteArea = async id => {
     try {
-      handleChange('loading', true)
-      const token = await AsyncStorage.getItem('token')
+      handleChange("loading", true)
+      const token = await AsyncStorage.getItem("token")
       const res = await getWorksitesTasks(id, token)
-      console.warn('getWorksitesTasks', res?.data)
       const list = []
       res?.data?.response?.forEach(element => {
         if (element) {
@@ -132,18 +130,18 @@ export default function CreateInspection ({ navigation, route }) {
           })
         }
       })
-      handleChange('worksiteTasks', list)
-      handleChange('loading', false)
+      handleChange("worksiteTasks", list)
+      handleChange("loading", false)
     } catch (error) {
-      handleChange('loading', false)
+      handleChange("loading", false)
       Toast.show(`Error: ${error.message}`)
     }
   }
 
   const _createInspectionReport = async () => {
     try {
-      handleChange('loadingCreate', true)
-      const token = await AsyncStorage.getItem('token')
+      handleChange("loadingCreate", true)
+      const token = await AsyncStorage.getItem("token")
       const payload = {
         name,
         worksite,
@@ -151,22 +149,21 @@ export default function CreateInspection ({ navigation, route }) {
         media: [{ file: photo }]
       }
       const res = await createInspectionReport(payload, token)
-      console.warn('getWorksitesTasks', res?.data)
-      handleChange('loadingCreate', false)
-      handleChange('name', '')
-      handleChange('worksite', '')
-      handleChange('areas', [])
-      handleChange('photo', '')
+      handleChange("loadingCreate", false)
+      handleChange("name", "")
+      handleChange("worksite", "")
+      handleChange("areas", [])
+      handleChange("photo", "")
       Toast.show(`Inspection report has been created`)
     } catch (error) {
-      handleChange('loadingCreate', false)
+      handleChange("loadingCreate", false)
       Toast.show(`Error: ${error.message}`)
     }
   }
 
   const getWorksiteText = (data, id) => {
     const filtered = data?.filter(e => e.value === id)
-    return (filtered?.length > 0 && filtered[0]?.label) || ''
+    return (filtered?.length > 0 && filtered[0]?.label) || ""
   }
 
   return (
@@ -174,49 +171,49 @@ export default function CreateInspection ({ navigation, route }) {
       <Header
         back
         leftButton
-        title={'Create Inspection Report'}
+        title={"Create Inspection Report"}
         onLeftPress={() => navigation.goBack()}
       />
       <ScrollView
-        contentContainerStyle={{ alignItems: 'center' }}
-        style={{ width: '100%' }}
+        contentContainerStyle={{ alignItems: "center" }}
+        style={{ width: "100%" }}
       >
         <PrimaryTextInput
           text={name}
           style={{ marginTop: 20 }}
-          label='Inspection report name'
-          key='name'
-          placeholder='Inspection report name'
-          onChangeText={(text, isValid) => handleChange('name', text)}
+          label="Inspection report name"
+          key="name"
+          placeholder="Inspection report name"
+          onChangeText={(text, isValid) => handleChange("name", text)}
         />
         <PrimaryTextInput
           dropdown={true}
           text={getWorksiteText(allWorksites, worksite)}
           items={allWorksites}
-          label={getWorksiteText(allWorksites, worksite) || 'Worksite name'}
-          key='worksite'
-          placeholder='Worksite name'
+          label={getWorksiteText(allWorksites, worksite) || "Worksite name"}
+          key="worksite"
+          placeholder="Worksite name"
           onChangeText={(text, isValid) => {
-            handleChange('worksite', text)
+            handleChange("worksite", text)
             _getWorksiteArea(text)
           }}
         />
         <PrimaryTextInput
           text={area_name}
-          label='Area name'
-          key='area_name'
-          placeholder='Area name'
-          onChangeText={(text, isValid) => handleChange('area_name', text)}
+          label="Area name"
+          key="area_name"
+          placeholder="Area name"
+          onChangeText={(text, isValid) => handleChange("area_name", text)}
         />
         <PrimaryTextInput
           dropdown={true}
           text={getWorksiteText(worksiteTasks, task)}
           items={worksiteTasks}
-          label={getWorksiteText(worksiteTasks, task) || 'Task name'}
-          key='task'
-          placeholder='Task name'
+          label={getWorksiteText(worksiteTasks, task) || "Task name"}
+          key="task"
+          placeholder="Task name"
           onChangeText={(text, isValid) => {
-            handleChange('task', text)
+            handleChange("task", text)
           }}
         />
         <Button
@@ -229,14 +226,14 @@ export default function CreateInspection ({ navigation, route }) {
             width: 20,
             height: 20,
             tintColor: Colors.GREEN_COLOR,
-            resizeMode: 'contain'
+            resizeMode: "contain"
           }}
-          icon={'upload'}
+          icon={"upload"}
           onPress={_uploadImage}
           isWhiteBg
           color={Colors.GREEN_COLOR}
-          backgroundColor={'transparent'}
-          title={'Upload media'}
+          backgroundColor={"transparent"}
+          title={"Upload media"}
         />
         <Button
           style={{
@@ -245,15 +242,15 @@ export default function CreateInspection ({ navigation, route }) {
             borderColor: Colors.GREEN_COLOR
           }}
           onPress={() => {
-            handleChange('areas', [...areas, { area_name, tasks: [task] }])
-            handleChange('area_name', '')
-            handleChange('task', '')
+            handleChange("areas", [...areas, { area_name, tasks: [task] }])
+            handleChange("area_name", "")
+            handleChange("task", "")
           }}
           disabled={!area_name || !task}
           isWhiteBg
           color={Colors.GREEN_COLOR}
-          backgroundColor={'transparent'}
-          title={'+ Add area'}
+          backgroundColor={"transparent"}
+          title={"+ Add area"}
         />
         <Button
           style={{
@@ -263,7 +260,7 @@ export default function CreateInspection ({ navigation, route }) {
           loading={loadingCreate}
           disabled={(!name || areas.length === 0, !photo)}
           onPress={_createInspectionReport}
-          title={'Create'}
+          title={"Create"}
         />
       </ScrollView>
     </View>
@@ -285,12 +282,12 @@ const styles = StyleSheet.create({
     padding: 20
   },
   footerButton: {
-    marginTop: '15%'
+    marginTop: "15%"
   },
   description: {
     ...Fonts.poppinsRegular(14),
     color: Colors.TEXT_COLOR,
-    textAlign: 'left',
+    textAlign: "left",
     marginTop: 2
   }
 })

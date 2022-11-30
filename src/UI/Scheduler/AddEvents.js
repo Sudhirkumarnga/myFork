@@ -217,7 +217,6 @@ export default function AddEvents({ navigation, route }) {
       handleChange("loading", true)
       const token = await AsyncStorage.getItem("token")
       const res = await getAllWorksites(token)
-      console.warn("getAllWorksites", res?.data)
       handleChange("allWorksites", res?.data?.results)
       const list = []
       res?.data?.results?.forEach(element => {

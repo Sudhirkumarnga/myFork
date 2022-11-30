@@ -48,7 +48,6 @@ export default class SignupComplete extends BaseScene {
       }
       const res = await signupUser(payload)
       this.handleChange('loading', false, true)
-      console.warn('signupUser', res?.data)
       // await AsyncStorage.setItem('token', res?.data?.response?.token)
       // if (res?.data?.user) {
       //   setUser(res?.data?.user)

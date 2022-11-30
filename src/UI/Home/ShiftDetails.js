@@ -1,5 +1,13 @@
-import React, { useContext } from "react"
-import { View, Text, StyleSheet, Image } from "react-native"
+import React, { useContext, useEffect } from "react"
+import {
+  View,
+  Platform,
+  PermissionsAndroid,
+  Text,
+  StyleSheet,
+  Image,
+  Dimensions
+} from "react-native"
 import { BaseScene, Button } from "../Common"
 import { Fonts, Colors, Images, Strings } from "../../res"
 import AsyncStorage from "@react-native-async-storage/async-storage"
@@ -13,23 +21,85 @@ import { FlatList } from "react-native"
 import userProfile from "../../res/Images/common/sample.png"
 import { ScrollView } from "react-native"
 import Header from "../Common/Header"
+import Geolocation from "@react-native-community/geolocation"
+import Geocoder from "react-native-geocoding"
+
+Geocoder.init("AIzaSyCndwU13bTZ8w_yhP4ErbFGE1Wr9oiro8Q")
+const { width, height } = Dimensions.get("window")
+const ASPECT_RATIO = width / height
+let LATITUDE_DELTA = 0.0922
+let LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO
 
 export default function ShiftDetails({ navigation }) {
   const { _getUpcomingShift, upcomingShiftData } = useContext(AppContext)
   const [state, setState] = useState({
     loading: false,
-    visible: false
+    visible: false,
+    currentLocation: null,
+    currentLocationName: ""
   })
 
-  const { loading, visible } = state
+  const { loading, visible, currentLocation, currentLocationName } = state
 
   const handleChange = (name, value) => {
     setState(pre => ({ ...pre, [name]: value }))
   }
 
+  useEffect(() => {
+    requestGeolocationPermission()
+  }, [])
+
+  async function requestGeolocationPermission() {
+    try {
+      if (Platform.OS === "ios") {
+        getCurrentLocation()
+      }
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: "CleanR Geolocation Permission",
+          message: "CleanR needs access to your current location."
+        }
+      )
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        getCurrentLocation()
+      } else {
+        console.log("Geolocation permission denied")
+      }
+    } catch (err) {
+      console.warn(err)
+    }
+  }
+
+  const getCurrentLocation = async () => {
+    Geolocation.getCurrentPosition(
+      position => {
+        var lat = parseFloat(position.coords.latitude)
+        var long = parseFloat(position.coords.longitude)
+        const region = {
+          latitude: lat,
+          longitude: long,
+          latitudeDelta: LATITUDE_DELTA,
+          longitudeDelta: LONGITUDE_DELTA
+        }
+        handleChange("currentLocation", region)
+        Geocoder.from(lat, long)
+          .then(json => {
+            var addressComponent = json.results[0].address_components[0]
+            console.log(addressComponent)
+            handleChange("currentLocationName", addressComponent.short_name)
+          })
+          .catch(error => console.warn(error))
+      },
+      error => console.log("Error", JSON.stringify(error)),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    )
+  }
+
   useFocusEffect(
     useCallback(() => {
       _getUpcomingShift()
+      getCurrentLocation()
     }, [])
   )
 
@@ -39,7 +109,10 @@ export default function ShiftDetails({ navigation }) {
       const token = await AsyncStorage.getItem("token")
       const payload = {
         event: upcomingShiftData?.id,
-        status: "CLOCK_OUT"
+        status: "CLOCK_IN",
+        location: currentLocationName,
+        latitude: currentLocation?.latitude,
+        longitude: currentLocation?.longitude
       }
       await newAttendance(payload, token)
       handleChange("loading", false)

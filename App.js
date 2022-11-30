@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react'
-import 'react-native-gesture-handler'
-import { NavigationContainer } from '@react-navigation/native'
-import { AuthNavigator } from './src/Navigation/AppNavigation'
-import SplashScreen from 'react-native-splash-screen'
-import './src/protos'
-import AppContext from './src/Utils/Context'
-import { MenuProvider } from 'react-native-popup-menu'
+import React, { useEffect, useState } from "react"
+import "react-native-gesture-handler"
+import { NavigationContainer } from "@react-navigation/native"
+import { AuthNavigator } from "./src/Navigation/AppNavigation"
+import SplashScreen from "react-native-splash-screen"
+import "./src/protos"
+import AppContext from "./src/Utils/Context"
+import { MenuProvider } from "react-native-popup-menu"
 import {
   getAllSchedules,
   getEarnings,
   getleaveRequest
-} from './src/api/business'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import Toast from 'react-native-simple-toast'
+} from "./src/api/business"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import Toast from "react-native-simple-toast"
 import {
   getAllNotifications,
   getCities,
@@ -20,10 +20,10 @@ import {
   getProfile,
   getStates,
   readDevice
-} from './src/api/auth'
-import { getUpcomingShift } from './src/api/employee'
-import { SafeAreaView, View } from 'react-native'
-import Colors from './src/res/Theme/Colors'
+} from "./src/api/auth"
+import { getUpcomingShift } from "./src/api/employee"
+import { SafeAreaView, View } from "react-native"
+import Colors from "./src/res/Theme/Colors"
 
 const App = () => {
   const [user, setUser] = useState(null)
@@ -44,7 +44,7 @@ const App = () => {
 
   const _getCountries = async () => {
     try {
-      const token = await AsyncStorage.getItem('token')
+      const token = await AsyncStorage.getItem("token")
       const countries = await getCountries(token)
       const cities = await getCities(token)
       const states = await getStates(token)
@@ -56,7 +56,7 @@ const App = () => {
         ? Object.values(error.response?.data?.error)
         : error.response?.data
         ? Object.values(error.response?.data)
-        : ''
+        : ""
       if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
       } else {
@@ -67,17 +67,16 @@ const App = () => {
 
   const _getAllSchedules = async payload => {
     try {
-      const token = await AsyncStorage.getItem('token')
-      const qs = payload || ''
+      const token = await AsyncStorage.getItem("token")
+      const qs = payload || ""
       const res = await getAllSchedules(qs, token)
-      console.warn('getAllWorksites', res?.data)
       setSchedules(res?.data?.response)
     } catch (error) {
       const showWError = error.response?.data?.error
         ? Object.values(error.response?.data?.error)
         : error.response?.data
         ? Object.values(error.response?.data)
-        : ''
+        : ""
       if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
       } else {
@@ -88,16 +87,15 @@ const App = () => {
 
   const _getEarnings = async () => {
     try {
-      const token = await AsyncStorage.getItem('token')
+      const token = await AsyncStorage.getItem("token")
       const res = await getEarnings(token)
       setEarnings(res?.data)
     } catch (error) {
-      console.warn('error.response?.data',error.response?.data);
       const showWError = error.response?.data?.error
         ? Object.values(error.response?.data?.error)
         : error.response?.data
         ? Object.values(error.response?.data)
-        : ''
+        : ""
       if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
       } else {
@@ -108,16 +106,16 @@ const App = () => {
 
   const _getleaveRequest = async () => {
     try {
-      const token = await AsyncStorage.getItem('token')
+      const token = await AsyncStorage.getItem("token")
       const res = await getleaveRequest(token)
-      console.log('getleaveRequest', res?.data?.results)
+      console.log("getleaveRequest", res?.data?.results)
       setLeaveRequest(res?.data?.results)
     } catch (error) {
       const showWError = error.response?.data?.error
         ? Object.values(error.response?.data?.error)
         : error.response?.data
         ? Object.values(error.response?.data)
-        : ''
+        : ""
       if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError)}`)
       } else {
@@ -128,7 +126,7 @@ const App = () => {
 
   const _getProfile = async () => {
     try {
-      const token = await AsyncStorage.getItem('token')
+      const token = await AsyncStorage.getItem("token")
       const res = await getProfile(token)
       setAdminProfile(res?.data?.response)
     } catch (error) {
@@ -136,7 +134,7 @@ const App = () => {
         ? Object.values(error.response?.data?.error)
         : error.response?.data
         ? Object.values(error.response?.data)
-        : ''
+        : ""
       if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
       } else {
@@ -147,16 +145,15 @@ const App = () => {
 
   const _getUpcomingShift = async () => {
     try {
-      const token = await AsyncStorage.getItem('token')
+      const token = await AsyncStorage.getItem("token")
       const res = await getUpcomingShift(token)
-      console.warn('getUpcomingShift', res?.data)
       setUpcomingShiftData(res?.data)
     } catch (error) {
       const showWError = error.response?.data?.error
         ? Object.values(error.response?.data?.error)
         : error.response?.data
         ? Object.values(error.response?.data)
-        : ''
+        : ""
       if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
       } else {
@@ -167,14 +164,14 @@ const App = () => {
 
   const _readDevice = async payload => {
     try {
-      const token = await AsyncStorage.getItem('token')
+      const token = await AsyncStorage.getItem("token")
       const res = await readDevice(payload, token)
     } catch (error) {
       const showWError = error.response?.data?.error
         ? Object.values(error.response?.data?.error)
         : error.response?.data
         ? Object.values(error.response?.data)
-        : ''
+        : ""
       if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
       } else {
@@ -186,16 +183,15 @@ const App = () => {
 
   const _getNotification = async () => {
     try {
-      const token = await AsyncStorage.getItem('token')
+      const token = await AsyncStorage.getItem("token")
       const res = await getAllNotifications(token)
-      console.warn('_getNotification', res?.data?.results)
       setNotifications(res?.data?.results)
     } catch (error) {
       const showWError = error.response?.data?.error
         ? Object.values(error.response?.data?.error)
         : error.response?.data
         ? Object.values(error.response?.data)
-        : ''
+        : ""
       if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
       } else {

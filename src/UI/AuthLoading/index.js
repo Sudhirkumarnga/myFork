@@ -1,19 +1,19 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import React, { useContext, useEffect } from 'react'
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import React, { useContext, useEffect } from "react"
 import {
   StyleSheet,
   View,
   ActivityIndicator,
   Platform,
   Alert
-} from 'react-native'
-import Toast from 'react-native-simple-toast'
-import { getProfile } from '../../api/auth'
-import Colors from '../../res/Theme/Colors'
-import AppContext from '../../Utils/Context'
-import messaging from '@react-native-firebase/messaging'
+} from "react-native"
+import Toast from "react-native-simple-toast"
+import { getProfile } from "../../api/auth"
+import Colors from "../../res/Theme/Colors"
+import AppContext from "../../Utils/Context"
+import messaging from "@react-native-firebase/messaging"
 
-function AuthLoading ({ navigation }) {
+function AuthLoading({ navigation }) {
   // Context
   const context = useContext(AppContext)
   const {
@@ -30,8 +30,8 @@ function AuthLoading ({ navigation }) {
 
   const _getProfile = async () => {
     try {
-      const token = await AsyncStorage.getItem('token')
-      const user = await AsyncStorage.getItem('user')
+      const token = await AsyncStorage.getItem("token")
+      const user = await AsyncStorage.getItem("user")
       const res = await getProfile(token)
       let userData
       if (user) {
@@ -39,37 +39,39 @@ function AuthLoading ({ navigation }) {
         setUser(userData)
       }
       _getNotification()
-      console.warn('userData', res?.data?.response)
+      console.warn("userData", userData)
+      console.warn("res?.data?.response", res?.data?.response)
       if (res?.data?.response) {
         setAdminProfile(res?.data?.response)
       }
 
-      if (userData?.role === 'Organization Admin') {
+      if (userData?.role === "Organization Admin") {
         _getleaveRequest()
       }
 
       if (
-        userData?.role === 'Organization Admin' &&
+        userData?.role === "Organization Admin" &&
         !res?.data?.response?.personal_information?.first_name
       ) {
-        navigation.navigate('businessProfileCreation')
+        navigation.navigate("businessProfileCreation")
         return
       } else if (
-        userData?.role !== 'Organization Admin' &&
+        userData?.role !== "Organization Admin" &&
         !res?.data?.response?.business_information &&
         !res?.data?.response?.emergency_contact?.first_name
       ) {
-        navigation.navigate('EmployeeProfileScene')
+        navigation.navigate("EmployeeProfileScene")
         return
       }
       if (
-        userData?.role === 'Organization Admin' ||
-        res?.data?.response?.emergency_contact?.first_name
+        userData?.role === "Organization Admin" ||
+        (res?.data?.response?.business_information &&
+          res?.data?.response?.emergency_contact?.first_name)
       ) {
-        navigation.navigate('home')
+        navigation.navigate("home")
         return
       } else {
-        navigation.navigate('homeEmployee')
+        navigation.navigate("homeEmployee")
         return
       }
     } catch (error) {
@@ -80,31 +82,31 @@ function AuthLoading ({ navigation }) {
 
   useEffect(() => {
     _bootstrapAsync()
-    navigation.addListener('focus', () => {
+    navigation.addListener("focus", () => {
       _bootstrapAsync()
     })
   }, [])
   useEffect(() => {
     requestUserPermission()
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage))
+      Alert.alert("A new FCM message arrived!", JSON.stringify(remoteMessage))
     })
 
     messaging().setBackgroundMessageHandler(async remoteMessage => {
-      console.log('Message handled in the background!', remoteMessage)
+      console.log("Message handled in the background!", remoteMessage)
     })
 
     return unsubscribe
   }, [])
 
-  async function registerAppWithFCM () {
+  async function registerAppWithFCM() {
     const getToken = await messaging().getToken()
     await messaging().registerDeviceForRemoteMessages()
-    const token = await AsyncStorage.getItem('token')
-    const user = await AsyncStorage.getItem('user')
+    const token = await AsyncStorage.getItem("token")
+    const user = await AsyncStorage.getItem("user")
     const userData = JSON.parse(user)
     const payloadRead = {
-      device_id: '', // Send if you can otherwise remove field
+      device_id: "", // Send if you can otherwise remove field
       registration_id: getToken,
       active: true,
       name: userData?.first_name,
@@ -115,7 +117,7 @@ function AuthLoading ({ navigation }) {
     }
   }
 
-  async function requestUserPermission () {
+  async function requestUserPermission() {
     const authStatus = await messaging().requestPermission()
     const enabled =
       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
@@ -127,31 +129,31 @@ function AuthLoading ({ navigation }) {
   }
 
   const _bootstrapAsync = async () => {
-    _getCountries()
-    const userUID = await AsyncStorage.getItem('token')
+    const userUID = await AsyncStorage.getItem("token")
     if (userUID) {
+      _getCountries()
       _getProfile()
       _getAllSchedules()
       _getEarnings()
     } else {
-      navigation.navigate('chooseEnv')
+      navigation.navigate("chooseEnv")
     }
   }
 
   return (
     <View style={styles.container}>
-      <ActivityIndicator size='large' color={Colors.WHITE} />
+      <ActivityIndicator size="large" color={Colors.WHITE} />
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
+    width: "100%",
     backgroundColor: Colors.BACKGROUND_BG,
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
+    alignItems: "center",
+    justifyContent: "center"
   }
 })
 

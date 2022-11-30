@@ -42,13 +42,11 @@ export default function NewMessageScene ({ navigation }) {
       _getAllEmployee()
     }, [])
   )
-  // console.warn('allEmployee',allEmployee);
   const _getAllEmployee = async () => {
     try {
       handleChange('loading', true)
       const token = await AsyncStorage.getItem('token')
       const res = await getAllEmployee(token)
-      console.warn('getAllEmployee', res?.data)
       handleChange('loading', false)
       handleChange('allEmployee', res?.data?.results)
     } catch (error) {
@@ -159,7 +157,6 @@ export default function NewMessageScene ({ navigation }) {
     )
   }
 
-  console.warn('allEmployee', allEmployee)
   const renderContent = () => {
     return (
       <View style={styles.childContainerStyle}>

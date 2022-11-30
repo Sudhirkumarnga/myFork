@@ -12,9 +12,6 @@ class BaseScene extends BaseComponent {
 
   onOfflineRetry() {
     if (__DEV__) {
-      console.warn(
-        "This is BaseScene, override onOfflineRetry method in customScene..."
-      )
     }
     //this.showOffline(false)
   }

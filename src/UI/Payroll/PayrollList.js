@@ -51,8 +51,6 @@ export default function EmployeeListScene ({ navigation }) {
     handleChange('visible', false)
   }
 
-  console.warn('earnings', earnings)
-
   return (
     <View style={styles.container}>
       <View

@@ -1,128 +1,100 @@
-import React, { Component } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
-import { BaseScene, Button, PrimaryTextInput, Forms, Header } from '../Common'
-import { ImagePickerAndUploader } from '../../Utils'
-import { Fonts, Colors } from '../../res'
+import React, { useState } from "react"
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
+import { Button, PrimaryTextInput, Header } from "../Common"
+import { Fonts, Colors, Images } from "../../res"
+import Toast from "react-native-simple-toast"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import ImagePicker from "react-native-image-crop-picker"
+import Strings, { submit } from "../../res/Strings"
+import { appFeedback } from "../../api/auth"
 
-export default class FeedbackScene extends BaseScene {
-  constructor (props) {
-    super(props)
-    this.state = {
-      image: {},
-      userImage: false,
-      password: '',
-      confirmPassword: '',
-      isFormValid: false
-    }
-    this.setForms()
-    this.isFormValid = this.isFormValid.bind(this)
+export default function FeedbackScene({ navigation }) {
+  const [state, setState] = useState({
+    email: "",
+    message: "",
+    file: "",
+    loading: false
+  })
+  const { email, message, file, loading } = state
+
+  const handleChange = (name, value) => {
+    setState(pre => ({ ...pre, [name]: value }))
   }
-
-  setForms (field) {
-    this.forms = Forms.fields('feedback')
-  }
-
-  isFormValid () {
-    let error = null
-    this.forms.map(i => {
-      if (!this[i.key].isValid()) {
-        error = i.key
-        return true
-      }
-      return false
+  const _uploadImage = async type => {
+    handleChange("uploading", true)
+    let OpenImagePicker =
+      type == "camera"
+        ? ImagePicker.openCamera
+        : type == ""
+        ? ImagePicker.openPicker
+        : ImagePicker.openPicker
+    OpenImagePicker({
+      cropping: true,
+      includeBase64: true
     })
-    if (error) {
-      this.setState({ isFormValid: false })
-      return false
-    }
-    this.setState({ isFormValid: true })
-    return true
+      .then(async response => {
+        if (!response.path) {
+          handleChange("uploading", false)
+        } else {
+          handleChange("file", response.data)
+          handleChange("uploading", false)
+          Toast.show("Media Add Successfully")
+        }
+      })
+      .catch(err => {
+        handleChange("showAlert", false)
+        handleChange("uploading", false)
+      })
   }
 
-  onSubmit () {
-    let error = null
-    let params = {}
-    if (!this.password.isValid()) {
-      error = 'Please enter valid password'
-    } else if (this.state.password != this.state.confirmPassword) {
-      error = 'Password does not match'
-    }
-    if (error) {
-      alert(error)
-    } else {
-      params = {
-        old_password: this.state.oldPassword,
-        new_password: this.state.password
+  const onSubmit = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token")
+      handleChange("loading", true)
+      const payload = {
+        email,
+        message,
+        files: { file01: file }
       }
-      //   this.postForm(params)
+      await appFeedback(payload, token)
+      handleChange("loading", false)
+      navigation.goBack()
+      Toast.show(`App feedback submitted`)
+    } catch (error) {
+      console.warn("error", error)
+      handleChange("loading", false)
+      const errorText = Object.values(error?.response?.data)
+      Toast.show(`Error: ${errorText[0]}`)
     }
   }
 
-  handleAWSUpload () {
-    const config = {
-      width: 300,
-      height: 150,
-      cropping: true
-    }
-    ImagePickerAndUploader.pickAndUpload(config)
-      .then(response => {
-        console.warn(response)
-        this.setState({
-          image: {
-            uri: response.image.path,
-            width: response.image.width,
-            height: response.image.height,
-            mime: response.image.mime
-          },
-          userImage: true
-        })
-      })
-      .catch(error => {
-        alert(error.message)
-      })
-  }
-
-  renderCancelButton () {
+  function renderCancelButton() {
     return (
       <TouchableOpacity
         style={{
-          justifyContent: 'center',
-          alignItems: 'center',
+          justifyContent: "center",
+          alignItems: "center",
           paddingVertical: 20
         }}
-        onPress={() => this.props.navigation.goBack()}
+        onPress={() => navigation.goBack()}
       >
-        <Text style={styles.cancelText}>{this.ls('cancel')}</Text>
+        <Text style={styles.cancelText}>{Strings.cancel}</Text>
       </TouchableOpacity>
     )
   }
 
-  renderTextInput () {
-    const props = {
-      dropdown: true,
-      items: [{ value: 'Workite number 1', label: 'Workite number 1' }]
-    }
+  function renderTextInput() {
     return (
       <View>
-        {this.forms.map(item => {
-          return (
-            <PrimaryTextInput
-              {...item}
-              onChangeText={text => this.isFormValid(text, 'password')}
-              ref={o => (this[item.key] = o)}
-            />
-          )
-        })}
         <PrimaryTextInput
-          ref={o => (this.worksite = o)}
-          label='Worksite'
-          {...props}
-          onChangeText={worksite => this.setState({ worksite })}
+          onChangeText={text => handleChange("email", text)}
+          label="Email address"
+          value={email}
         />
         <PrimaryTextInput
-          onChangeText={text => this.isFormValid(text, 'confirmPassword')}
-          ref={o => (this.message = o)}
-          label='Message'
+          onChangeText={text => handleChange("message", text)}
+          label="Message"
+          value={message}
           inputStyle={{ height: 100 }}
           multiline
         />
@@ -130,7 +102,7 @@ export default class FeedbackScene extends BaseScene {
     )
   }
 
-  renderUploadButton () {
+  function renderUploadButton() {
     return (
       <Button
         style={[styles.footerWhiteButton]}
@@ -139,49 +111,49 @@ export default class FeedbackScene extends BaseScene {
           width: 20,
           height: 20,
           tintColor: Colors.GREEN_COLOR,
-          resizeMode: 'contain'
+          resizeMode: "contain"
         }}
         color={Colors.GREEN_COLOR}
-        icon={'upload'}
-        title={this.ls('uploadMedia')}
-        onPress={() => this.handleAWSUpload()}
+        icon={"upload"}
+        title={Strings.uploadMedia}
+        onPress={_uploadImage}
       />
     )
   }
 
-  renderFooterButton () {
+  function renderFooterButton() {
     return (
       <Button
-        title={this.ls('submit')}
+        title={Strings.submit}
+        loading={loading}
+        disabled={!email || !message || !file}
         style={styles.footerButton}
-        onPress={this.props.onPress}
+        onPress={onSubmit}
       />
     )
   }
-  renderHeader () {
+  function renderHeader() {
     return (
       <Header
-        title={'Send App Feedback'}
+        title={"Send App Feedback"}
         leftButton
-        leftIcon={this.images('leftArrow')}
-        onLeftPress={() => this.props.navigation.goBack()}
+        leftIcon={Images.leftArrow}
+        onLeftPress={() => navigation.goBack()}
       />
     )
   }
 
-  render () {
-    return (
-      <View style={styles.container}>
-        {this.renderHeader()}
-        <View style={{ paddingTop: 30 }}>
-          {this.renderTextInput()}
-          {this.renderUploadButton()}
-          {this.renderFooterButton()}
-          {this.renderCancelButton()}
-        </View>
+  return (
+    <View style={styles.container}>
+      {renderHeader()}
+      <View style={{ paddingTop: 30 }}>
+        {renderTextInput()}
+        {renderUploadButton()}
+        {renderFooterButton()}
+        {renderCancelButton()}
       </View>
-    )
-  }
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -192,8 +164,8 @@ const styles = StyleSheet.create({
   title: {
     ...Fonts.poppinsRegular(28),
     color: Colors.BLACK,
-    textAlign: 'center',
-    marginTop: '20%'
+    textAlign: "center",
+    marginTop: "20%"
   },
   description: {
     ...Fonts.poppinsRegular(14),
@@ -201,8 +173,8 @@ const styles = StyleSheet.create({
     marginVertical: 10
   },
   footerButton: {
-    marginTop: '15%',
-    width: '90%'
+    marginTop: "15%",
+    width: "90%"
   },
   forgotPwdText: {
     ...Fonts.poppinsRegular(14),
@@ -214,9 +186,9 @@ const styles = StyleSheet.create({
     color: Colors.BUTTON_BG
   },
   footerWhiteButton: {
-    marginTop: '5%',
-    width: '90%',
-    backgroundColor: 'red',
+    marginTop: "5%",
+    width: "90%",
+    backgroundColor: "red",
     borderWidth: 1,
     borderColor: Colors.BUTTON_BG
   }
