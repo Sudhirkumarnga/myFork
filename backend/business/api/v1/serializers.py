@@ -308,7 +308,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
 class AttendanceFeedbackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attendance
-        fields = ('id', 'feedback',)
+        fields = ('id', 'attendance_feedback',)
 
 
 class EarningSerializer(serializers.ModelSerializer):
