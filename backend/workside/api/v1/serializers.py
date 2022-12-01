@@ -42,8 +42,8 @@ class WorksiteSerializer(ModelSerializer):
     class Meta:
         model = WorkSite
         fields = (
-        'id', 'business', 'personal_information', 'contact_person', 'is_active', 'show_dtails', 'tasks', 'location',
-        'longitude', 'latitude')
+            'id', 'business', 'personal_information', 'contact_person', 'is_active', 'show_dtails', 'tasks', 'location',
+            'longitude', 'latitude')
 
     def to_representation(self, data):
         data = super(WorksiteSerializer, self).to_representation(data)
@@ -199,14 +199,14 @@ class EventSerializer(ModelSerializer):
                 start_time__lte=data['start_time'],
                 end_time__gte=data['end_time'],
                 worksite=data['worksite']
-                #worksite__business__user=request.user
+                # worksite__business__user=request.user
             )
         else:
             event = Event.objects.filter(
                 start_time__lte=data['start_time'],
                 end_time__gte=data['end_time'],
                 worksite=data['worksite']
-                #worksite__business__user=request.user
+                # worksite__business__user=request.user
             )
         if event.exists():
             raise serializers.ValidationError(
@@ -279,7 +279,7 @@ class EventSerializer(ModelSerializer):
                 )
 
         Event.objects.filter(id=instance.id).update(
-           **validated_data
+            **validated_data
         )
         return Event.objects.get(id=instance.id)
 
@@ -309,9 +309,10 @@ class WorksiteListSerializer(serializers.ModelSerializer):
 
     def to_representation(self, data):
         data = super(WorksiteListSerializer, self).to_representation(data)
-        data['worksite_name'] = Event.objects.get(id=data['id']).worksite.name
-        data['location'] = Event.objects.get(id=data['id']).worksite.location
-        data['logo'] = Event.objects.get(id=data['id']).worksite.business.profile_image.url
+        event = Event.objects.get(id=data['id'])
+        data['worksite_name'] = event.worksite.name if event.worksite.name else None
+        data['location'] = event.worksite.location if event.worksite.location else None
+        data['logo'] = event.worksite.business.profile_image.url if event.worksite.business.profile_image.url else None
         return data
 
 
@@ -332,7 +333,8 @@ class EventAssignedEmployeeSerializer(serializers.ModelSerializer):
 
 class AttendanceWorksiteSerializer(serializers.ModelSerializer):
     tasks = serializers.SerializerMethodField()
-    #assigned_employee = serializers.SerializerMethodField()
+
+    # assigned_employee = serializers.SerializerMethodField()
 
     class Meta:
         model = WorkSite
@@ -433,17 +435,17 @@ class AttendanceEventSerializer(serializers.ModelSerializer):
     #     ).data
     #     return data
 
-        # attendance = Attendance.objects.filter(event=obj)
-        # if attendance.exists():
-        #     employees = AttendanceActiveEmployeeSerializer(
-        #         attendance.first(),
-        #         many=False
-        #     ).data['employee']
-        #     for employee in employees:
-        #         employee['worksite'] = obj.worksite.name
-        #     return employees
-        # else:
-        #     return []
+    # attendance = Attendance.objects.filter(event=obj)
+    # if attendance.exists():
+    #     employees = AttendanceActiveEmployeeSerializer(
+    #         attendance.first(),
+    #         many=False
+    #     ).data['employee']
+    #     for employee in employees:
+    #         employee['worksite'] = obj.worksite.name
+    #     return employees
+    # else:
+    #     return []
 
     # def get_total_hours(self, obj):
     #     request = self.context['request']

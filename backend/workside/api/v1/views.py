@@ -400,7 +400,8 @@ class UpcomingShiftView(APIView):
         if queryset.exists():
             attendance = Attendance.objects.filter(
                 event=queryset.first(),
-                employee__user=request.user
+                employee__user=request.user,
+                status="CLOCK_OUT"
             )
             if not attendance.exists():
                 serializer_data = AttendanceEventSerializer(
