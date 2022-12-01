@@ -8,7 +8,7 @@ from push_notification.services import create_notification
 from workside import models
 from workside.tasks import event_publishing_reminder_task, event_start_notification_task
 from business.models import (
-    Business, Employee
+    Business, Employee, Attendance
 )
 
 
@@ -50,7 +50,7 @@ def update_worksite(user, data, instance):
         worksite.instruction_video = convert_file_from_bse64_to_blob(data['instruction_video'])
     if data.__contains__("logo") and data['logo'] is None:
         worksite.logo = data['logo']
-    if data.__contains__("instruction_video")  and data['instruction_video'] is None:
+    if data.__contains__("instruction_video") and data['instruction_video'] is None:
         worksite.instruction_video = data['instruction_video']
 
     worksite.save()
@@ -159,3 +159,12 @@ def send_notify_to_employees(employees, worksite):
             "user": employee.user
         }
         )
+
+
+def get_total_hours(request):
+    all_attendance = Attendance.objects.filter(employee__user=request.user, status="CLOCK_OUT")
+    attendance_hours = 0
+    if all_attendance.exists():
+        for attendance in all_attendance:
+            attendance_hours += attendance.total_hours
+    return attendance_hours

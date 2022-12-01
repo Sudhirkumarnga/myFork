@@ -382,13 +382,13 @@ class AttendanceActiveEmployeeSerializer(serializers.ModelSerializer):
 
 class AttendanceEventSerializer(serializers.ModelSerializer):
     worksite = serializers.SerializerMethodField()
-    active_employees = serializers.SerializerMethodField()
-    total_hours = serializers.SerializerMethodField()
+    # active_employees = serializers.SerializerMethodField()
+    # total_hours = serializers.SerializerMethodField()
     assigned_employees = serializers.SerializerMethodField()
 
     class Meta:
         model = Event
-        fields = ('id', 'worksite', 'assigned_employees', 'active_employees', 'total_hours')
+        fields = ('id', 'worksite', 'assigned_employees')
 
     def to_representation(self, data):
         request = self.context['request']
@@ -424,14 +424,14 @@ class AttendanceEventSerializer(serializers.ModelSerializer):
             many=True
         ).data
 
-    @staticmethod
-    def get_active_employees(obj):
-        employees = Employee.objects.filter(business=obj.worksite.business, is_owner=False)
-        data = EmployeeSerializer(
-            employees,
-            many=True
-        ).data
-        return data
+    # def get_active_employees(self, obj):
+    #     request = self.context['request']
+    #     employees = Employee.objects.filter(business__user=request.user, is_owner=False)
+    #     data = EmployeeSerializer(
+    #         employees,
+    #         many=True
+    #     ).data
+    #     return data
 
         # attendance = Attendance.objects.filter(event=obj)
         # if attendance.exists():
@@ -445,11 +445,11 @@ class AttendanceEventSerializer(serializers.ModelSerializer):
         # else:
         #     return []
 
-    def get_total_hours(self, obj):
-        request = self.context['request']
-        all_attendance = Attendance.objects.filter(employee__user=request.user, status="CLOCK_OUT")
-        attendance_hours = 0
-        if all_attendance.exists():
-            for attendance in all_attendance:
-                attendance_hours += attendance.total_hours
-        return attendance_hours
+    # def get_total_hours(self, obj):
+    #     request = self.context['request']
+    #     all_attendance = Attendance.objects.filter(employee__user=request.user, status="CLOCK_OUT")
+    #     attendance_hours = 0
+    #     if all_attendance.exists():
+    #         for attendance in all_attendance:
+    #             attendance_hours += attendance.total_hours
+    #     return attendance_hours
