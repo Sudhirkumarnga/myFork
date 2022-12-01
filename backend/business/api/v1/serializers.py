@@ -293,6 +293,19 @@ class AttendanceSerializer(serializers.ModelSerializer):
                 )
                 if not event.exists():
                     raise serializers.ValidationError(_("Event Time not started or you're not allowed to clockin."))
+
+        if request.method == "POST":
+            attendance = Attendance.objects.filter(
+                event=data['event'],
+                employee__user=request.user
+            )
+            if attendance.exists():
+                raise serializers.ValidationError(
+                    {"event": _(
+                        "You already attend this event."
+                    )
+                    }
+                )
         return data
 
     def create(self, validated_data):
@@ -308,7 +321,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
 class AttendanceFeedbackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attendance
-        fields = ('id', 'feedback',)
+        fields = ('id', 'attendance_feedback',)
 
 
 class EarningSerializer(serializers.ModelSerializer):
@@ -323,7 +336,8 @@ class EarningSerializer(serializers.ModelSerializer):
         for attendance in attendances:
             dict = {}
             dict['employee_name'] = attendance.employee.user.get_full_name()
-            dict['employee_image'] = attendance.employee.profile_image.url if attendance.employee.profile_image else None
+            dict[
+                'employee_image'] = attendance.employee.profile_image.url if attendance.employee.profile_image else None
             dict['employee_position'] = attendance.employee.position
             dict['employee_hourly_rate'] = attendance.employee.hourly_rate
             dict['employee_hours'], dict['employee_earnings'] = 0, 0

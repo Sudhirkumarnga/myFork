@@ -18,11 +18,11 @@ from workside.api.v1.serializers import (
     EventSerializer,
     SchedularSerializer,
     WorksiteListSerializer,
-    AttendanceEventSerializer
+    AttendanceEventSerializer, EmployeeSerializer
 )
 from workside.services import (
     update_serializer_data,
-    get_filtered_queryset, send_notification_to_employees
+    get_filtered_queryset, send_notification_to_employees, get_total_hours
 )
 from datetime import datetime
 from rest_framework.filters import SearchFilter
@@ -395,9 +395,18 @@ class UpcomingShiftView(APIView):
             end_time__gte=datetime.now(),
             employees__in=employee,
         )
-        serializer = AttendanceEventSerializer(
+        serializer_data = AttendanceEventSerializer(
             queryset.first(),
             many=False,
             context={'request': request}
-        )
-        return Response(serializer.data)
+        ).data
+        serializer_data['active_employees'] = EmployeeSerializer(
+            Employee.objects.filter(
+                business=Employee.objects.get(
+                    user=request.user
+                ).business
+            ),
+            many=True
+        ).data
+        serializer_data['total_hours'] = get_total_hours(request)
+        return Response(serializer_data)

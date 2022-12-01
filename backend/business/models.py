@@ -157,7 +157,7 @@ class Attendance(TimeStampedModel):
     total_hours = models.DecimalField(max_digits=200, decimal_places=1, default=0)
     earnings = models.DecimalField(max_digits=200, decimal_places=1, default=0)
     is_approved = models.BooleanField(default=False)
-    feedback = models.CharField(
+    attendance_feedback = models.CharField(
         _("Attendance Feedback"),
         max_length=200,
         choices=AttendanceFeedback.choices(),
