@@ -312,7 +312,7 @@ class WorksiteListSerializer(serializers.ModelSerializer):
         event = Event.objects.get(id=data['id'])
         data['worksite_name'] = event.worksite.name if event.worksite.name else None
         data['location'] = event.worksite.location if event.worksite.location else None
-        data['logo'] = event.worksite.business.profile_image.url if event.worksite.business.profile_image.url else None
+        data['logo'] = event.worksite.business.profile_image.url if event.worksite.business.profile_image else None
         return data
 
 
