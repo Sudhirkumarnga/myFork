@@ -489,7 +489,7 @@ class FeedbackView(APIView):
     def get(self, request):
 
         serializer = FeedbackSerializer(
-            self.queryset.filter(business__user=self.request.user),
+            self.queryset.filter(user=self.request.user),
             many=True,
             context={'request': request}
         )

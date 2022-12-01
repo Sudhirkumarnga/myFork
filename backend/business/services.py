@@ -185,10 +185,11 @@ def convert_file_from_bse64_to_blob(file, file_name):
 
 
 def create_feedback(validated_data, request):
+
     feedback = Feedback.objects.create(
         email=validated_data['email'],
         message=validated_data['message'],
-        business=Business.objects.get(user=request.user)
+        user=request.user
     )
     for key, val in validated_data['files'].items():
         FeedbackMedia.objects.create(feedback=feedback, file=convert_file_from_bse64_to_blob(val, key))

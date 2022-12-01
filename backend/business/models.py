@@ -217,7 +217,7 @@ class Feedback(models.Model):
     is_visible = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    business = models.ForeignKey(Business, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         verbose_name = "Feedback"
