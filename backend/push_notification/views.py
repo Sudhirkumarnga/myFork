@@ -15,6 +15,12 @@ class NotificationViewSet(ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ['user', 'is_read']
 
+    def get_queryset(self):
+        queryset = self.queryset.filter(
+            user=self.request.user
+        )
+        return queryset
+
     @action(detail=False, methods=['GET'])
     def read_notification(self, request):
         Notification.objects.filter(
