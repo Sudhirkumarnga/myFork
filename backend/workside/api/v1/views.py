@@ -2,6 +2,8 @@ import json
 
 from rest_framework import status
 from rest_framework.response import Response
+
+from business.models import Attendance
 from smart_workhorse_33965.response import SmartWorkHorseResponse, SmartWorkHorseStatus
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from smart_workhorse_33965.permissions import IsOrganizationAdmin, IsActiveSubscription
@@ -395,11 +397,19 @@ class UpcomingShiftView(APIView):
             end_time__gte=datetime.now(),
             employees__in=employee,
         )
-        serializer_data = AttendanceEventSerializer(
-            queryset.first(),
-            many=False,
-            context={'request': request}
-        ).data
+        if queryset.exists():
+            attendance = Attendance.objects.filter(
+                event=queryset.first(),
+                employee__user=request.user
+            )
+            if not attendance.exists():
+                serializer_data = AttendanceEventSerializer(
+                    queryset.first(),
+                    many=False,
+                    context={'request': request}
+                ).data
+            else:
+                serializer_data = {}
         serializer_data['active_employees'] = EmployeeSerializer(
             Employee.objects.filter(
                 business=Employee.objects.get(
