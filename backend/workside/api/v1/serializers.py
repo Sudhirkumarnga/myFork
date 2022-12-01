@@ -216,23 +216,6 @@ class EventSerializer(ModelSerializer):
                 }
             )
 
-        # if self.instance:
-        #     event = Event.objects.filter(
-        #         ~Q(id=self.instance.id),
-        #         worksite=data['worksite']
-        #     )
-        # else:
-        #     event = Event.objects.filter(
-        #         worksite=data['worksite']
-        #     )
-        # if event.exists():
-        #     raise serializers.ValidationError(
-        #         {"worksite": _(
-        #             "Event is already created for this worksite."
-        #         )
-        #         }
-        #     )
-
         return data
 
     @staticmethod
@@ -443,17 +426,24 @@ class AttendanceEventSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_active_employees(obj):
-        attendance = Attendance.objects.filter(event=obj)
-        if attendance.exists():
-            employees = AttendanceActiveEmployeeSerializer(
-                attendance.first(),
-                many=False
-            ).data['employee']
-            for employee in employees:
-                employee['worksite'] = obj.worksite.name
-            return employees
-        else:
-            return []
+        employees = Employee.objects.filter(business=obj.worksite.business, is_owner=False)
+        data = EmployeeSerializer(
+            employees,
+            many=True
+        ).data
+        return data
+
+        # attendance = Attendance.objects.filter(event=obj)
+        # if attendance.exists():
+        #     employees = AttendanceActiveEmployeeSerializer(
+        #         attendance.first(),
+        #         many=False
+        #     ).data['employee']
+        #     for employee in employees:
+        #         employee['worksite'] = obj.worksite.name
+        #     return employees
+        # else:
+        #     return []
 
     def get_total_hours(self, obj):
         request = self.context['request']

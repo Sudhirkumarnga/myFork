@@ -1,5 +1,7 @@
+from business.models import Employee
 from push_notification.services import create_notification
 from smart_workhorse_33965.response import SmartWorkHorseResponse, SmartWorkHorseStatus
+from workside.api.v1.serializers import EmployeeSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from allauth.account import app_settings as allauth_settings
 from rest_framework.viewsets import ModelViewSet, ViewSet
@@ -124,6 +126,7 @@ class LoginViewSet(LoginView):
 
         serializer_data = serializer.data
         serializer_data['user'] = UserSerializer(self.request.user, many=False).data
+        serializer_data['employee'] = EmployeeSerializer(Employee.objects.get(user=self.request.user)).data
         response = Response(serializer_data, status=status.HTTP_200_OK)
         if getattr(settings, 'REST_USE_JWT', False):
             from rest_framework_jwt.settings import api_settings as jwt_settings
