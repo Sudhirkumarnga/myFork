@@ -401,7 +401,11 @@ class UpcomingShiftView(APIView):
             context={'request': request}
         ).data
         serializer_data['active_employees'] = EmployeeSerializer(
-            Employee.objects.filter(business__user=request.user, is_owner=False),
+            Employee.objects.filter(
+                business=Employee.objects.get(
+                    user=request.user
+                ).business
+            ),
             many=True
         ).data
         serializer_data['total_hours'] = get_total_hours(request)
