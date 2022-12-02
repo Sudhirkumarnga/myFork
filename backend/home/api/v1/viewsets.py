@@ -126,7 +126,7 @@ class LoginViewSet(LoginView):
 
         serializer_data = serializer.data
         serializer_data['user'] = UserSerializer(self.request.user, many=False).data
-        serializer_data['employee'] = EmployeeSerializer(Employee.objects.get(user=self.request.user)).data
+        serializer_data['user']['employee_id'] = Employee.objects.get(user=self.request.user).id
         response = Response(serializer_data, status=status.HTTP_200_OK)
         if getattr(settings, 'REST_USE_JWT', False):
             from rest_framework_jwt.settings import api_settings as jwt_settings
