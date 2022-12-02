@@ -57,7 +57,7 @@ class PayrollReportSerializer(ModelSerializer):
     class Meta:
         model = Attendance
         fields = ('employee', 'total_hours', 'earnings', 'updated_at',)
-        depth = 1
+        depth = 2
 
 
 class WorksiteSerializer(ModelSerializer):

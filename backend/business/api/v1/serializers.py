@@ -363,7 +363,8 @@ class EmployeeEarningSerializer(serializers.ModelSerializer):
             worksite = {
                 'worksite': attendance.event.worksite.name,
                 'amount_clocked': attendance.total_hours,
-                'earned': attendance.earnings
+                'earned': attendance.earnings,
+                'created_at': attendance.created_at
             }
             worksites.append(worksite)
         data['worksites'] = worksites
