@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from "react"
 import {
   StyleSheet,
   View,
@@ -11,29 +11,29 @@ import {
   BackHandler,
   Platform,
   ActivityIndicator
-} from 'react-native'
-import { Icon, Input } from 'react-native-elements'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import database from '@react-native-firebase/database'
-import Toast from 'react-native-simple-toast'
+} from "react-native"
+import { Icon, Input } from "react-native-elements"
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
+import database from "@react-native-firebase/database"
+import Toast from "react-native-simple-toast"
 // import { COLORS, FONT1REGULAR, FONT2REGULAR } from '../../constants'
-import userProfile from '../../res/Images/common/sample.png'
-import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
-import moment from 'moment'
-import groupAvatar from '../../res/Images/common/groupAvatar.png'
-import { SvgXml } from 'react-native-svg'
-import sendIcon from '../../res/Svgs/sendIcon.svg'
-import smileIcon from '../../res/Svgs/smileIcon.svg'
-import insertIcon from '../../res/Svgs/galleryIcon.svg'
-import Colors from '../../res/Theme/Colors'
-import { Fonts } from '../../res'
-import AppContext from '../../Utils/Context'
-import { useRef } from 'react'
-import EmojiPicker from 'react-native-emoji-picker-staltz'
-import ImagePicker from 'react-native-image-crop-picker'
-import storage from '@react-native-firebase/storage'
+import userProfile from "../../res/Images/common/sample.png"
+import { heightPercentageToDP as hp } from "react-native-responsive-screen"
+import moment from "moment"
+import groupAvatar from "../../res/Images/common/groupAvatar.png"
+import { SvgXml } from "react-native-svg"
+import sendIcon from "../../res/Svgs/sendIcon.svg"
+import smileIcon from "../../res/Svgs/smileIcon.svg"
+import insertIcon from "../../res/Svgs/galleryIcon.svg"
+import Colors from "../../res/Theme/Colors"
+import { Fonts } from "../../res"
+import AppContext from "../../Utils/Context"
+import { useRef } from "react"
+import EmojiPicker from "react-native-emoji-picker-staltz"
+import ImagePicker from "react-native-image-crop-picker"
+import storage from "@react-native-firebase/storage"
 
-function GroupMessageChat ({ navigation, route }) {
+function GroupMessageChat({ navigation, route }) {
   const messageuid = route?.params?.messageuid
   const orderData = route?.params?.orderData
   const inputRef = useRef()
@@ -47,7 +47,7 @@ function GroupMessageChat ({ navigation, route }) {
     scrollViewHeight: 0,
     uploading: false,
     messages: [],
-    messageText: '',
+    messageText: "",
     messageData: null
   })
 
@@ -77,25 +77,31 @@ function GroupMessageChat ({ navigation, route }) {
       return true
     }
     const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
+      "hardwareBackPress",
       backAction
     )
     return () => backHandler.remove()
   }, [])
 
+  console.warn("messageuid", messageData)
+
   useEffect(() => {
     const db = database()
     if (user && messageuid) {
-      db.ref('Messages/' + messageuid).on('value', snapshot => {
+      db.ref("Messages/" + messageuid).on("value", snapshot => {
         if (snapshot.val()) {
           if (
             snapshot.val()?.participentIds?.length > 0 &&
-            snapshot.val()?.participentIds?.some(e => e === user?.id)
+            snapshot
+              .val()
+              ?.participentIds?.some(
+                e => e === user?.id || e === user?.employee_id
+              )
           ) {
-            db.ref('Messages/' + messageuid)
+            db.ref("Messages/" + messageuid)
               .update({ senderRead: 0 })
               .then(res => {
-                db.ref('Messages/' + messageuid).once('value', snapshot => {
+                db.ref("Messages/" + messageuid).once("value", snapshot => {
                   if (snapshot.val()) {
                     // getMessages()
                     setState(prevState => ({
@@ -119,11 +125,11 @@ function GroupMessageChat ({ navigation, route }) {
   })
 
   const _uploadImage = async type => {
-    handleChange('uploading', true)
+    handleChange("uploading", true)
     let OpenImagePicker =
-      type == 'camera'
+      type == "camera"
         ? ImagePicker.openCamera
-        : type == ''
+        : type == ""
         ? ImagePicker.openPicker
         : ImagePicker.openPicker
 
@@ -132,47 +138,47 @@ function GroupMessageChat ({ navigation, route }) {
     })
       .then(async response => {
         if (!response.path) {
-          handleChange('uploading', false)
+          handleChange("uploading", false)
         } else {
           const uri = response.path
           const filename = Date.now()
           const uploadUri =
-            Platform.OS === 'ios' ? uri.replace('file://', '') : uri
+            Platform.OS === "ios" ? uri.replace("file://", "") : uri
           const task = storage()
-            .ref('Chat/' + filename)
+            .ref("Chat/" + filename)
             .putFile(uploadUri)
           // set progress state
-          task.on('state_changed', snapshot => {})
+          task.on("state_changed", snapshot => {})
           try {
             const durl = await task
             task.snapshot.ref.getDownloadURL().then(downloadURL => {
-              onSend(downloadURL, 'image')
+              onSend(downloadURL, "image")
             })
           } catch (e) {
             console.error(e)
           }
-          handleChange('uploading', false)
+          handleChange("uploading", false)
         }
       })
       .catch(err => {
-        handleChange('showAlert', false)
-        handleChange('uploading', false)
+        handleChange("showAlert", false)
+        handleChange("uploading", false)
       })
   }
 
-  function onlySpaces (str) {
+  function onlySpaces(str) {
     return /^\s*$/.test(str)
   }
 
   const onSend = (text, type) => {
     if (onlySpaces(text || state.messageText)) {
-      Toast.show('Please enter any character', Toast.LONG)
+      Toast.show("Please enter any character", Toast.LONG)
       return
     }
     const data = {
       text: text || state.messageText,
       timeStamp: Date.now(),
-      type: type || 'text',
+      type: type || "text",
       senderId: user?.id
     }
     let messages = state.messages.concat(data)
@@ -189,27 +195,27 @@ function GroupMessageChat ({ navigation, route }) {
     }
 
     database()
-      .ref('Messages/' + messageuid)
+      .ref("Messages/" + messageuid)
       .update(values)
       .then(res => {
         setState(prevState => ({
           ...prevState,
           loading: false,
-          messageText: ''
+          messageText: ""
         }))
         downButtonHandler()
       })
       .catch(err => {
         console.log(err)
-        Toast.show('Something went wrong!', Toast.LONG)
+        Toast.show("Something went wrong!", Toast.LONG)
       })
   }
 
   const _handleSend = (message, id) => {
     var data = {
-      app_id: '15b1f37a-b123-45e3-a8c4-f0ef7e091130',
-      android_channel_id: '97ad04d8-51d2-4739-8e83-0479a7e8cd60',
-      headings: { en: user?.username ? user?.username : 'Guest User' },
+      app_id: "15b1f37a-b123-45e3-a8c4-f0ef7e091130",
+      android_channel_id: "97ad04d8-51d2-4739-8e83-0479a7e8cd60",
+      headings: { en: user?.username ? user?.username : "Guest User" },
       contents: { en: message },
       include_player_ids: [id]
     }
@@ -229,9 +235,9 @@ function GroupMessageChat ({ navigation, route }) {
   return (
     <View
       style={{
-        width: '100%',
-        height: '100%',
-        alignItems: 'center'
+        width: "100%",
+        height: "100%",
+        alignItems: "center"
         // backgroundColor: COLORS.backgroud
       }}
     >
@@ -239,26 +245,26 @@ function GroupMessageChat ({ navigation, route }) {
         style={{
           height: 60,
           backgroundColor: Colors.BACKGROUND_BG,
-          width: '100%',
-          alignItems: 'center',
-          justifyContent: 'center'
+          width: "100%",
+          alignItems: "center",
+          justifyContent: "center"
         }}
       >
         <View
           style={{
-            width: '95%',
-            flexDirection: 'row',
-            justifyContent: 'flex-start',
-            alignItems: 'center'
+            width: "95%",
+            flexDirection: "row",
+            justifyContent: "flex-start",
+            alignItems: "center"
           }}
         >
           <TouchableOpacity
             onPress={() => navigation.goBack()}
-            style={{ flexDirection: 'row', alignItems: 'center' }}
+            style={{ flexDirection: "row", alignItems: "center" }}
           >
             <Icon
-              name='arrowleft'
-              type='antdesign'
+              name="arrowleft"
+              type="antdesign"
               size={hp(2.8)}
               color={Colors.WHITE}
             />
@@ -271,12 +277,12 @@ function GroupMessageChat ({ navigation, route }) {
               marginRight: 10,
               marginLeft: 20
             }}
-            resizeMode='cover'
+            resizeMode="cover"
             source={groupAvatar}
           />
           <View>
             <Text style={{ color: Colors.WHITE, ...Fonts.poppinsRegular(12) }}>
-              {messageData?.name || ''}
+              {messageData?.name || ""}
             </Text>
             {/* <Text style={{ color: Colors.WHITE, ...Fonts.poppinsRegular(9) }}>
               Last seen 9:15 PM
@@ -286,23 +292,23 @@ function GroupMessageChat ({ navigation, route }) {
       </View>
       <View style={styles.container}>
         <KeyboardAwareScrollView
-          keyboardShouldPersistTaps={'handled'}
+          keyboardShouldPersistTaps={"handled"}
           contentContainerStyle={{
-            justifyContent: 'flex-end',
+            justifyContent: "flex-end",
             borderTopWidth: 1,
             // borderTopColor: COLORS.borderColor1,
-            alignItems: 'center',
+            alignItems: "center",
             flex: 1
           }}
           style={{
-            width: '100%',
+            width: "100%",
             // backgroundColor: COLORS.white,
-            height: '100%'
+            height: "100%"
           }}
         >
           <FlatList
             data={state?.messages}
-            keyboardDismissMode='on-drag'
+            keyboardDismissMode="on-drag"
             onContentSizeChange={(contentWidth, contentHeight) => {
               setState(prevState => ({
                 ...prevState,
@@ -316,10 +322,10 @@ function GroupMessageChat ({ navigation, route }) {
                 scrollViewHeight: height
               }))
             }}
-            style={{ width: '90%', flex: 1 }}
+            style={{ width: "90%", flex: 1 }}
             contentContainerStyle={{
-              alignItems: 'flex-start',
-              justifyContent: 'flex-end'
+              alignItems: "flex-start",
+              justifyContent: "flex-end"
             }}
             ref={ref => {
               scrollView = ref
@@ -332,16 +338,16 @@ function GroupMessageChat ({ navigation, route }) {
                   <View
                     key={index}
                     style={{
-                      width: '100%',
+                      width: "100%",
                       marginVertical: 10
                     }}
                   >
                     <View
                       style={{
-                        width: '100%',
-                        flexDirection: 'row',
-                        justifyContent: 'flex-start',
-                        alignItems: 'flex-end',
+                        width: "100%",
+                        flexDirection: "row",
+                        justifyContent: "flex-start",
+                        alignItems: "flex-end",
                         paddingBottom: 10
                       }}
                     >
@@ -352,7 +358,7 @@ function GroupMessageChat ({ navigation, route }) {
                           height: 40,
                           marginRight: 10
                         }}
-                        resizeMode='cover'
+                        resizeMode="cover"
                         source={
                           messageData?.participents?.some(
                             e => e?.id === item?.senderId
@@ -380,18 +386,18 @@ function GroupMessageChat ({ navigation, route }) {
                       <View
                         style={{
                           backgroundColor: Colors.MESSAGEB_BOX_LIGHT,
-                          maxWidth: '80%',
+                          maxWidth: "80%",
                           borderRadius: 10,
                           padding: 15
                         }}
                       >
-                        {item?.type === 'image' ? (
+                        {item?.type === "image" ? (
                           <Image
                             source={{ uri: item?.text }}
                             style={{
                               width: 200,
                               height: 200,
-                              resizeMode: 'contain'
+                              resizeMode: "contain"
                             }}
                           />
                         ) : (
@@ -407,8 +413,8 @@ function GroupMessageChat ({ navigation, route }) {
                         )}
                         <View
                           style={{
-                            width: '100%',
-                            alignItems: 'flex-end',
+                            width: "100%",
+                            alignItems: "flex-end",
                             marginTop: 10
                           }}
                         >
@@ -432,39 +438,39 @@ function GroupMessageChat ({ navigation, route }) {
                   <View
                     key={index}
                     style={{
-                      width: '100%',
+                      width: "100%",
                       marginVertical: 10,
-                      flexDirection: 'row',
-                      alignItems: 'flex-end',
-                      justifyContent: 'flex-end'
+                      flexDirection: "row",
+                      alignItems: "flex-end",
+                      justifyContent: "flex-end"
                     }}
                   >
                     <View
                       style={{
-                        width: '95%',
-                        flexDirection: 'row',
-                        justifyContent: 'flex-end',
-                        alignItems: 'flex-end',
+                        width: "95%",
+                        flexDirection: "row",
+                        justifyContent: "flex-end",
+                        alignItems: "flex-end",
                         paddingBottom: 10
                       }}
                     >
                       <View
                         style={{
                           backgroundColor: Colors.BACKGROUND_BG,
-                          maxWidth: '85%',
-                          alignItems: 'flex-end',
+                          maxWidth: "85%",
+                          alignItems: "flex-end",
                           borderRadius: 10,
                           borderBottomRightRadius: 0,
                           padding: 10
                         }}
                       >
-                        {item?.type === 'image' ? (
+                        {item?.type === "image" ? (
                           <Image
                             source={{ uri: item?.text }}
                             style={{
                               width: 200,
                               height: 200,
-                              resizeMode: 'contain'
+                              resizeMode: "contain"
                             }}
                           />
                         ) : (
@@ -498,17 +504,17 @@ function GroupMessageChat ({ navigation, route }) {
           />
           {state?.uploading && (
             <View
-              style={{ width: '100%', alignItems: 'center', marginBottom: 10 }}
+              style={{ width: "100%", alignItems: "center", marginBottom: 10 }}
             >
-              <ActivityIndicator size={'small'} color={Colors.BACKGROUND_BG} />
+              <ActivityIndicator size={"small"} color={Colors.BACKGROUND_BG} />
             </View>
           )}
           <View
             style={{
-              width: '100%',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
+              width: "100%",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
               height: 70,
               backgroundColor: Colors.BACKGROUND_BG
             }}
@@ -524,14 +530,14 @@ function GroupMessageChat ({ navigation, route }) {
             <TouchableOpacity
               onPress={() => {
                 inputRef.current?.blur()
-                handleChange('show', !show)
+                handleChange("show", !show)
               }}
             >
               <SvgXml xml={smileIcon} />
             </TouchableOpacity>
             <Input
               ref={inputRef}
-              placeholderTextColor='#58595B'
+              placeholderTextColor="#58595B"
               inputStyle={{
                 ...Fonts.poppinsRegular(12),
                 // color: COLORS.darkGrey,
@@ -542,13 +548,13 @@ function GroupMessageChat ({ navigation, route }) {
                 borderBottomWidth: 0,
                 borderRadius: 50
               }}
-              onFocus={() => handleChange('show', false)}
+              onFocus={() => handleChange("show", false)}
               containerStyle={{
                 paddingLeft: 0,
                 height: 40,
                 borderRadius: 10,
                 backgroundColor: Colors.WHITE,
-                width: '65%',
+                width: "65%",
                 marginHorizontal: 10
               }}
               onChangeText={message =>
@@ -556,17 +562,17 @@ function GroupMessageChat ({ navigation, route }) {
               }
               value={state.messageText}
               onSubmitEditing={() =>
-                state.messageText ? onSend() : console.log('')
+                state.messageText ? onSend() : console.log("")
               }
               blurOnSubmit={false}
-              returnKeyType='send'
-              placeholder={'Write a message'}
+              returnKeyType="send"
+              placeholder={"Write a message"}
             />
 
             <TouchableOpacity
               style={{}}
               onPress={() => {
-                state.messageText ? onSend() : console.log('')
+                state.messageText ? onSend() : console.log("")
               }}
             >
               <SvgXml xml={sendIcon} />
@@ -577,20 +583,20 @@ function GroupMessageChat ({ navigation, route }) {
               onEmojiSelected={onClickEmoji}
               rows={6}
               hideClearButton
-              modalStyle={{ height: '50%' }}
-              backgroundStyle={{ backgroundColor: '#fff', height: '50%' }}
-              onPressOutside={() => handleChange('show', false)}
-              containerStyle={{ height: '100%' }}
+              modalStyle={{ height: "50%" }}
+              backgroundStyle={{ backgroundColor: "#fff", height: "50%" }}
+              onPressOutside={() => handleChange("show", false)}
+              containerStyle={{ height: "100%" }}
               localizedCategories={[
                 // Always in this order:
-                'Smileys and emotion',
-                'People and body',
-                'Animals and nature',
-                'Food and drink',
-                'Activities',
-                'Travel and places',
-                'Objects',
-                'Symbols'
+                "Smileys and emotion",
+                "People and body",
+                "Animals and nature",
+                "Food and drink",
+                "Activities",
+                "Travel and places",
+                "Objects",
+                "Symbols"
               ]}
             />
           )}
@@ -602,9 +608,9 @@ function GroupMessageChat ({ navigation, route }) {
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
+    width: "100%",
     flex: 1,
-    alignItems: 'center'
+    alignItems: "center"
   },
   title: {
     // color: COLORS.darkBlack,

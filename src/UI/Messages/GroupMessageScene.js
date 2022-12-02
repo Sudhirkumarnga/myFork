@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from "react"
 import {
   View,
   Text,
@@ -8,25 +8,25 @@ import {
   FlatList,
   Image,
   ActivityIndicator
-} from 'react-native'
-import { Header, PrimaryTextInput } from '../Common'
-import { Fonts, Images } from '../../res'
-import Colors from '../../res/Theme/Colors'
-import userProfile from '../../res/Images/common/sample.png'
-import BouncyCheckbox from 'react-native-bouncy-checkbox'
-import groupIcon from '../../res/Svgs/group.svg'
-import database from '@react-native-firebase/database'
-import { SvgXml } from 'react-native-svg'
-import { useFocusEffect } from '@react-navigation/native'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { getAllEmployee } from '../../api/business'
-import Toast from 'react-native-simple-toast'
-import AppContext from '../../Utils/Context'
-import { Icon } from 'react-native-elements'
+} from "react-native"
+import { Header, PrimaryTextInput } from "../Common"
+import { Fonts, Images } from "../../res"
+import Colors from "../../res/Theme/Colors"
+import userProfile from "../../res/Images/common/sample.png"
+import BouncyCheckbox from "react-native-bouncy-checkbox"
+import groupIcon from "../../res/Svgs/group.svg"
+import database from "@react-native-firebase/database"
+import { SvgXml } from "react-native-svg"
+import { useFocusEffect } from "@react-navigation/native"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { getAllEmployee } from "../../api/business"
+import Toast from "react-native-simple-toast"
+import AppContext from "../../Utils/Context"
+import { Icon } from "react-native-elements"
 
-const screenWidth = Dimensions.get('window').width
+const screenWidth = Dimensions.get("window").width
 
-export default function GroupMessageScene ({ navigation }) {
+export default function GroupMessageScene({ navigation }) {
   const { user, adminProfile } = useContext(AppContext)
   const [state, setState] = useState({
     loading: false,
@@ -34,8 +34,8 @@ export default function GroupMessageScene ({ navigation }) {
     allEmployee: [],
     participents: [],
     List: [],
-    searchText: '',
-    groupName: ''
+    searchText: "",
+    groupName: ""
   })
   const {
     loading,
@@ -59,15 +59,15 @@ export default function GroupMessageScene ({ navigation }) {
   // console.warn('allEmployee',allEmployee);
   const _getAllEmployee = async () => {
     try {
-      handleChange('loading', true)
-      const token = await AsyncStorage.getItem('token')
+      handleChange("loading", true)
+      const token = await AsyncStorage.getItem("token")
       const res = await getAllEmployee(token)
-      handleChange('loading', false)
-      handleChange('allEmployee', res?.data?.results)
-      handleChange('List', res?.data?.results)
+      handleChange("loading", false)
+      handleChange("allEmployee", res?.data?.results)
+      handleChange("List", res?.data?.results)
     } catch (error) {
-      handleChange('loading', false)
-      console.warn('err', error?.response?.data)
+      handleChange("loading", false)
+      console.warn("err", error?.response?.data)
       const showWError = Object.values(error.response?.data?.error)
       if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
@@ -77,18 +77,22 @@ export default function GroupMessageScene ({ navigation }) {
     }
   }
 
+  const sortByUser = data => {
+    return data?.filter(item => item?.id !== user?.employee_id)
+  }
+
   const filtered = (key, value) => {
     handleChange(key, value)
     if (value) {
-      const re = new RegExp(value, 'i')
+      const re = new RegExp(value, "i")
       var filtered = allEmployee?.filter(entry =>
         entry?.senderId !== user?.id
           ? entry?.personal_information?.first_name?.includes(value)
           : entry?.personal_information?.first_name?.includes(value)
       )
-      handleChange('List', filtered)
+      handleChange("List", filtered)
     } else {
-      handleChange('List', allEmployee)
+      handleChange("List", allEmployee)
     }
   }
 
@@ -102,29 +106,29 @@ export default function GroupMessageScene ({ navigation }) {
   }
 
   const createMessageList = () => {
-    handleChange('loadingCreate', true)
+    handleChange("loadingCreate", true)
     const db = database()
-    const uid = db.ref('Messages').push().key
+    const uid = db.ref("Messages").push().key
     let value = {
       sender: user,
       senderId: user?.id,
       id: uid,
       name: groupName,
-      type: 'group',
+      type: "group",
       timeStamp: Date.now(),
       receiverRead: 0,
       participentIds: [user?.id, ...getParticipentsIDs()],
       participents: [{ ...user, ...adminProfile }, ...participents]
     }
-    db.ref('Messages/' + uid)
+    db.ref("Messages/" + uid)
       .update(value)
       .then(res => {
-        navigation.navigate('GroupMessageChat', { messageuid: uid })
-        handleChange('loadingCreate', false)
+        navigation.navigate("GroupMessageChat", { messageuid: uid })
+        handleChange("loadingCreate", false)
       })
       .catch(err => {
-        handleChange('loadingCreate', false)
-        Toast.show('Something went wrong!')
+        handleChange("loadingCreate", false)
+        Toast.show("Something went wrong!")
       })
   }
 
@@ -132,14 +136,14 @@ export default function GroupMessageScene ({ navigation }) {
     return (
       <>
         <PrimaryTextInput
-          label={'Search for people'}
+          label={"Search for people"}
           value={searchText}
-          onChangeText={value => filtered('searchText', value)}
+          onChangeText={value => filtered("searchText", value)}
           rightIcon={{ ...Images.search }}
         />
         <PrimaryTextInput
-          label={'Group name'}
-          onChangeText={value => handleChange('groupName', value)}
+          label={"Group name"}
+          onChangeText={value => handleChange("groupName", value)}
           value={groupName}
         />
       </>
@@ -153,17 +157,17 @@ export default function GroupMessageScene ({ navigation }) {
         <FlatList
           data={participents}
           horizontal
-          style={{ width: '100%', paddingLeft: '5%' }}
+          style={{ width: "100%", paddingLeft: "5%" }}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item, index }) => (
             <View
               key={index}
-              style={{ marginTop: 10, alignItems: 'center', marginRight: 10 }}
+              style={{ marginTop: 10, alignItems: "center", marginRight: 10 }}
             >
               <TouchableOpacity
                 onPress={() => {
                   const removed = participents?.filter(e => e?.id !== item?.id)
-                  handleChange('participents', removed)
+                  handleChange("participents", removed)
                 }}
                 style={{
                   width: 20,
@@ -172,12 +176,12 @@ export default function GroupMessageScene ({ navigation }) {
                   marginBottom: -10,
                   zIndex: 33,
                   borderRadius: 20,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: '#C1C1C1'
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "#C1C1C1"
                 }}
               >
-                <Icon name='close' type='antdesign' size={14} />
+                <Icon name="close" type="antdesign" size={14} />
               </TouchableOpacity>
               <Image
                 source={
@@ -194,13 +198,13 @@ export default function GroupMessageScene ({ navigation }) {
               <Text
                 style={{
                   ...Fonts.poppinsRegular(12),
-                  textAlign: 'center',
+                  textAlign: "center",
                   width: 60,
                   marginTop: 5
                 }}
               >
                 {item?.personal_information?.first_name +
-                  ' ' +
+                  " " +
                   item?.personal_information?.last_name}
               </Text>
             </View>
@@ -209,15 +213,15 @@ export default function GroupMessageScene ({ navigation }) {
         {participents?.length > 0 && (
           <View
             style={{
-              width: '90%',
-              alignItems: 'flex-end',
-              justifyContent: 'flex-end',
-              flexDirection: 'row'
+              width: "90%",
+              alignItems: "flex-end",
+              justifyContent: "flex-end",
+              flexDirection: "row"
             }}
           >
             {loadingCreate && (
               <ActivityIndicator
-                size={'small'}
+                size={"small"}
                 color={Colors.BACKGROUND_BG}
                 style={{ marginRight: 10 }}
               />
@@ -237,31 +241,31 @@ export default function GroupMessageScene ({ navigation }) {
             </TouchableOpacity>
           </View>
         )}
-        <View style={{ width: '90%', marginTop: 10 }}></View>
+        <View style={{ width: "90%", marginTop: 10 }}></View>
         <Text
-          style={{ ...Fonts.poppinsRegular(18), width: '90%', marginTop: 10 }}
+          style={{ ...Fonts.poppinsRegular(18), width: "90%", marginTop: 10 }}
         >
           Suggested
         </Text>
-        {loading && <ActivityIndicator size='small' color={Colors.BUTTON_BG} />}
+        {loading && <ActivityIndicator size="small" color={Colors.BUTTON_BG} />}
         <FlatList
-          data={List}
-          style={{ width: '90%', marginTop: 20 }}
+          data={sortByUser(List)}
+          style={{ width: "90%", marginTop: 20 }}
           renderItem={({ item, index }) => (
             <View
               key={index}
               // onPress={() => createMessageList(item)}
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
                 marginBottom: 20,
                 borderBottomWidth: 1,
                 paddingBottom: 10,
                 borderBottomColor: Colors.TEXT_INPUT_BG
               }}
             >
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Image
                   source={
                     item?.personal_information?.profile_image
@@ -277,7 +281,7 @@ export default function GroupMessageScene ({ navigation }) {
                 />
                 <Text style={{ ...Fonts.poppinsRegular(12) }}>
                   {item?.personal_information?.first_name +
-                    ' ' +
+                    " " +
                     item?.personal_information?.last_name}
                 </Text>
               </View>
@@ -302,9 +306,9 @@ export default function GroupMessageScene ({ navigation }) {
                     const removed = participents?.filter(
                       e => e?.id !== item?.id
                     )
-                    handleChange('participents', removed)
+                    handleChange("participents", removed)
                   } else {
-                    handleChange('participents', [...participents, item])
+                    handleChange("participents", [...participents, item])
                   }
                 }}
               />
@@ -318,7 +322,7 @@ export default function GroupMessageScene ({ navigation }) {
   return (
     <View style={styles.container}>
       <Header
-        title={'Group message'}
+        title={"Group message"}
         leftButton
         onLeftPress={() => navigation.goBack()}
       />
@@ -334,15 +338,15 @@ const styles = StyleSheet.create({
   },
   title: {
     ...Fonts.poppinsRegular(18),
-    color: 'white',
-    textAlign: 'center',
+    color: "white",
+    textAlign: "center",
     marginVertical: 10
   },
   sliderContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     width: screenWidth,
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    justifyContent: "space-around",
+    alignItems: "center",
     backgroundColor: Colors.BUTTON_BG
   },
   touchable: {
@@ -352,11 +356,11 @@ const styles = StyleSheet.create({
   },
   childContainerStyle: {
     paddingVertical: 20,
-    alignItems: 'center'
+    alignItems: "center"
   },
   animatedViewStyle: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     width: screenWidth * 2,
     flex: 1,
     marginTop: 2,

@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from 'react'
+import React, { useCallback, useContext, useState } from "react"
 import {
   View,
   Text,
@@ -7,29 +7,29 @@ import {
   TouchableOpacity,
   FlatList,
   Image
-} from 'react-native'
-import { Header, PrimaryTextInput } from '../Common'
-import { Fonts, Strings, Images, Colors } from '../../res'
-import userProfile from '../../res/Images/common/sample.png'
-import groupIcon from '../../res/Svgs/group.svg'
-import { SvgXml } from 'react-native-svg'
-import { useFocusEffect } from '@react-navigation/native'
-import { getAllEmployee } from '../../api/business'
-import Toast from 'react-native-simple-toast'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import database from '@react-native-firebase/database'
-import AppContext from '../../Utils/Context'
-import { ActivityIndicator } from 'react-native'
+} from "react-native"
+import { Header, PrimaryTextInput } from "../Common"
+import { Fonts, Strings, Images, Colors } from "../../res"
+import userProfile from "../../res/Images/common/sample.png"
+import groupIcon from "../../res/Svgs/group.svg"
+import { SvgXml } from "react-native-svg"
+import { useFocusEffect } from "@react-navigation/native"
+import { getAllEmployee } from "../../api/business"
+import Toast from "react-native-simple-toast"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import database from "@react-native-firebase/database"
+import AppContext from "../../Utils/Context"
+import { ActivityIndicator } from "react-native"
 
-const screenWidth = Dimensions.get('window').width
+const screenWidth = Dimensions.get("window").width
 
-export default function NewMessageScene ({ navigation }) {
+export default function NewMessageScene({ navigation }) {
   const { user, adminProfile } = useContext(AppContext)
   const [state, setState] = useState({
     loading: false,
     allEmployee: [],
     List: [],
-    searchText: ''
+    searchText: ""
   })
   const { loading, searchText, allEmployee, List } = state
 
@@ -44,14 +44,15 @@ export default function NewMessageScene ({ navigation }) {
   )
   const _getAllEmployee = async () => {
     try {
-      handleChange('loading', true)
-      const token = await AsyncStorage.getItem('token')
+      handleChange("loading", true)
+      const token = await AsyncStorage.getItem("token")
       const res = await getAllEmployee(token)
-      handleChange('loading', false)
-      handleChange('allEmployee', res?.data?.results)
+      handleChange("loading", false)
+      handleChange("allEmployee", res?.data?.results)
+      handleChange("List", res?.data?.results)
     } catch (error) {
-      handleChange('loading', false)
-      console.warn('err', error?.response?.data)
+      handleChange("loading", false)
+      console.warn("err", error?.response?.data)
       const showWError = Object.values(error.response?.data?.error)
       if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
@@ -64,23 +65,27 @@ export default function NewMessageScene ({ navigation }) {
   const filtered = (key, value) => {
     handleChange(key, value)
     if (value) {
-      const re = new RegExp(value, 'i')
+      const re = new RegExp(value, "i")
       var filtered = allEmployee?.filter(entry =>
         entry?.senderId !== user?.id
           ? entry?.personal_information?.first_name?.includes(value)
           : entry?.personal_information?.first_name?.includes(value)
       )
-      handleChange('List', filtered)
+      handleChange("List", filtered)
     } else {
-      handleChange('List', allEmployee)
+      handleChange("List", allEmployee)
     }
+  }
+
+  const sortByUser = data => {
+    return data?.filter(item => item?.id !== user?.employee_id)
   }
 
   const createMessageList = item => {
     const id = `${user?.id}_${item?.id}`
     const rid = `${item?.id}_${user?.id}`
     const db = database()
-    db.ref('Messages/' + id).once('value', snapshot => {
+    db.ref("Messages/" + id).once("value", snapshot => {
       if (snapshot.val()) {
         let value = {
           sender: { ...user, ...adminProfile },
@@ -92,16 +97,16 @@ export default function NewMessageScene ({ navigation }) {
           receiver: item
         }
         database()
-          .ref('Messages/' + id)
+          .ref("Messages/" + id)
           .update(value)
           .then(res => {
-            navigation.navigate('MessageChat', { messageuid: id })
+            navigation.navigate("MessageChat", { messageuid: id })
           })
           .catch(err => {
-            Toast.show('Something went wrong!')
+            Toast.show("Something went wrong!")
           })
       } else {
-        db.ref('Messages/' + rid).once('value', snapshot => {
+        db.ref("Messages/" + rid).once("value", snapshot => {
           if (snapshot.val()) {
             let value = {
               sender: user,
@@ -113,13 +118,13 @@ export default function NewMessageScene ({ navigation }) {
               receiver: item
             }
             database()
-              .ref('Messages/' + rid)
+              .ref("Messages/" + rid)
               .update(value)
               .then(res => {
-                navigation.navigate('MessageChat', { messageuid: rid })
+                navigation.navigate("MessageChat", { messageuid: rid })
               })
               .catch(err => {
-                Toast.show('Something went wrong!')
+                Toast.show("Something went wrong!")
               })
           } else {
             let value = {
@@ -132,13 +137,13 @@ export default function NewMessageScene ({ navigation }) {
               receiver: item
             }
             database()
-              .ref('Messages/' + id)
+              .ref("Messages/" + id)
               .update(value)
               .then(res => {
-                navigation.navigate('MessageChat', { messageuid: id })
+                navigation.navigate("MessageChat", { messageuid: id })
               })
               .catch(err => {
-                Toast.show('Something went wrong!')
+                Toast.show("Something went wrong!")
               })
           }
         })
@@ -151,7 +156,7 @@ export default function NewMessageScene ({ navigation }) {
       <PrimaryTextInput
         label={Strings.searchConversation}
         value={searchText}
-        onChangeText={value => filtered('searchText', value)}
+        onChangeText={value => filtered("searchText", value)}
         rightIcon={{ ...Images.search }}
       />
     )
@@ -161,15 +166,15 @@ export default function NewMessageScene ({ navigation }) {
     return (
       <View style={styles.childContainerStyle}>
         {renderSearchInput()}
-        <View style={{ width: '90%', marginTop: 10 }}>
+        <View style={{ width: "90%", marginTop: 10 }}>
           <TouchableOpacity
             style={{
-              flexDirection: 'row',
+              flexDirection: "row",
               borderBottomWidth: 1,
               borderBottomColor: Colors.TEXT_INPUT_BG,
               paddingBottom: 10
             }}
-            onPress={() => navigation.navigate('GroupMessageScene')}
+            onPress={() => navigation.navigate("GroupMessageScene")}
           >
             <SvgXml xml={groupIcon} />
             <Text
@@ -184,21 +189,21 @@ export default function NewMessageScene ({ navigation }) {
           </TouchableOpacity>
         </View>
         <Text
-          style={{ ...Fonts.poppinsRegular(18), width: '90%', marginTop: 10 }}
+          style={{ ...Fonts.poppinsRegular(18), width: "90%", marginTop: 10 }}
         >
           Suggested
         </Text>
-        {loading && <ActivityIndicator size='small' color={Colors.BUTTON_BG} />}
+        {loading && <ActivityIndicator size="small" color={Colors.BUTTON_BG} />}
         <FlatList
-          data={List}
-          style={{ width: '90%', marginTop: 20 }}
+          data={sortByUser(List)}
+          style={{ width: "90%", marginTop: 20 }}
           renderItem={({ item, index }) => (
             <TouchableOpacity
               key={index}
               onPress={() => createMessageList(item)}
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
+                flexDirection: "row",
+                alignItems: "center",
                 marginBottom: 20,
                 borderBottomWidth: 1,
                 paddingBottom: 10,
@@ -220,7 +225,7 @@ export default function NewMessageScene ({ navigation }) {
               />
               <Text style={{ ...Fonts.poppinsRegular(12) }}>
                 {item?.personal_information?.first_name +
-                  ' ' +
+                  " " +
                   item?.personal_information?.last_name}
               </Text>
             </TouchableOpacity>
@@ -249,15 +254,15 @@ const styles = StyleSheet.create({
   },
   title: {
     ...Fonts.poppinsRegular(18),
-    color: 'white',
-    textAlign: 'center',
+    color: "white",
+    textAlign: "center",
     marginVertical: 10
   },
   sliderContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     width: screenWidth,
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    justifyContent: "space-around",
+    alignItems: "center",
     backgroundColor: Colors.BUTTON_BG
   },
   touchable: {
@@ -267,11 +272,11 @@ const styles = StyleSheet.create({
   },
   childContainerStyle: {
     paddingVertical: 20,
-    alignItems: 'center'
+    alignItems: "center"
   },
   animatedViewStyle: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     width: screenWidth * 2,
     flex: 1,
     marginTop: 2,

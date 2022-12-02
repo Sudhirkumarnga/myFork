@@ -1,28 +1,28 @@
-import React, { useState } from 'react'
-import { View, StyleSheet, ScrollView, Text } from 'react-native'
-import { Header } from '../Common'
-import { Fonts, Images, Colors } from '../../res'
-import { Button } from '../Common'
-import { Divider, Icon } from 'react-native-elements'
-import { FlatList } from 'react-native'
-import PieChart from 'react-native-pie-chart'
-import { TouchableOpacity } from 'react-native'
-import { Modal } from 'react-native'
-import BouncyCheckbox from 'react-native-bouncy-checkbox'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { createFeedback } from '../../api/business'
-import Toast from 'react-native-simple-toast'
+import React, { useState } from "react"
+import { View, StyleSheet, ScrollView, Text } from "react-native"
+import { Header } from "../Common"
+import { Fonts, Images, Colors } from "../../res"
+import { Button } from "../Common"
+import { Divider, Icon } from "react-native-elements"
+import { FlatList } from "react-native"
+import PieChart from "react-native-pie-chart"
+import { TouchableOpacity } from "react-native"
+import { Modal } from "react-native"
+import BouncyCheckbox from "react-native-bouncy-checkbox"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { createFeedback } from "../../api/business"
+import Toast from "react-native-simple-toast"
 
-export default function InspectionDetails ({ navigation, route }) {
+export default function InspectionDetails({ navigation, route }) {
   const item = route.params?.item
   const series = [123, 321, 123]
-  const sliceColor = ['#23C263', '#EFF259', '#F84F31']
+  const sliceColor = ["#23C263", "#EFF259", "#F84F31"]
   const [state, setState] = useState({
     loading: false,
     visible: false,
-    task: '',
-    taskIndex: '',
-    selectedFeedback: '',
+    task: "",
+    taskIndex: "",
+    selectedFeedback: "",
     loadingFeedback: false
   })
 
@@ -39,72 +39,73 @@ export default function InspectionDetails ({ navigation, route }) {
   }
 
   const feedback = [
-    { name: 'Satisfactory', value: 'SATISFACTORY', color: '#23C263' },
-    { name: 'Needs Attention', value: 'NEEDS_ATTENTION', color: '#EFF259' },
-    { name: 'Unsatisfactory', value: 'UNSATISFACTORY', color: '#F84F31' }
+    { name: "Satisfactory", value: "SATISFACTORY", color: "#23C263" },
+    { name: "Needs Attention", value: "NEEDS_ATTENTION", color: "#EFF259" },
+    { name: "Unsatisfactory", value: "UNSATISFACTORY", color: "#F84F31" }
   ]
 
   const handleClose = () => {
-    handleChange('visible', false)
-    handleChange('selectedFeedback', '')
-    handleChange('taskIndex', '')
+    handleChange("visible", false)
+    handleChange("selectedFeedback", "")
+    handleChange("taskIndex", "")
   }
 
   const _createFeedback = async () => {
     try {
-      handleChange('loadingFeedback', true)
-      const token = await AsyncStorage.getItem('token')
+      handleChange("loadingFeedback", true)
+      const token = await AsyncStorage.getItem("token")
       const payload = {
         feedback: selectedFeedback,
         tasks: task,
         report: item?.id
       }
+      console.warn("payload", payload)
       await createFeedback(payload, token)
       handleClose()
-      handleChange('loadingFeedback', false)
+      navigation.goBack()
+      handleChange("loadingFeedback", false)
     } catch (error) {
-      handleChange('loadingFeedback', false)
+      handleChange("loadingFeedback", false)
       Toast.show(`Error: ${error.message}`)
     }
   }
 
-  console.warn('item', item)
+  console.warn("item", item)
 
   return (
     <View style={styles.container}>
       <Header
         back
         leftButton
-        title={'Create Inspection Report'}
+        title={"Create Inspection Report"}
         onLeftPress={() => navigation.goBack()}
       />
       <ScrollView
-        contentContainerStyle={{ alignItems: 'center' }}
-        style={{ width: '100%' }}
+        contentContainerStyle={{ alignItems: "center" }}
+        style={{ width: "100%" }}
       >
-        <View style={{ width: '90%', marginTop: 20 }}>
-          <Text style={styles.title}>{'Inspection report name:'}</Text>
+        <View style={{ width: "90%", marginTop: 20 }}>
+          <Text style={styles.title}>{"Inspection report name:"}</Text>
           <Text style={styles.description}>{item?.name}</Text>
-          <Text style={[styles.title, { marginTop: 20 }]}>
-            {'Worksite name:'}
-          </Text>
-          <Text style={styles.description}>{item?.worksite?.name}</Text>
+
           <FlatList
             data={item?.areas}
             renderItem={({ item: area }) => (
-              <View style={{ width: '100%', marginBottom: 20 }}>
+              <View style={{ width: "100%", marginVertical: 20 }}>
                 <Divider />
                 <View
                   style={{
-                    flexDirection: 'row',
-                    width: '100%',
+                    flexDirection: "row",
+                    width: "100%",
                     marginTop: 20,
-                    justifyContent: 'space-between'
+                    justifyContent: "space-between"
                   }}
                 >
                   <View>
-                    <Text style={styles.title}>Area name:</Text>
-                    <Text style={styles.description}>{area?.area_name}</Text>
+                    <Text style={[styles.title]}>{"Worksite name:"}</Text>
+                    <Text style={styles.description}>
+                      {item?.worksite?.name}
+                    </Text>
                   </View>
                   <PieChart
                     widthAndHeight={60}
@@ -116,12 +117,12 @@ export default function InspectionDetails ({ navigation, route }) {
                 </View>
                 <Text style={styles.title}>Tasks:</Text>
                 {area?.tasks?.map((task, index) => (
-                  <View style={{ width: '100%' }}>
+                  <View style={{ width: "100%" }}>
                     <View
                       style={{
-                        flexDirection: 'row',
-                        width: '100%',
-                        justifyContent: 'space-between'
+                        flexDirection: "row",
+                        width: "100%",
+                        justifyContent: "space-between"
                       }}
                     >
                       <Text style={styles.description}>
@@ -129,9 +130,9 @@ export default function InspectionDetails ({ navigation, route }) {
                       </Text>
                       <TouchableOpacity
                         onPress={() => {
-                          handleChange('visible', true)
-                          handleChange('task', task)
-                          handleChange('taskIndex', index + 1)
+                          handleChange("visible", true)
+                          handleChange("task", task?.id)
+                          handleChange("taskIndex", index + 1)
                         }}
                       >
                         <Text
@@ -140,7 +141,7 @@ export default function InspectionDetails ({ navigation, route }) {
                             color: Colors.BLUR_TEXT
                           }}
                         >
-                          {'Review'}
+                          {"Review"}
                         </Text>
                       </TouchableOpacity>
                     </View>
@@ -150,14 +151,14 @@ export default function InspectionDetails ({ navigation, route }) {
               </View>
             )}
           />
-          <Text style={[styles.title, { marginTop: 20 }]}>Media Links:</Text>
+          <Text style={[styles.title]}>Media Links:</Text>
           {item?.media?.map((task, index) => (
-            <View style={{ width: '100%' }}>
+            <View style={{ width: "100%" }}>
               <View
                 style={{
-                  flexDirection: 'row',
-                  width: '100%',
-                  justifyContent: 'space-between'
+                  flexDirection: "row",
+                  width: "100%",
+                  justifyContent: "space-between"
                 }}
               >
                 <Text
@@ -178,9 +179,9 @@ export default function InspectionDetails ({ navigation, route }) {
       >
         <View style={styles.centerMode}>
           <View style={styles.modal}>
-            <View style={{ alignItems: 'flex-end' }}>
+            <View style={{ alignItems: "flex-end" }}>
               <TouchableOpacity onPress={handleClose}>
-                <Icon name='close' type='antdesign' />
+                <Icon name="close" type="antdesign" />
               </TouchableOpacity>
             </View>
             <Text style={[styles.description, { ...Fonts.poppinsRegular(18) }]}>
@@ -189,19 +190,19 @@ export default function InspectionDetails ({ navigation, route }) {
             {feedback?.map(feed => (
               <View
                 style={{
-                  flexDirection: 'row',
-                  width: '100%',
+                  flexDirection: "row",
+                  width: "100%",
                   marginTop: 10,
-                  alignItems: 'center',
-                  justifyContent: 'space-between'
+                  alignItems: "center",
+                  justifyContent: "space-between"
                 }}
               >
                 <View
                   style={{
-                    flexDirection: 'row',
-                    width: '90%',
+                    flexDirection: "row",
+                    width: "90%",
                     marginTop: 10,
-                    alignItems: 'center'
+                    alignItems: "center"
                   }}
                 >
                   <BouncyCheckbox
@@ -215,9 +216,9 @@ export default function InspectionDetails ({ navigation, route }) {
                     }}
                     onPress={() => {
                       if (feed?.value === selectedFeedback) {
-                        handleChange('selectedFeedback', '')
+                        handleChange("selectedFeedback", "")
                       } else {
-                        handleChange('selectedFeedback', feed?.value)
+                        handleChange("selectedFeedback", feed?.value)
                       }
                     }}
                     isChecked={selectedFeedback === feed?.value}
@@ -246,7 +247,7 @@ export default function InspectionDetails ({ navigation, route }) {
               onPress={_createFeedback}
               disabled={!selectedFeedback}
               loading={loadingFeedback}
-              title={'Save'}
+              title={"Save"}
             />
 
             <Button
@@ -254,8 +255,8 @@ export default function InspectionDetails ({ navigation, route }) {
               onPress={handleClose}
               isWhiteBg
               color={Colors.GREEN_COLOR}
-              backgroundColor={'transparent'}
-              title={'Cancel'}
+              backgroundColor={"transparent"}
+              title={"Cancel"}
             />
           </View>
         </View>
@@ -279,25 +280,25 @@ const styles = StyleSheet.create({
     padding: 20
   },
   footerButton: {
-    marginTop: '15%'
+    marginTop: "15%"
   },
   description: {
     ...Fonts.poppinsRegular(14),
     color: Colors.TEXT_COLOR,
-    textAlign: 'left',
+    textAlign: "left",
     marginTop: 2
   },
   centerMode: {
     backgroundColor: Colors.MODAL_BG,
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center'
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center"
   },
   modal: {
     backgroundColor: Colors.WHITE,
     borderRadius: 10,
     padding: 20,
-    width: '90%'
+    width: "90%"
   }
 })
