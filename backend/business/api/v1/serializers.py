@@ -339,7 +339,7 @@ class EarningSerializer(serializers.ModelSerializer):
             dict['employee_image'] = attendance.employee.profile_image.url if attendance.employee.profile_image else None
             dict['employee_position'] = attendance.employee.position
             dict['employee_hourly_rate'] = attendance.employee.hourly_rate
-            dict['created_at'] = attendance.created_at
+            dict['created_at'] = attendance.created_at.date()
             dict['employee_hours'], dict['employee_earnings'] = 0, 0
             for attendance in attendances.filter(employee=attendance.employee):
                 dict['employee_hours'] += attendance.total_hours
@@ -364,7 +364,7 @@ class EmployeeEarningSerializer(serializers.ModelSerializer):
                 'worksite': attendance.event.worksite.name,
                 'amount_clocked': attendance.total_hours,
                 'earned': attendance.earnings,
-                'created_at': attendance.created_at
+                'created_at': attendance.created_at.date()
             }
             worksites.append(worksite)
         data['worksites'] = worksites
