@@ -336,10 +336,10 @@ class EarningSerializer(serializers.ModelSerializer):
         for attendance in attendances:
             dict = {}
             dict['employee_name'] = attendance.employee.user.get_full_name()
-            dict[
-                'employee_image'] = attendance.employee.profile_image.url if attendance.employee.profile_image else None
+            dict['employee_image'] = attendance.employee.profile_image.url if attendance.employee.profile_image else None
             dict['employee_position'] = attendance.employee.position
             dict['employee_hourly_rate'] = attendance.employee.hourly_rate
+            data['created_at'] = attendance.created_at
             dict['employee_hours'], dict['employee_earnings'] = 0, 0
             for attendance in attendances.filter(employee=attendance.employee):
                 dict['employee_hours'] += attendance.total_hours
