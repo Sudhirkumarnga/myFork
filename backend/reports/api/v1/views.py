@@ -1,4 +1,6 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
+from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -136,6 +138,8 @@ class InspectionReportView(ModelViewSet):
     serializer_class = InspectionReportSerializer
     queryset = InspectionReport.objects.filter()
     http_method_names = ['get', 'post']
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ["name", "worksite",]
 
     def get_serializer_context(self):
         context = super(InspectionReportView, self).get_serializer_context()
@@ -143,16 +147,16 @@ class InspectionReportView(ModelViewSet):
         return context
 
     def get_queryset(self):
-        from_date = self.request.query_params.get('from', None)
-        to_date = self.request.query_params.get('to', None)
+        from_date = self.request.query_params.get('from_date', None)
+        to_date = self.request.query_params.get('to_date', None)
         queryset = self.queryset.filter(worksite__business__user=self.request.user)
         if from_date:
             queryset = queryset.filter(
-                updated_at__date__gte=from_date
+                created_at__date__gte=from_date
             )
         if to_date:
             queryset = queryset.filter(
-                updated_at__date__lte=to_date
+                created_at__date__lte=to_date
             )
         return queryset
 

@@ -89,7 +89,7 @@ class InspectionReportSerializer(ModelSerializer):
         data['worksite'] = WorksiteSerializer(
             WorkSite.objects.get(id=data['worksite'])
         ).data
-        data['inspector'] = request.user.get_full_name()
+        # data['inspector'] = request.user.get_full_name()
         data['tasks'] = TaskFeedbackSerializer(
             TaskFeedback.objects.filter(report_id=data['id']),
             many=True
