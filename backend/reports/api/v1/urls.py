@@ -6,8 +6,6 @@ from reports.api.v1.views import PayrollReport, GetWorksitesView, GetWorksitesTa
 router = DefaultRouter()
 
 router.register("inspection-report", InspectionReportView, basename="inspection-report")
-router.register("task-feedback", TaskFeedbackView, basename="task-feedback")
-
 
 urlpatterns = [
     path('get_worksites/',GetWorksitesView.as_view(),name='get_worksites'),
@@ -15,7 +13,6 @@ urlpatterns = [
     path('payroll-reports/',PayrollReport.as_view(),name='payroll-reports'),
     path('locationvariance-reports/', LocationVarianceReport.as_view(), name='location-variance-reports'),
     path('schedulevariance-reports/', ScheduleVarianceReport.as_view(), name='schedule-variance-reports'),
-
-
+    path('task-feedback/', TaskFeedbackView.as_view(), name="task-feedback")
 
 ]+ router.urls

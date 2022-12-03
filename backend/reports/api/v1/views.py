@@ -157,11 +157,35 @@ class InspectionReportView(ModelViewSet):
         return queryset
 
 
-class TaskFeedbackView(ModelViewSet):
-    permission_classes = [IsAuthenticated, IsActiveSubscription]
-    serializer_class = TaskFeedbackSerializer
+class TaskFeedbackView(APIView):
     queryset = TaskFeedback.objects.filter()
+    permission_classes = [IsAuthenticated, IsActiveSubscription]
     http_method_names = ['post']
+
+    def post(self, request, *args, **kwargs):
+        task_feedback = TaskFeedback.objects.filter(
+            report_id=request.data['report']
+        )
+        if task_feedback.exists():
+            task_feedback = task_feedback.first()
+            task_feedback.task__id = request.data['tasks']
+            task_feedback.feedback = request.data['feedback']
+            task_feedback.save()
+
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=True,
+                    message="Task Response Successfully created.",
+                    status=SmartWorkHorseStatus.Success.value,
+                    response=TaskFeedbackSerializer(
+                        task_feedback,
+                        many=False
+                    ).data
+                ),
+                status=status.HTTP_201_CREATED,
+                headers={},
+            )
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class LocationVarianceReport(APIView):

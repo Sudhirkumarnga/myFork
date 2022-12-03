@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from business.models import Attendance, Employee
-from reports.models import InspectionReport, InspectionArea, InspectionReportMedia, TaskFeedback
+from reports.models import InspectionReport, InspectionReportMedia, TaskFeedback
 from reports.services import calculate_distance_deviation
 from workside.models import WorkSite, Task, Event
 from business.services import convert_image_from_bse64_to_blob
@@ -72,13 +72,6 @@ class TaskSerializer(ModelSerializer):
         fields = ('id', 'name',)
 
 
-class InspectionAreaSerializer(ModelSerializer):
-    class Meta:
-        model = InspectionArea
-        exclude = ('report', 'created_at', 'updated_at',)
-        depth = 1
-
-
 class InspectionReportMediaSerializer(ModelSerializer):
     class Meta:
         model = InspectionReportMedia
@@ -88,15 +81,17 @@ class InspectionReportMediaSerializer(ModelSerializer):
 class InspectionReportSerializer(ModelSerializer):
     class Meta:
         model = InspectionReport
-        fields = ('id', 'name', 'worksite', 'created_at',)
-        depth = 1
+        fields = ('id', 'name', 'worksite', 'tasks', 'created_at',)
 
     def to_representation(self, data):
         data = super(InspectionReportSerializer, self).to_representation(data)
         request = self.context['request']
+        data['worksite'] = WorksiteSerializer(
+            WorkSite.objects.get(id=data['worksite'])
+        ).data
         data['inspector'] = request.user.get_full_name()
-        data['areas'] = InspectionAreaSerializer(
-            InspectionArea.objects.filter(report_id=data['id']),
+        data['tasks'] = TaskFeedbackSerializer(
+            TaskFeedback.objects.filter(report_id=data['id']),
             many=True
         ).data
         data['media'] = InspectionReportMediaSerializer(
@@ -109,18 +104,15 @@ class InspectionReportSerializer(ModelSerializer):
         request = self.context['request']
         data = request.data
         report = InspectionReport.objects.create(
-            name=data['name'],
-            worksite=WorkSite.objects.get(id=data['worksite'])
+            name=validated_data['name'],
+            worksite=validated_data['worksite'],
         )
-
-        for area in data['areas']:
-            inspection_area = InspectionArea.objects.create(
+        report.tasks.set(validated_data['tasks'])
+        for task in validated_data["tasks"]:
+            TaskFeedback.objects.create(
                 report=report,
-                area_name=area['area_name']
+                tasks=task
             )
-            for task in area['tasks']:
-                inspection_area.tasks.add(task)
-
         if data.__contains__('media'):
             for file in data['media']:
                 InspectionReportMedia.objects.create(
@@ -133,4 +125,9 @@ class InspectionReportSerializer(ModelSerializer):
 class TaskFeedbackSerializer(ModelSerializer):
     class Meta:
         model = TaskFeedback
-        exclude = ('created_at', 'updated_at',)
+        exclude = ('created_at', 'updated_at', 'report',)
+
+    def to_representation(self, data):
+        data = super(TaskFeedbackSerializer, self).to_representation(data)
+        data['tasks'] = Task.objects.get(id=data['tasks']).name
+        return data

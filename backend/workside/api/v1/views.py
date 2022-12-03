@@ -411,6 +411,8 @@ class UpcomingShiftView(APIView):
                 ).data
             else:
                 serializer_data = {}
+        else:
+            serializer_data = {}
         serializer_data['active_employees'] = EmployeeSerializer(
             Employee.objects.filter(
                 business=Employee.objects.get(

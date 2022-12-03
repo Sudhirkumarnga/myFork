@@ -6,6 +6,7 @@ from reports.constants import TaskFeedback
 
 
 def inspection_report_media(instance, filename):
+    print(instance.report)
     return 'business/{}/{}/{}/{}'.format(instance.report.worksite.business.id, instance.report.name, instance.id,
                                          filename)
 
@@ -13,6 +14,7 @@ def inspection_report_media(instance, filename):
 class InspectionReport(TimeStampedModel):
     name = models.CharField(_("Inspection Report Name"), blank=True, null=True, max_length=255)
     worksite = models.ForeignKey(WorkSite, on_delete=models.CASCADE, null=True, blank=True)
+    tasks = models.ManyToManyField(Task)
 
     class Meta:
         verbose_name = "Inspection Report"
@@ -20,19 +22,6 @@ class InspectionReport(TimeStampedModel):
 
     def __str__(self):
         return f'{self.name}'
-
-
-class InspectionArea(TimeStampedModel):
-    report = models.ForeignKey(InspectionReport, on_delete=models.CASCADE, null=True, blank=True)
-    area_name = models.CharField(_("Area Name"), blank=True, null=True, max_length=255)
-    tasks = models.ManyToManyField(Task)
-
-    class Meta:
-        verbose_name = "Inspection Report Area"
-        verbose_name_plural = "Inspection Report Areas"
-
-    def __str__(self):
-        return f'{self.report.name}'
 
 
 class InspectionReportMedia(TimeStampedModel):
