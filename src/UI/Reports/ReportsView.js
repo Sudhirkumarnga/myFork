@@ -100,7 +100,6 @@ export default function ReportsView({ navigation, route }) {
       } else if (title === "Inspection") {
         res = await inspectionReports(payload, token)
       }
-      console.warn("res?.data", res?.data)
       if (res?.data) {
         handleChange("reports", res?.data?.results || res?.data?.response)
       }
@@ -129,7 +128,6 @@ export default function ReportsView({ navigation, route }) {
       if (res?.data) {
         handleChange("reports", res?.data?.results || res?.data?.response)
       }
-      console.warn("res?.data?.response", res?.data)
       handleChange("loading", false)
     } catch (error) {
       handleChange("loading", false)
@@ -147,7 +145,6 @@ export default function ReportsView({ navigation, route }) {
     return `${hours}h${minutes > 0 ? ` ${minutes.toFixed(0)}m` : ""}`
   }
 
-  console.warn("reports", reports)
   return (
     <View style={styles.container}>
       <Header
@@ -282,14 +279,11 @@ export default function ReportsView({ navigation, route }) {
                   <View />
                 )}
                 <Text style={[styles.description, { marginTop: 0 }]}>
-                  {item?.created_at ||
-                    (item?.updated_at &&
-                      moment(
-                        convertLocalDateToUTCDate(
-                          item?.updated_at || item?.created_at,
-                          true
-                        )
-                      ).fromNow())}
+                  {(item?.created_at || item?.updated_at) &&
+                    moment
+                      .utc(item?.updated_at || item?.created_at)
+                      .local()
+                      .fromNow()}
                 </Text>
               </View>
               <Text
@@ -352,7 +346,7 @@ export default function ReportsView({ navigation, route }) {
                 <View style={{ marginVertical: 10 }}>
                   <Text style={styles.title}>{"Actual Time:"}</Text>
                   <Text style={styles.description}>
-                    {moment(item?.actual_time)
+                    {moment
                       .utc(item?.actual_time)
                       .local()
                       .format("YYYY/MM/DD hh:mm")}

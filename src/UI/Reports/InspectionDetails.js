@@ -62,15 +62,16 @@ export default function InspectionDetails({ navigation, route }) {
       console.warn("payload", payload)
       await createFeedback(payload, token)
       handleClose()
+      handleChange("task", "")
+      handleChange("selectedFeedback", "")
       navigation.goBack()
-      handleChange("loadingFeedback", false)
     } catch (error) {
       handleChange("loadingFeedback", false)
       Toast.show(`Error: ${error.message}`)
     }
   }
+  console.warn("report", item)
 
-  console.warn("item", item)
 
   return (
     <View style={styles.container}>
@@ -87,47 +88,54 @@ export default function InspectionDetails({ navigation, route }) {
         <View style={{ width: "90%", marginTop: 20 }}>
           <Text style={styles.title}>{"Inspection report name:"}</Text>
           <Text style={styles.description}>{item?.name}</Text>
-
+          <View
+            style={{
+              flexDirection: "row",
+              width: "100%",
+              marginTop: 20,
+              justifyContent: "space-between"
+            }}
+          >
+            <View>
+              <Text style={[styles.title]}>{"Worksite name:"}</Text>
+              <Text style={styles.description}>{item?.worksite?.name}</Text>
+            </View>
+            <PieChart
+              widthAndHeight={60}
+              doughnut={true}
+              coverRadius={0.83}
+              series={series}
+              sliceColor={sliceColor}
+            />
+          </View>
+          <Text style={styles.title}>Tasks:</Text>
           <FlatList
-            data={item?.areas}
-            renderItem={({ item: area }) => (
+            data={item?.tasks}
+            renderItem={({ item: task, index }) => (
               <View style={{ width: "100%", marginVertical: 20 }}>
-                <Divider />
-                <View
-                  style={{
-                    flexDirection: "row",
-                    width: "100%",
-                    marginTop: 20,
-                    justifyContent: "space-between"
-                  }}
-                >
-                  <View>
-                    <Text style={[styles.title]}>{"Worksite name:"}</Text>
+                <View style={{ width: "100%" }}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      width: "100%",
+                      justifyContent: "space-between"
+                    }}
+                  >
                     <Text style={styles.description}>
-                      {item?.worksite?.name}
+                      Task Number {index + 1}
                     </Text>
-                  </View>
-                  <PieChart
-                    widthAndHeight={60}
-                    doughnut={true}
-                    coverRadius={0.83}
-                    series={series}
-                    sliceColor={sliceColor}
-                  />
-                </View>
-                <Text style={styles.title}>Tasks:</Text>
-                {area?.tasks?.map((task, index) => (
-                  <View style={{ width: "100%" }}>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        width: "100%",
-                        justifyContent: "space-between"
-                      }}
-                    >
-                      <Text style={styles.description}>
-                        Task Number {index + 1}
-                      </Text>
+                    {task?.feedback ? (
+                      <View
+                        style={{
+                          width: 15,
+                          height: 15,
+                          borderRadius: 15,
+                          backgroundColor: feedback.find(
+                            e => e.value === task.feedback
+                          ).color
+                        }}
+                      />
+                    ) : (
                       <TouchableOpacity
                         onPress={() => {
                           handleChange("visible", true)
@@ -144,10 +152,12 @@ export default function InspectionDetails({ navigation, route }) {
                           {"Review"}
                         </Text>
                       </TouchableOpacity>
-                    </View>
-                    {area?.tasks?.length < index + 1 && <Divider />}
+                    )}
                   </View>
-                ))}
+                  {/* {area?.tasks?.length < index + 1 && <Divider />} */}
+                </View>
+                {/* ))} */}
+                <Divider />
               </View>
             )}
           />

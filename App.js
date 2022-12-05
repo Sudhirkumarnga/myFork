@@ -138,6 +138,7 @@ const App = () => {
       if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
       } else {
+        alert(error)
         Toast.show(`Error: ${JSON.stringify(error)}`)
       }
     }

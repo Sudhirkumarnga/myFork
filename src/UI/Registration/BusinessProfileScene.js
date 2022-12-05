@@ -151,13 +151,18 @@ export default function BusinessProfileScene ({ navigation }) {
       await createAdminProfile(formData, token)
       _getProfile(token)
       handleChange('loading', false)
-      navigation.navigate('home')
+      navigation.navigate('AuthLoading')
       Toast.show(`Your profile has been updated!`)
     } catch (error) {
       handleChange('loading', false)
-      console.warn('err', error.response)
-      const showWError = Object.values(error.response?.data?.error)
-      Toast.show(`Error: ${showWError[0]}`)
+      console.warn('err', error.response?.data)
+      if(error.response?.data?.detail){
+        Toast.show(`Error: ${JSON.stringify(error.response?.data?.detail)}`)
+        
+      }else{
+        const showWError = Object.values(error.response?.data?.error||error.response?.data?.detail)
+        Toast.show(`Error: ${showWError}`)
+      }
     }
   }
 

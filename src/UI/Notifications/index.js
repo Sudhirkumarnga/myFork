@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from 'react'
+import React, { useCallback, useContext, useState } from "react"
 import {
   View,
   StyleSheet,
@@ -8,19 +8,19 @@ import {
   TouchableOpacity,
   Text,
   ActivityIndicator
-} from 'react-native'
-import NotificationIcon from '../../res/Images/common/notificationIcon.png'
-import { Icon, CheckBox } from 'react-native-elements'
-import moment from 'moment'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import Toast from 'react-native-simple-toast'
-import { Images } from '../../res'
-import { useFocusEffect } from '@react-navigation/native'
-import AppContext from '../../Utils/Context'
-import Header from '../Common/Header'
-import { Fonts } from '../../res/Theme'
-import Colors from '../../res/Theme/Colors'
-import { readNotification } from '../../api/auth'
+} from "react-native"
+import NotificationIcon from "../../res/Images/common/notificationIcon.png"
+import { Icon, CheckBox } from "react-native-elements"
+import moment from "moment"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import Toast from "react-native-simple-toast"
+import { Images } from "../../res"
+import { useFocusEffect } from "@react-navigation/native"
+import AppContext from "../../Utils/Context"
+import Header from "../Common/Header"
+import { Fonts } from "../../res/Theme"
+import Colors from "../../res/Theme/Colors"
+import { readNotification } from "../../api/auth"
 
 const Notifications = ({ navigation }) => {
   const { notifications, _getNotification } = useContext(AppContext)
@@ -40,24 +40,24 @@ const Notifications = ({ navigation }) => {
       if (notifications?.length > 0) {
         const readed = notifications?.filter(e => e.is_read === true)
         const unreaded = notifications?.filter(e => e.is_read === false)
-        handleChange('readed', readed)
-        handleChange('unreaded', unreaded)
+        handleChange("readed", readed)
+        handleChange("unreaded", unreaded)
       } else {
-        handleChange('readed', [])
-        handleChange('unreaded', [])
+        handleChange("readed", [])
+        handleChange("unreaded", [])
       }
     }, [notifications])
   )
 
   const _readNotification = async id => {
     try {
-      handleChange('loading', true)
-      const token = await AsyncStorage.getItem('token')
+      handleChange("loading", true)
+      const token = await AsyncStorage.getItem("token")
       await readNotification(id, token)
-      handleChange('loading', false)
+      handleChange("loading", false)
       _getNotification()
     } catch (error) {
-      handleChange('loading', false)
+      handleChange("loading", false)
       Toast.show(`Error: ${error.message}`)
     }
   }
@@ -74,24 +74,24 @@ const Notifications = ({ navigation }) => {
           </View>
           <View
             style={{
-              width: '70%',
+              width: "70%",
               marginLeft: 10,
-              alignItems: 'flex-start'
+              alignItems: "flex-start"
             }}
           >
             <View
               style={{
-                width: '100%',
-                flexDirection: 'row',
-                alignItems: 'flex-start',
-                justifyContent: 'space-between'
+                width: "100%",
+                flexDirection: "row",
+                alignItems: "flex-start",
+                justifyContent: "space-between"
               }}
             >
               <Text
                 style={{
                   // fontFamily: FONT1REGULAR,
                   color: Colors.BLACK,
-                  width: '70%',
+                  width: "70%",
                   fontSize: 13
                 }}
               >
@@ -101,7 +101,7 @@ const Notifications = ({ navigation }) => {
                 {!item?.is_read && <View style={styles.dot} />}
                 <TouchableOpacity>
                   <Text style={[styles.smallText]}>
-                    {moment(item?.created_at).fromNow()}
+                    {moment.utc(item?.created_at).local().fromNow()}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -109,11 +109,11 @@ const Notifications = ({ navigation }) => {
             {!item?.is_read && (
               <View style={styles.checkedBoxView}>
                 <CheckBox
-                  title={''}
+                  title={""}
                   checkedIcon={
                     <Icon
-                      name={'checkbox-marked'}
-                      type={'material-community'}
+                      name={"checkbox-marked"}
+                      type={"material-community"}
                       color={Colors.BACKGROUND_BG}
                     />
                   }
@@ -121,8 +121,8 @@ const Notifications = ({ navigation }) => {
                   containerStyle={[styles.checkedBox]}
                   uncheckedIcon={
                     <Icon
-                      name={'checkbox-blank-outline'}
-                      type={'material-community'}
+                      name={"checkbox-blank-outline"}
+                      type={"material-community"}
                       color={Colors.BLUR_TEXT}
                     />
                   }
@@ -140,11 +140,11 @@ const Notifications = ({ navigation }) => {
   return (
     <ScrollView
       style={styles.container}
-      contentContainerStyle={{ alignItems: 'center' }}
+      contentContainerStyle={{ alignItems: "center" }}
     >
       <Header
         leftButton
-        title={'Notifications'}
+        title={"Notifications"}
         rightIcon={{ ...Images.bell }}
         onLeftPress={() => navigation.goBack()}
       />
@@ -160,8 +160,8 @@ const Notifications = ({ navigation }) => {
                 marginTop: -5,
                 backgroundColor: Colors.RED_COLOR,
                 borderRadius: 20,
-                alignItems: 'center',
-                justifyContent: 'center'
+                alignItems: "center",
+                justifyContent: "center"
               }}
             >
               <Text style={{ color: Colors.WHITE, marginTop: -1 }}>
@@ -174,16 +174,16 @@ const Notifications = ({ navigation }) => {
         {loading && <ActivityIndicator color={Colors.BACKGROUND_BG} />}
         <FlatList
           data={unreaded}
-          style={{ width: '100%' }}
+          style={{ width: "100%" }}
           showsVerticalScrollIndicator={false}
           renderItem={({ item, index }) => _renderItem(item, index)}
         />
-        <View style={[{ alignItems: 'flex-start', width: '90%' }]}>
+        <View style={[{ alignItems: "flex-start", width: "90%" }]}>
           <Text style={styles.listheading}>Reviewed</Text>
         </View>
         <FlatList
           data={readed}
-          style={{ width: '100%' }}
+          style={{ width: "100%" }}
           showsVerticalScrollIndicator={false}
           renderItem={({ item, index }) => _renderItem(item, index)}
         />
@@ -198,28 +198,28 @@ const styles = StyleSheet.create({
     // backgroundColor: colors.background
   },
   mainBody: {
-    width: '90%',
+    width: "90%",
     flex: 1,
     marginTop: 20,
-    alignItems: 'center'
+    alignItems: "center"
   },
   scroll: {
     flex: 1
     // backgroundColor: colors.background
   },
   center: {
-    alignItems: 'center'
+    alignItems: "center"
   },
   newContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '90%',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "90%",
     marginTop: 20
   },
   newView: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 10
   },
   dot: {
@@ -238,10 +238,10 @@ const styles = StyleSheet.create({
     // fontFamily: FONT1REGULAR,
     ...Fonts.poppinsRegular(14),
     color: Colors.BLUR_TEXT,
-    textTransform: 'uppercase'
+    textTransform: "uppercase"
   },
   checkedBox: {
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     marginRight: -15
   },
   countText: {
@@ -253,8 +253,8 @@ const styles = StyleSheet.create({
   count: {
     width: 25,
     marginLeft: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     height: 25,
     // backgroundColor: colors.secondary,
     borderRadius: 25
@@ -263,12 +263,12 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center'
+    justifyContent: "center",
+    alignItems: "center"
   },
   checkedBoxView: {
-    alignItems: 'flex-end',
-    width: '100%',
+    alignItems: "flex-end",
+    width: "100%",
     marginTop: 0
   },
   listheading: {
@@ -277,41 +277,41 @@ const styles = StyleSheet.create({
     // fontFamily: FONT1BOLD
   },
   header: {
-    width: '100%',
-    alignItems: 'center',
-    flexDirection: 'row'
+    width: "100%",
+    alignItems: "center",
+    flexDirection: "row"
   },
   optionView: {
-    flexDirection: 'row',
+    flexDirection: "row",
     // width: '20%',
-    alignItems: 'center'
+    alignItems: "center"
   },
   titleStyle: {
     // color: colors.white,
     // fontFamily: FONT1BOLD
   },
   list: {
-    alignItems: 'center',
-    width: '100%',
+    alignItems: "center",
+    width: "100%",
     paddingBottom: 10
   },
   listContainer: {
-    alignItems: 'center',
-    width: '100%',
+    alignItems: "center",
+    width: "100%",
     paddingBottom: 10,
     marginTop: -10,
     zIndex: -1
   },
   rowList: {
-    flexDirection: 'row',
-    alignItems: 'center'
+    flexDirection: "row",
+    alignItems: "center"
   },
   listContnet: {
     padding: 20
   },
   listView: {
-    flexDirection: 'row',
-    width: '90%',
+    flexDirection: "row",
+    width: "90%",
     marginTop: 10,
     paddingBottom: 10
   },
@@ -322,13 +322,13 @@ const styles = StyleSheet.create({
     borderRadius: 8
   },
   socialBox: {
-    flexDirection: 'row',
+    flexDirection: "row",
     height: 60,
-    alignItems: 'center',
-    justifyContent: 'space-around',
+    alignItems: "center",
+    justifyContent: "space-around",
     borderRadius: 8,
     // backgroundColor: colors.white,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2
@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 5,
-    resizeMode: 'contain'
+    resizeMode: "contain"
   }
 })
 export default Notifications

@@ -1,19 +1,25 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import React, { useContext, useEffect } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import {
   StyleSheet,
   View,
   ActivityIndicator,
   Platform,
-  Alert
+  Alert,
+  Text
 } from "react-native"
 import Toast from "react-native-simple-toast"
 import { getProfile } from "../../api/auth"
 import Colors from "../../res/Theme/Colors"
 import AppContext from "../../Utils/Context"
 import messaging from "@react-native-firebase/messaging"
+import AsyncHelper from "../../Utils/AsyncHelper"
+import { Fonts } from "../../res"
+import Button from "../Common/Button"
 
 function AuthLoading({ navigation }) {
+  const [popUp, setPopUp] = useState(false)
+  const [localUser, setLocalUser] = useState(null)
   // Context
   const context = useContext(AppContext)
   const {
@@ -32,14 +38,15 @@ function AuthLoading({ navigation }) {
     try {
       const token = await AsyncStorage.getItem("token")
       const user = await AsyncStorage.getItem("user")
-      const res = await getProfile(token)
       let userData
       if (user) {
         userData = JSON.parse(user)
         setUser(userData)
+        setLocalUser(userData)
       }
-      _getNotification()
       console.warn("userData", userData)
+      const res = await getProfile(token)
+      _getNotification()
       console.warn("res?.data?.response", res?.data?.response)
       if (res?.data?.response) {
         setAdminProfile(res?.data?.response)
@@ -76,11 +83,18 @@ function AuthLoading({ navigation }) {
       }
     } catch (error) {
       const errorText = Object.values(error?.response?.data)
-      Toast.show(`Error: ${errorText[0]}`)
+      if (errorText[0] === "Business Subscription currently is not active.") {
+        setPopUp(true)
+      } else {
+        Toast.show(`Error: ${errorText[0]}`)
+      }
     }
   }
 
-  useEffect(() => {
+  useEffect(async () => {
+    const env = await AsyncHelper.getEnv()
+    console.warn("env", env)
+    setLocalUser(env)
     _bootstrapAsync()
     navigation.addListener("focus", () => {
       _bootstrapAsync()
@@ -139,10 +153,38 @@ function AuthLoading({ navigation }) {
       navigation.navigate("chooseEnv")
     }
   }
+  console.log("localUser", localUser)
+
+  const logout = async () => {
+    setUser(null)
+    setPopUp(false)
+    setLocalUser(null)
+    setAdminProfile(null)
+    await AsyncStorage.removeItem("token")
+    await AsyncStorage.removeItem("user")
+    navigation.navigate("chooseEnv")
+  }
 
   return (
     <View style={styles.container}>
-      <ActivityIndicator size="large" color={Colors.WHITE} />
+      {popUp ? (
+        <View style={{ width: "90%" }}>
+          <Text
+            style={{
+              ...Fonts.poppinsRegular(16),
+              color: Colors.WHITE,
+              width: "100%"
+            }}
+          >
+            {localUser === "admin"
+              ? "There was an issue processing your monthly subscription, please visit https://Cleanr.pro/subscription to review your plan and to continue using CleanR"
+              : " It looks like there is an issue with the subscription to CleanR - please contact your administrator - our apologies for the inconvenience"}
+          </Text>
+          <Button title={"Logout"} onPress={logout} />
+        </View>
+      ) : (
+        <ActivityIndicator size="large" color={Colors.WHITE} />
+      )}
     </View>
   )
 }

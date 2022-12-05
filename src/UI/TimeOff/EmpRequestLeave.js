@@ -1,40 +1,44 @@
-import React from 'react'
-import { View, FlatList, StyleSheet, Text } from 'react-native'
-import { BaseComponent, Button } from '../Common'
-import { Fonts, Colors } from '../../res'
-import DenyModal from './DenyModal'
+import React from "react"
+import { View, FlatList, StyleSheet, Text } from "react-native"
+import { BaseComponent, Button } from "../Common"
+import { Fonts, Colors } from "../../res"
+import DenyModal from "./DenyModal"
+import moment from "moment"
 
 export default class EmpRequestLeave extends BaseComponent {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       denyModalVisible: false,
       leaveItem: null,
       data: [
         {
-          title: 'Employee name:',
-          des: 'John Doe'
+          title: "Employee name:",
+          des: "John Doe"
         }
       ]
     }
   }
 
-  renderRequestCell (leaveItem) {
+  renderRequestCell(leaveItem) {
     const data = [
       {
-        title: 'Employee name:',
+        title: "Employee name:",
         des: leaveItem?.Employee_name
       },
       {
-        title: 'Date submitted:',
-        des: leaveItem?.created_at
+        title: "Date submitted:",
+        des: moment.utc(leaveItem?.created_at).local().fromNow()
       },
       {
-        title: 'Dates requested:',
-        des: leaveItem?.from_date + ' - ' + leaveItem?.to_date
+        title: "Dates requested:",
+        des:
+          moment.utc(leaveItem?.from_date).local().format("YYYY-MM-DD") +
+          " - " +
+          moment.utc(leaveItem?.to_date).local().format("YYYY-MM-DD")
       },
       {
-        title: 'Description:',
+        title: "Description:",
         des: leaveItem?.description
       }
     ]
@@ -59,31 +63,31 @@ export default class EmpRequestLeave extends BaseComponent {
     )
   }
 
-  renderButtons (leaveItem, handleChange) {
+  renderButtons(leaveItem, handleChange) {
     return (
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <Button
-          title={this.ls('approve')}
+          title={this.ls("approve")}
           disabled={
             this.props.loadingApprove ||
-            leaveItem?.status === 'APPROVED' ||
-            leaveItem?.status === 'DENY'
+            leaveItem?.status === "APPROVED" ||
+            leaveItem?.status === "DENY"
           }
           style={styles.footerButton}
-          onPress={() => this.props.UpdateRequest(leaveItem?.id, 'APPROVED')}
+          onPress={() => this.props.UpdateRequest(leaveItem?.id, "APPROVED")}
         />
         <Button
-          title={this.ls('deny')}
+          title={this.ls("deny")}
           color={Colors.BUTTON_BG}
           style={styles.footerWhiteButton}
           disabled={
             this.props.loadingApprove ||
-            leaveItem?.status === 'APPROVED' ||
-            leaveItem?.status === 'DENY'
+            leaveItem?.status === "APPROVED" ||
+            leaveItem?.status === "DENY"
           }
           onPress={() => {
-            this.props.handleChange('denyModalVisible', true, true)
-            this.props.handleChange('leaveItem', leaveItem, true)
+            this.props.handleChange("denyModalVisible", true, true)
+            this.props.handleChange("leaveItem", leaveItem, true)
           }}
           isWhiteBg
           textStyle={{ color: Colors.BUTTON_BG }}
@@ -92,7 +96,7 @@ export default class EmpRequestLeave extends BaseComponent {
     )
   }
 
-  render () {
+  render() {
     return (
       <View style={styles.container}>
         <DenyModal
@@ -127,14 +131,14 @@ const styles = StyleSheet.create({
     flex: 1
   },
   footerButton: {
-    width: '48%',
+    width: "48%",
     marginVertical: 20,
     height: 40
   },
   footerWhiteButton: {
     borderWidth: 1,
     borderColor: Colors.BUTTON_BG,
-    width: '48%',
+    width: "48%",
 
     marginVertical: 20,
     height: 40
@@ -142,7 +146,7 @@ const styles = StyleSheet.create({
   description: {
     ...Fonts.poppinsRegular(14),
     color: Colors.TEXT_COLOR,
-    textAlign: 'left',
+    textAlign: "left",
     marginTop: 2
   }
 })

@@ -111,8 +111,8 @@ export default function ShiftDetails({ navigation }) {
         event: upcomingShiftData?.id,
         status: "CLOCK_IN",
         location: currentLocationName,
-        latitude: currentLocation?.latitude,
-        longitude: currentLocation?.longitude
+        latitude: Number(currentLocation?.latitude).toFixed(6),
+        longitude: Number(currentLocation?.longitude).toFixed(6)
       }
       await newAttendance(payload, token)
       handleChange("loading", false)

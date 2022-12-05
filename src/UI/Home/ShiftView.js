@@ -47,8 +47,13 @@ export default function ShiftView() {
     notes_media: "",
     feedback_media: "",
     openStart: false,
-    clock_in_timeDate: new Date(),
+    clock_in_time: moment
+      .utc(upcomingShiftData?.clock_in_time)
+      .local()
+      .format("hh:mm A"),
+    clock_in_timeDate: new Date(moment(upcomingShiftData?.clock_in_time)) || new Date(),
     openEnd: false,
+    clock_out_time: moment().format("hh:mm A"),
     clock_out_timeDate: new Date()
   })
 
@@ -556,10 +561,10 @@ export default function ShiftView() {
                   disabled={
                     !notes ||
                     !feedback ||
-                    !clock_in_time ||
+                    // !clock_in_time ||
                     !notes_media ||
                     !feedback_media ||
-                    !clock_out_time ||
+                    // !clock_out_time ||
                     completed_tasks.length === 0
                   }
                   title={"Submit"}
