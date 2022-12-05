@@ -147,7 +147,7 @@ class PrimaryTextInput extends Component {
           }}
           placeholder={{
             label:
-              this.state.text && Platform.OS === "android"
+              this.state.text 
                 ? this.props.label
                 : !this.props.text
                 ? this.props.label
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     width: "90%",
-    paddingHorizontal: 10,
+    paddingHorizontal: 30,
     color: "transparent",
     ...Fonts.poppinsRegular(14)
   },
