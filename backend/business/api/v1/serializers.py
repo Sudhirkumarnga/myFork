@@ -380,7 +380,7 @@ class FeedbackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feedback
         fields = (
-            "id", "email", "message", "business", "files",
+            "id", "email", "message", "user", "files",
             "feedback_media"
         )
 

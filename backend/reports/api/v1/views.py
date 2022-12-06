@@ -168,11 +168,11 @@ class TaskFeedbackView(APIView):
 
     def post(self, request, *args, **kwargs):
         task_feedback = TaskFeedback.objects.filter(
-            report_id=request.data['report']
+            report_id=request.data['report'],
+            tasks__id = request.data['tasks']
         )
         if task_feedback.exists():
             task_feedback = task_feedback.first()
-            task_feedback.task__id = request.data['tasks']
             task_feedback.feedback = request.data['feedback']
             task_feedback.save()
 

@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 from business.models import Attendance, Employee
 from reports.models import InspectionReport, InspectionReportMedia, TaskFeedback
-from reports.services import calculate_distance_deviation
+from reports.services import calculate_distance_deviation, get_stats
 from workside.models import WorkSite, Task, Event
 from business.services import convert_image_from_bse64_to_blob
 
@@ -85,11 +85,9 @@ class InspectionReportSerializer(ModelSerializer):
 
     def to_representation(self, data):
         data = super(InspectionReportSerializer, self).to_representation(data)
-        request = self.context['request']
         data['worksite'] = WorksiteSerializer(
             WorkSite.objects.get(id=data['worksite'])
         ).data
-        # data['inspector'] = request.user.get_full_name()
         data['tasks'] = TaskFeedbackSerializer(
             TaskFeedback.objects.filter(report_id=data['id']),
             many=True
@@ -98,6 +96,7 @@ class InspectionReportSerializer(ModelSerializer):
             InspectionReportMedia.objects.filter(report_id=data['id']),
             many=True
         ).data
+        data['stats'] = get_stats(data['tasks'])
         return data
 
     def create(self, validated_data):
