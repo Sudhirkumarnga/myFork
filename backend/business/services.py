@@ -14,7 +14,7 @@ from business.models import (
     BusinessAddress, Feedback, FeedbackMedia,
 
 )
-from workside.models import Event
+from workside.models import Event, Task
 
 
 def convert_image_from_bse64_to_blob(image):
@@ -155,8 +155,18 @@ def get_payroll_hours(serializer_data):
 def send_clock_in_notification_to_business_owner(request):
     event = Event.objects.get(id=request.data['event'])
     create_notification({
-        "name": "Event ClockIn",
-        "description": f"{request.user.get_full_name()} clockIn in {event.worksite.name}",
+        "name": "Event Clock In",
+        "description": f"{request.user.get_full_name()} clock In in worksite {event.worksite.name}",
+        "user": event.worksite.business.user
+    }
+    )
+
+
+def send_clock_out_notification_to_business_owner(request):
+    event = Event.objects.get(id=request.data['event'])
+    create_notification({
+        "name": "Event Clock Out",
+        "description": f"{request.user.get_full_name()} clock out from worksite {event.worksite.name}",
         "user": event.worksite.business.user
     }
     )

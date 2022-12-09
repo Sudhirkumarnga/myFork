@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from users.models import User
 from business.services import convert_image_from_bse64_to_blob, send_clock_in_notification_to_employee, \
-    send_clock_in_notification_to_business_owner, get_total_amount
+    send_clock_in_notification_to_business_owner, get_total_amount, send_clock_out_notification_to_business_owner
 from business.models import Employee, Country, City, Region, LeaveRequest, Attendance, Business, Feedback
 from business.api.v1.serializers import (
     BusinessAdminProfileSerializer,
@@ -328,6 +328,7 @@ class AttendanceView(APIView):
             )
             if serializer.is_valid():
                 serializer.save()
+                send_clock_out_notification_to_business_owner(request)
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

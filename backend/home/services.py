@@ -1,5 +1,7 @@
 from django.utils.crypto import get_random_string
 import random
+
+from push_notification.services import create_notification
 from users.models import User_OTP
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -39,15 +41,24 @@ def create_employee(business, user, data):
 
 
 def create_organization_employee(user, data):
+    business = Business.objects.get(business_code=data['business_code'])
     employee = Employee.objects.create(
         user=user,
-        business=Business.objects.get(
-            business_code=data['business_code']
-        ),
+        business=business,
         mobile=data['phone'],
         is_owner=False
     )
+    send_employee_registration_notification_to_business_owner(employee, business)
     return employee
+
+
+def send_employee_registration_notification_to_business_owner(employee,business):
+    create_notification({
+        "name": "New Employee Registration",
+        "description": f"New employee {employee.user.get_full_name()} registered on your business.",
+        "user": business.user.get_full_name()
+    }
+    )
 
 
 def create_emergency_contact(employee):
