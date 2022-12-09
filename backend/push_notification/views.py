@@ -18,7 +18,7 @@ class NotificationViewSet(ModelViewSet):
     def get_queryset(self):
         queryset = self.queryset.filter(
             user=self.request.user
-        )
+        ).order_by("-created_at")
         return queryset
 
     @action(detail=False, methods=['GET'])
