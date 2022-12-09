@@ -30,6 +30,7 @@ def event_publishing_reminder_task(event_id, reminder_date):
 
 @app.task(name="event_start_notification_task")
 def event_start_notification_task(start_time, employees, worksite_id):
+    from workside.models import WorkSite
     worksite = WorkSite.objects.get(id=worksite_id)
     employees = Employee.objects.filter(id__in=employees)
     for employee in employees:
