@@ -1,4 +1,4 @@
-import { API } from './'
+import { API } from "./"
 
 export const createMenu = (body, token) => {
   return API.post(`api/v1/items/`, body, token)
@@ -34,6 +34,22 @@ export const updateWorksite = (id, payload, token) => {
 
 export const createTask = (payload, token) => {
   return API.post(`api/v1/task/`, payload, token)
+}
+
+export const updateTask = (id, payload, token) => {
+  return API.put(`api/v1/task/${id}/`, payload, token)
+}
+
+export const getTask = (id, token) => {
+  return API.get(`api/v1/task/${id}/`, token)
+}
+
+export const deleteTask = (id, token) => {
+  return API.delete(`api/v1/task/${id}/`, {}, token)
+}
+
+export const deleteTaskMedia = (id, token) => {
+  return API.delete(`api/v1/task_attachement/${id}/`, {}, token)
 }
 
 export const deleteWorksite = (id, token) => {
