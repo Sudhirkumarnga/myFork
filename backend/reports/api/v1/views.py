@@ -1,5 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
@@ -167,14 +168,19 @@ class TaskFeedbackView(APIView):
     http_method_names = ['post']
 
     def post(self, request, *args, **kwargs):
-        task_feedback = TaskFeedback.objects.filter(
-            report_id=request.data['report'],
-            tasks__id = request.data['tasks']
-        )
-        if task_feedback.exists():
-            task_feedback = task_feedback.first()
-            task_feedback.feedback = request.data['feedback']
-            task_feedback.save()
+        try:
+            task_feedback = TaskFeedback.objects.filter(
+                report_id=request.data['report'],
+                tasks__id=request.data['tasks']
+            )
+            if task_feedback.exists():
+                task_feedback = task_feedback.first()
+                task_feedback.feedback = request.data['feedback']
+                task_feedback.save()
+            else:
+                raise ValidationError(
+                    {'report': "Report Doesn't exists for this task."}
+                )
 
             return Response(
                 SmartWorkHorseResponse.get_response(
@@ -189,7 +195,16 @@ class TaskFeedbackView(APIView):
                 status=status.HTTP_201_CREATED,
                 headers={},
             )
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=False,
+                    message="Something went wrong adding task feedback",
+                    status=SmartWorkHorseStatus.Error.value,
+                    error={str(e)},
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 class LocationVarianceReport(APIView):
