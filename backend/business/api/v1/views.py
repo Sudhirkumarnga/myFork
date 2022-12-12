@@ -191,7 +191,7 @@ class EmployeeViewset(ModelViewSet):
 class ProfileView(APIView):
     queryset = User.objects.filter()
     http_method_names = ['get', 'post']
-    permission_classes = [IsAuthenticated,IsActiveSubscription]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
         try:
