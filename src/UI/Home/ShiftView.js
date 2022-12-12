@@ -236,7 +236,7 @@ export default function ShiftView() {
                     { fontSize: 14, color: Colors.HOME_DES }
                   ]}
                 >
-                  Clock in time: {upcomingShiftData?.schedule_shift}
+                  Clock in time: {moment.utc(upcomingShiftData?.schedule_shift_start_time).local().format('HH:mm')} to {moment.utc(upcomingShiftData?.schedule_shift_end_time).local().format('HH:mm')}
                 </Text>
               )}
             </View>
