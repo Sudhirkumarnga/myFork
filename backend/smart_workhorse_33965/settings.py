@@ -10,7 +10,7 @@ https://docs.djangoproject.com/en/2.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
-
+import json
 import os
 import io
 import environ
@@ -345,14 +345,14 @@ DJSTRIPE_WEBHOOK_SECRET = "whsec_48e8a215af1fa02eda2299b82a9978a8438a11415b604a8
 DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"
 
 
-# FCM_DJANGO_SETTINGS = {"FCM_SERVER_KEY": env("FCM_SERVER_KEY", default=None)}
-# cred = credentials.Certificate(os.path.join(APPS_DIR, "credentials.json"))
-# firebase_admin.initialize_app(cred)
-#
-# FCM_DJANGO_SETTINGS = {
-#     "APP_VERBOSE_NAME": "Smart Work Horse",
-#     "ONE_DEVICE_PER_USER": False,
-#     "DELETE_INACTIVE_DEVICES": False,
-# }
+FCM_DJANGO_SETTINGS = {"FCM_SERVER_KEY": env("FCM_SERVER_KEY", default=None)}
+cred = credentials.Certificate(json.load(env("FIREBASE_CREDENTAILS", default=None)))
+firebase_admin.initialize_app(cred)
+
+FCM_DJANGO_SETTINGS = {
+    "APP_VERBOSE_NAME": "Smart Work Horse",
+    "ONE_DEVICE_PER_USER": False,
+    "DELETE_INACTIVE_DEVICES": False,
+}
 
 OLD_PASSWORD_FIELD_ENABLED = True
