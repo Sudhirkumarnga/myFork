@@ -345,13 +345,17 @@ DJSTRIPE_WEBHOOK_SECRET = "whsec_48e8a215af1fa02eda2299b82a9978a8438a11415b604a8
 DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"
 
 
-FCM_DJANGO_SETTINGS = {"FCM_SERVER_KEY": env("FCM_SERVER_KEY", default=None)}
-
-cred = credentials.Certificate(env.json("FIREBASE_CREDENTAILS", default=None))
-firebase_admin.initialize_app(cred)
 FCM_DJANGO_SETTINGS = {
+    # default: _('FCM Django')
     "APP_VERBOSE_NAME": "Smart Work Horse",
+    # Your firebase API KEY
+    "FCM_SERVER_KEY": env.str("FCM_SERVER_KEY", ""),
+    # true if you want to have only one active device per registered user at a time
+    # default: False
     "ONE_DEVICE_PER_USER": False,
+    # devices to which notifications cannot be sent,
+    # are deleted upon receiving error response from FCM
+    # default: False
     "DELETE_INACTIVE_DEVICES": False,
 }
 
