@@ -346,7 +346,7 @@ DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"
 
 
 FCM_DJANGO_SETTINGS = {"FCM_SERVER_KEY": env("FCM_SERVER_KEY", default=None)}
-cred = credentials.Certificate(json.load(env("FIREBASE_CREDENTAILS", default=None)))
+cred = credentials.Certificate(env.json("FIREBASE_CREDENTAILS", default=None))
 firebase_admin.initialize_app(cred)
 
 FCM_DJANGO_SETTINGS = {
