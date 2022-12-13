@@ -145,6 +145,8 @@ export default function ReportsView({ navigation, route }) {
     return `${hours}h${minutes > 0 ? ` ${minutes.toFixed(0)}m` : ""}`
   }
 
+  console.warn("reports", reports)
+
   return (
     <View style={styles.container}>
       <Header
@@ -404,7 +406,17 @@ export default function ReportsView({ navigation, route }) {
                         widthAndHeight={90}
                         doughnut={true}
                         coverRadius={0.7}
-                        series={series}
+                        series={[
+                          item?.stats?.NEEDS_ATTENTION
+                            ? Number(item?.stats?.NEEDS_ATTENTION)
+                            : 1,
+                          item?.stats?.SATISFACTORY
+                            ? Number(item?.stats?.SATISFACTORY)
+                            : 1,
+                          item?.stats?.UNSATISFACTORY
+                            ? Number(item?.stats?.UNSATISFACTORY)
+                            : 1
+                        ]}
                         sliceColor={sliceColor}
                       />
                     )}

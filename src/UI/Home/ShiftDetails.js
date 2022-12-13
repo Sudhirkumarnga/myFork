@@ -94,6 +94,28 @@ export default function ShiftDetails({ navigation }) {
       error => console.log("Error", JSON.stringify(error)),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     )
+    Geolocation.watchPosition(
+      position => {
+        var lat = parseFloat(position.coords.latitude)
+        var long = parseFloat(position.coords.longitude)
+        const region = {
+          latitude: lat,
+          longitude: long,
+          latitudeDelta: LATITUDE_DELTA,
+          longitudeDelta: LONGITUDE_DELTA
+        }
+        handleChange("currentLocation", region)
+        Geocoder.from(lat, long)
+          .then(json => {
+            var addressComponent = json.results[0].address_components[0]
+            console.log(addressComponent)
+            handleChange("currentLocationName", addressComponent.short_name)
+          })
+          .catch(error => console.warn(error))
+      },
+      error => console.log("Error", JSON.stringify(error)),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    )
   }
 
   useFocusEffect(
@@ -134,6 +156,7 @@ export default function ShiftDetails({ navigation }) {
       <Button
         onPress={_newAttendance}
         loading={loading}
+        disabled={!currentLocation?.latitude || !currentLocation?.longitude}
         title={Strings.clockIn}
         style={{
           marginVertical: 30

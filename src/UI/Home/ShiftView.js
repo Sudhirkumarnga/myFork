@@ -1,17 +1,21 @@
-import React, { useContext } from "react"
-import { View, Text, StyleSheet, Image } from "react-native"
-import { BaseScene, Button } from "../Common"
+import React, { useContext, useState, useCallback } from "react"
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Modal,
+  FlatList,
+  ScrollView
+} from "react-native"
+import { Button } from "../Common"
 import { Fonts, Colors, Images, Strings } from "../../res"
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { createAttendance, getUpcomingShift } from "../../api/employee"
+import { createAttendance } from "../../api/employee"
 import Toast from "react-native-simple-toast"
-import { useState } from "react"
 import { useFocusEffect, useNavigation } from "@react-navigation/native"
-import { useCallback } from "react"
 import AppContext from "../../Utils/Context"
-import { FlatList } from "react-native"
-import { Modal } from "react-native"
-import { TouchableOpacity } from "react-native"
 import { Icon } from "react-native-elements"
 import Upset from "../../res/Svgs/Upset.svg"
 import Rushed from "../../res/Svgs/Rushed.svg"
@@ -21,7 +25,6 @@ import Happy from "../../res/Svgs/Happy.svg"
 import Confident from "../../res/Svgs/Confident.svg"
 import Worried from "../../res/Svgs/Worried.svg"
 import ImagePicker from "react-native-image-crop-picker"
-import { ScrollView } from "react-native"
 import BouncyCheckbox from "react-native-bouncy-checkbox"
 import PrimaryTextInput from "../Common/PrimaryTextInput"
 import moment from "moment-timezone"
@@ -51,14 +54,14 @@ export default function ShiftView() {
       .utc(upcomingShiftData?.clock_in_time)
       .local()
       .format("hh:mm A"),
-    clock_in_timeDate: new Date(moment(upcomingShiftData?.clock_in_time)) || new Date(),
+    clock_in_timeDate:
+      new Date(moment(upcomingShiftData?.clock_in_time)) || new Date(),
     openEnd: false,
     clock_out_time: moment().format("hh:mm A"),
     clock_out_timeDate: new Date()
   })
 
   const {
-    loading,
     completed_tasks,
     visible,
     visible1,
@@ -236,7 +239,16 @@ export default function ShiftView() {
                     { fontSize: 14, color: Colors.HOME_DES }
                   ]}
                 >
-                  Clock in time: {moment.utc(upcomingShiftData?.schedule_shift_start_time).local().format('HH:mm')} to {moment.utc(upcomingShiftData?.schedule_shift_end_time).local().format('HH:mm')}
+                  Clock in time:{" "}
+                  {moment
+                    .utc(upcomingShiftData?.schedule_shift_start_time)
+                    .local()
+                    .format("HH:mm")}{" "}
+                  to{" "}
+                  {moment
+                    .utc(upcomingShiftData?.schedule_shift_end_time)
+                    .local()
+                    .format("HH:mm")}
                 </Text>
               )}
             </View>
@@ -556,7 +568,9 @@ export default function ShiftView() {
                 <Button
                   onPress={() => {
                     handleChange("visible", false)
-                    handleChange("visible1", true)
+                    setTimeout(() => {
+                      handleChange("visible1", true)
+                    }, 300)
                   }}
                   disabled={
                     !notes ||

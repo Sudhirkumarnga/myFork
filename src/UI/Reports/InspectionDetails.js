@@ -67,11 +67,16 @@ export default function InspectionDetails({ navigation, route }) {
       navigation.goBack()
     } catch (error) {
       handleChange("loadingFeedback", false)
-      Toast.show(`Error: ${error.message}`)
+      console.warn("err", error?.response?.data)
+      const showWError = Object.values(error.response?.data?.error)
+      if (showWError.length > 0) {
+        Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
+      } else {
+        Toast.show(`Error: ${JSON.stringify(error)}`)
+      }
     }
   }
   console.warn("report", item)
-
 
   return (
     <View style={styles.container}>
@@ -104,7 +109,17 @@ export default function InspectionDetails({ navigation, route }) {
               widthAndHeight={60}
               doughnut={true}
               coverRadius={0.83}
-              series={series}
+              series={[
+                item?.stats?.NEEDS_ATTENTION
+                  ? Number(item?.stats?.NEEDS_ATTENTION)
+                  : 1,
+                item?.stats?.SATISFACTORY
+                  ? Number(item?.stats?.SATISFACTORY)
+                  : 1,
+                item?.stats?.UNSATISFACTORY
+                  ? Number(item?.stats?.UNSATISFACTORY)
+                  : 1
+              ]}
               sliceColor={sliceColor}
             />
           </View>
