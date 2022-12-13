@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import MapView, { PROVIDER_GOOGLE, Marker, Polyline } from "react-native-maps"
 import Geolocation from "@react-native-community/geolocation"
 import Geocoder from "react-native-geocoding"
 import haversine from "haversine"
+import { useFocusEffect } from "@react-navigation/native"
 
 Geocoder.init("AIzaSyCndwU13bTZ8w_yhP4ErbFGE1Wr9oiro8Q")
 
@@ -58,11 +59,16 @@ export default function WorksiteMapScene({ navigation, route }) {
     setState(pre => ({ ...pre, [name]: value }))
   }
 
+  useFocusEffect(
+    useCallback(() => {
+      requestGeolocationPermission()
+    }, [])
+  )
   useEffect(() => {
     requestGeolocationPermission()
   }, [])
 
-  console.warn("worksiteData", worksiteData?.location)
+  console.warn("currentLocation", currentLocation)
 
   useEffect(() => {
     Geocoder.from(worksiteData?.location)
@@ -76,7 +82,8 @@ export default function WorksiteMapScene({ navigation, route }) {
 
         mapRef &&
           mapRef?.current?.animateToRegion({
-            ...addressComponent,
+            latitude: addressComponent.lat,
+            longitude: addressComponent.lng,
             latitudeDelta: LATITUDE_DELTA,
             longitudeDelta: LONGITUDE_DELTA
           })
@@ -85,13 +92,14 @@ export default function WorksiteMapScene({ navigation, route }) {
   }, [worksiteData])
 
   const calcDistance = () => {
-    return (pinLocation && haversine(pinLocation, currentLocation)) || 0
+    return (pinLocation && currentLocation && haversine(pinLocation, currentLocation)) || 0
   }
 
   async function requestGeolocationPermission() {
     try {
       if (Platform.OS === "ios") {
         getCurrentLocation()
+        return
       }
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
@@ -126,7 +134,7 @@ export default function WorksiteMapScene({ navigation, route }) {
         // mapRef && mapRef?.current?.animateToRegion(region)
       },
       error => console.log("Error", JSON.stringify(error)),
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+      Platform.OS !== "ios" &&  { enableHighAccuracy: Platform.OS === "ios" ? false : true, timeout: 20000, maximumAge: 1000 }
     )
     Geolocation.watchPosition(position => {
       var lat = parseFloat(position.coords.latitude)
@@ -137,7 +145,7 @@ export default function WorksiteMapScene({ navigation, route }) {
         latitudeDelta: LATITUDE_DELTA,
         longitudeDelta: LONGITUDE_DELTA
       }
-      setState(pre => ({ ...pre, initialRegion: region }))
+      setState(pre => ({ ...pre, currentLocation: region }))
       // mapRef && mapRef?.current?.animateToRegion(region)
     })
   }
@@ -157,11 +165,11 @@ export default function WorksiteMapScene({ navigation, route }) {
           initialRegion={
             pinLocation
               ? {
-                  ...pinLocation,
-                  latitudeDelta: LATITUDE_DELTA,
-                  longitudeDelta: LONGITUDE_DELTA
-                }
-              : null
+                ...pinLocation,
+                latitudeDelta: LATITUDE_DELTA,
+                longitudeDelta: LONGITUDE_DELTA
+              }
+              : currentLocation
           }
           // onPress={props => onMapPress(props.nativeEvent.coordinate)}
           onRegionChange={() => console.log("")}
