@@ -128,5 +128,7 @@ class TaskFeedbackSerializer(ModelSerializer):
 
     def to_representation(self, data):
         data = super(TaskFeedbackSerializer, self).to_representation(data)
-        data['tasks'] = Task.objects.get(id=data['tasks']).name
+        task = Task.objects.get(id=data['tasks'])
+        data['id'] = task.id
+        data['tasks'] = task.name
         return data

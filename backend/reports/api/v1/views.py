@@ -170,7 +170,7 @@ class TaskFeedbackView(APIView):
     def post(self, request, *args, **kwargs):
         try:
             task_feedback = TaskFeedback.objects.filter(
-                report_id=request.data['report'],
+                report__id=request.data['report'],
                 tasks__id=request.data['tasks']
             )
             if task_feedback.exists():
