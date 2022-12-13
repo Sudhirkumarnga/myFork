@@ -345,18 +345,14 @@ DJSTRIPE_WEBHOOK_SECRET = "whsec_48e8a215af1fa02eda2299b82a9978a8438a11415b604a8
 DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"
 
 
-FCM_DJANGO_SETTINGS = {"FCM_SERVER_KEY": env("FCM_SERVER_KEY", default=None)}
+# FCM_DJANGO_SETTINGS = {"FCM_SERVER_KEY": env("FCM_SERVER_KEY", default=None)}
 
-a = env.str("FIREBASE_CREDENTAILS", default=None)
-print(a)
-
-# cred = credentials.Certificate(env.str("FIREBASE_CREDENTAILS", default=None))
-# firebase_admin.initialize_app(cred)
-#
-# FCM_DJANGO_SETTINGS = {
-#     "APP_VERBOSE_NAME": "Smart Work Horse",
-#     "ONE_DEVICE_PER_USER": False,
-#     "DELETE_INACTIVE_DEVICES": False,
-# }
+cred = credentials.Certificate(env.json("FIREBASE_CREDENTAILS", default=None))
+firebase_admin.initialize_app(cred)
+FCM_DJANGO_SETTINGS = {
+    "APP_VERBOSE_NAME": "Smart Work Horse",
+    "ONE_DEVICE_PER_USER": False,
+    "DELETE_INACTIVE_DEVICES": False,
+}
 
 OLD_PASSWORD_FIELD_ENABLED = True
