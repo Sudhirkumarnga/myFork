@@ -36,6 +36,7 @@ function AuthLoading({ navigation }) {
 
   const _getProfile = async () => {
     try {
+      const env = await AsyncHelper.getEnv()
       const token = await AsyncStorage.getItem("token")
       const user = await AsyncStorage.getItem("user")
       let userData
@@ -63,6 +64,7 @@ function AuthLoading({ navigation }) {
         navigation.navigate("businessProfileCreation")
         return
       } else if (
+        env === "employee" &&
         userData?.role !== "Organization Admin" &&
         !res?.data?.response?.business_information &&
         !res?.data?.response?.emergency_contact?.first_name
@@ -71,14 +73,17 @@ function AuthLoading({ navigation }) {
         return
       }
       if (
-        userData?.role === "Organization Admin" ||
+        (env === "admin" && userData?.role === "Organization Admin") ||
         (res?.data?.response?.business_information &&
           res?.data?.response?.emergency_contact?.first_name)
       ) {
         navigation.navigate("home")
         return
-      } else {
+      } else if (env === "employee") {
         navigation.navigate("homeEmployee")
+        return
+      } else {
+        setPopUp(true)
         return
       }
     } catch (error) {

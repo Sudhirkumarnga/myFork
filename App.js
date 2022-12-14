@@ -33,6 +33,7 @@ const App = () => {
   const [cities, setCities] = useState([])
   const [states, setStates] = useState([])
   const [earnings, setEarnings] = useState([])
+  const [earningLoading, setEarningLoading] = useState(false)
   const [notifications, setNotifications] = useState([])
   const [leaveRequest, setLeaveRequest] = useState([])
   const [upcomingShiftData, setUpcomingShiftData] = useState(null)
@@ -85,12 +86,16 @@ const App = () => {
     }
   }
 
-  const _getEarnings = async () => {
+  const _getEarnings = async payload => {
     try {
+      setEarningLoading(true)
+      const qs = payload ? payload : ""
       const token = await AsyncStorage.getItem("token")
-      const res = await getEarnings(token)
+      const res = await getEarnings(qs, token)
       setEarnings(res?.data)
+      setEarningLoading(false)
     } catch (error) {
+      setEarningLoading(false)
       const showWError = error.response?.data?.error
         ? Object.values(error.response?.data?.error)
         : error.response?.data
@@ -223,7 +228,8 @@ const App = () => {
         upcomingShiftData,
         _readDevice,
         notifications,
-        _getNotification
+        _getNotification,
+        earningLoading
       }}
     >
       <MenuProvider>

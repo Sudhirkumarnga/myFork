@@ -76,8 +76,8 @@ export const deleteEvent = (id, token) => {
   return API.delete(`api/v1/event/${id}/`, {}, token)
 }
 
-export const getEarnings = token => {
-  return API.get(`api/v1/earnings/`, token)
+export const getEarnings = (payload, token) => {
+  return API.get(`api/v1/earnings/${payload}`, token)
 }
 
 export const getleaveRequest = token => {
