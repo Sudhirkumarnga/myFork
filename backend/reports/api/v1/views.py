@@ -24,12 +24,12 @@ class PayrollReport(APIView):
     def get(self, request):
         try:
             queryset = self.queryset.filter(employee__business__user=self.request.user)
-            employee = self.request.query_params.get('employee', None)
+            employee = self.request.query_params.get('employee_name', None)
             from_date = self.request.query_params.get('from', None)
             to_date = self.request.query_params.get('to', None)
             if employee:
                 queryset = queryset.filter(
-                    employee_id=employee
+                    employee__user__first_name__contains=employee
                 )
             if from_date:
                 queryset = queryset.filter(
