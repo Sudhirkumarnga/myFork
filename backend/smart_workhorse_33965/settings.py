@@ -16,7 +16,7 @@ import logging
 from modules.manifest import get_modules
 from pathlib import Path
 import firebase_admin
-from firebase_admin import credentials
+from firebase_admin.credentials import Certificate
 import json
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -358,8 +358,14 @@ DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"
 
 
 FCM_DJANGO_SETTINGS = {"FCM_SERVER_KEY": env("FCM_SERVER_KEY", default=None)}
-cred = credentials.Certificate(env.json("FIREBASE_CREDENTAILS", default=None))
-firebase_admin.initialize_app(cred)
+
+credentials = json.loads(
+    os.environ["FIREBASE_CREDENTAILS"]
+)
+
+
+firebase_admin.initialize_app(Certificate(credentials))
+
 
 FCM_DJANGO_SETTINGS = {
     "APP_VERBOSE_NAME": "Smart Work Horse",
