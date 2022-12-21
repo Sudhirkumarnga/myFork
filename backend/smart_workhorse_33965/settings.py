@@ -360,7 +360,7 @@ DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"
 FCM_DJANGO_SETTINGS = {"FCM_SERVER_KEY": env("FCM_SERVER_KEY", default=None)}
 
 credentials = json.loads(
-    os.environ["FIREBASE_CREDENTAILS"]
+    env.str("FIREBASE_CREDENTAILS", default="")
 )
 
 
