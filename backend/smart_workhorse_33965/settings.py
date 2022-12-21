@@ -357,30 +357,30 @@ DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"
 # }
 
 
-FCM_DJANGO_SETTINGS = {"FCM_SERVER_KEY": env("FCM_SERVER_KEY", default=None)}
+# FCM_DJANGO_SETTINGS = {"FCM_SERVER_KEY": env("FCM_SERVER_KEY", default=None)}
 
-credentials = {
-    "type": env.str("FIREBASE_CREDENTAILS_TYPE"),
-    "project_id": env.str("FIREBASE_CREDENTAILs_PROJECT_ID"),
-    "private_key_id": env.str("FIREBASE_CREDENTAILS_PRIVATE_KEY_ID"),
-    "private_key": env.str("FIREBASE_CREDENTAILS_PRIVATE_KEY"),
-    "client_email": env.str("FIREBASE_CREDENTAILS_CLIENT_EMAIL"),
-    "client_id": env.str("FIREBASE_CREDENTAILS_CLIENT_ID"),
-    "auth_uri": env.str("FIREBASE_CREDENTAILS_AUTH_URI"),
-    "token_uri": env.str("FIREBASE_CREDENTAILS_TOKEN_URI"),
-    "auth_provider_x509_cert_url": env.str("FIREBASE_CREDENTAILS_AUTH_PROVIDER_X509_CERT_URL"),
-    "client_x509_cert_url": env.str("FIREBASE_CREDENTAILS_CLIENT_X509_CERT_URL"),
-}
-
-
-firebase_admin.initialize_app(Certificate(json.dumps(credentials)))
+# credentials = {
+#     "type": env.str("FIREBASE_CREDENTAILS_TYPE"),
+#     "project_id": env.str("FIREBASE_CREDENTAILs_PROJECT_ID"),
+#     "private_key_id": env.str("FIREBASE_CREDENTAILS_PRIVATE_KEY_ID"),
+#     "private_key": env.str("FIREBASE_CREDENTAILS_PRIVATE_KEY"),
+#     "client_email": env.str("FIREBASE_CREDENTAILS_CLIENT_EMAIL"),
+#     "client_id": env.str("FIREBASE_CREDENTAILS_CLIENT_ID"),
+#     "auth_uri": env.str("FIREBASE_CREDENTAILS_AUTH_URI"),
+#     "token_uri": env.str("FIREBASE_CREDENTAILS_TOKEN_URI"),
+#     "auth_provider_x509_cert_url": env.str("FIREBASE_CREDENTAILS_AUTH_PROVIDER_X509_CERT_URL"),
+#     "client_x509_cert_url": env.str("FIREBASE_CREDENTAILS_CLIENT_X509_CERT_URL"),
+# }
 
 
-FCM_DJANGO_SETTINGS = {
-    "APP_VERBOSE_NAME": "Smart Work Horse",
-    "ONE_DEVICE_PER_USER": False,
-    "DELETE_INACTIVE_DEVICES": False,
-}
+# firebase_admin.initialize_app(Certificate(json.dumps(credentials)))
+
+
+# FCM_DJANGO_SETTINGS = {
+#     "APP_VERBOSE_NAME": "Smart Work Horse",
+#     "ONE_DEVICE_PER_USER": False,
+#     "DELETE_INACTIVE_DEVICES": False,
+# }
 
 
 OLD_PASSWORD_FIELD_ENABLED = True
