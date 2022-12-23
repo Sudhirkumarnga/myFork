@@ -17,11 +17,13 @@ def send_notification(user, title, message, notification, data = {}):
     headers["Accept"] = "application/json"
     headers["Authorization"] = "key={}".format(FCM_SERVER_KEY)
     headers["Content-Type"] = "application/json"
+    notif_id = str(notification)
+    device = FCMDevice.objects.filter(user=user)
     try:
-        notif_id = str(notification)
-        if user.registration_id:
+        if device:
+            device = device.last()
             payload = {
-                    'to': user.registration_id,
+                    'to': device.device_id,
                     'notification': {
                         "title": title,
                         "text": message
@@ -31,5 +33,7 @@ def send_notification(user, title, message, notification, data = {}):
                     }
                 }
             resp = requests.post(url, headers=headers, json=payload)
-    except:
-        pass
+    except Exception as e:
+        print('-----------------------')
+        print(e)
+        print('-----------------------')
