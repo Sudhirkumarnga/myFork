@@ -10,9 +10,10 @@ def create_notification(data:dict) -> Notification:
         user=data.get("user", ""),
     )
     send_notification(
-        user_id=notification.user.id,
+        user=notification.user,
         title=notification.name,
         message=notification.description,
+        notification=notification,
         data={
             "image": notification.image
         }

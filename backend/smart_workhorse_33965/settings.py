@@ -16,7 +16,7 @@ import logging
 from modules.manifest import get_modules
 from pathlib import Path
 import firebase_admin
-from firebase_admin.credentials import Certificate
+from firebase_admin import credentials
 import json
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -340,47 +340,7 @@ DJSTRIPE_WEBHOOK_SECRET = "whsec_48e8a215af1fa02eda2299b82a9978a8438a11415b604a8
 DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"
 
 
-
-
-# FCM_DJANGO_SETTINGS = {
-#     # default: _('FCM Django')
-#     "APP_VERBOSE_NAME": "Smart Work Horse",
-#     # Your firebase API KEY
-#     "FCM_SERVER_KEY": env.str("FCM_SERVER_KEY", "FCM_SERVER_KEY"),
-#     # true if you want to have only one active device per registered user at a time
-#     # default: False
-#     "ONE_DEVICE_PER_USER": False,
-#     # devices to which notifications cannot be sent,
-#     # are deleted upon receiving error response from FCM
-#     # default: False
-#     "DELETE_INACTIVE_DEVICES": False,
-# }
-
-
-# FCM_DJANGO_SETTINGS = {"FCM_SERVER_KEY": env("FCM_SERVER_KEY", default=None)}
-
-# credentials = {
-#     "type": env.str("FIREBASE_CREDENTAILS_TYPE"),
-#     "project_id": env.str("FIREBASE_CREDENTAILs_PROJECT_ID"),
-#     "private_key_id": env.str("FIREBASE_CREDENTAILS_PRIVATE_KEY_ID"),
-#     "private_key": env.str("FIREBASE_CREDENTAILS_PRIVATE_KEY"),
-#     "client_email": env.str("FIREBASE_CREDENTAILS_CLIENT_EMAIL"),
-#     "client_id": env.str("FIREBASE_CREDENTAILS_CLIENT_ID"),
-#     "auth_uri": env.str("FIREBASE_CREDENTAILS_AUTH_URI"),
-#     "token_uri": env.str("FIREBASE_CREDENTAILS_TOKEN_URI"),
-#     "auth_provider_x509_cert_url": env.str("FIREBASE_CREDENTAILS_AUTH_PROVIDER_X509_CERT_URL"),
-#     "client_x509_cert_url": env.str("FIREBASE_CREDENTAILS_CLIENT_X509_CERT_URL"),
-# }
-
-
-# firebase_admin.initialize_app(Certificate(json.dumps(credentials)))
-
-
-# FCM_DJANGO_SETTINGS = {
-#     "APP_VERBOSE_NAME": "Smart Work Horse",
-#     "ONE_DEVICE_PER_USER": False,
-#     "DELETE_INACTIVE_DEVICES": False,
-# }
+FCM_SERVER_KEY = env("FCM_SERVER_KEY", default=None)
 
 
 OLD_PASSWORD_FIELD_ENABLED = True
