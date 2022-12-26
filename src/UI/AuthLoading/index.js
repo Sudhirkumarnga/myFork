@@ -125,7 +125,7 @@ function AuthLoading({ navigation }) {
     const user = await AsyncStorage.getItem("user")
     const userData = JSON.parse(user)
     const payloadRead = {
-      device_id: "", // Send if you can otherwise remove field
+      device_id: getToken, // Send if you can otherwise remove field
       registration_id: getToken,
       active: true,
       name: userData?.first_name,
