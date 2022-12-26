@@ -119,6 +119,7 @@ function AuthLoading({ navigation }) {
   }, [])
 
   async function registerAppWithFCM() {
+    await messaging().deleteToken()
     const getToken = await messaging().getToken()
     await messaging().registerDeviceForRemoteMessages()
     const token = await AsyncStorage.getItem("token")
