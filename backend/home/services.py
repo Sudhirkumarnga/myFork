@@ -56,7 +56,7 @@ def send_employee_registration_notification_to_business_owner(employee,business)
     create_notification({
         "name": "New Employee Registration",
         "description": f"New employee {employee.user.get_full_name()} registered on your business.",
-        "user": business.user.get_full_name()
+        "user": business.user
     }
     )
 
