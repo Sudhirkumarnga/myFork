@@ -83,8 +83,6 @@ function GroupMessageChat({ navigation, route }) {
     return () => backHandler.remove()
   }, [])
 
-  console.warn("messageuid", messageData)
-
   useEffect(() => {
     const db = database()
     if (user && messageuid) {

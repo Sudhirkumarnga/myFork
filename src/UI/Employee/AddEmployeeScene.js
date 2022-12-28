@@ -23,7 +23,6 @@ import { useEffect } from 'react'
 
 export default function AddEmployeeScene ({ navigation, route }) {
   const item = route?.params?.item
-  console.warn('item', item)
   const {
     _getProfile,
     _getCountries,
@@ -183,7 +182,6 @@ export default function AddEmployeeScene ({ navigation, route }) {
     })
   }
 
-  console.warn('cities', cities)
 
   const renderWorkInfo = () => {
     return Forms?.fields('employeeWorkInfo')?.map(fields => {

@@ -47,7 +47,6 @@ export default function BusinessProfileView ({ navigation }) {
       handleChange('loading', true)
       const token = await AsyncStorage.getItem('token')
       const res = await deleteEmployee(adminProfile?.id, token)
-      console.warn('createAdminProfile', res?.data)
       handleChange('loading', false)
       navigation.goBack()
       Toast.show(`Employee has been deleted!`)

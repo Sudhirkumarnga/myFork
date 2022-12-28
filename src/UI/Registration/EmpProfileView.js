@@ -19,8 +19,6 @@ export default function EmpProfileView ({ navigation }) {
     setState(pre => ({ ...pre, [name]: value }))
   }
 
-  console.warn('adminProfile',adminProfile);
-
   return (
     <View style={styles.container}>
       <Header

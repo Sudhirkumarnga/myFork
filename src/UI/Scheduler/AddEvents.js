@@ -180,8 +180,6 @@ export default function AddEvents({ navigation, route }) {
       handleChange("loading", false)
       const showWError = Object.values(error.response?.data)
       const showWError1 = Object.values(error.response?.data?.error)
-      console.warn("showWError", showWError)
-      console.warn("showWError1", showWError1)
       if (showWError1?.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError1[0])}`)
       } else if (showWError.length > 0) {
@@ -197,7 +195,6 @@ export default function AddEvents({ navigation, route }) {
       handleChange("loading", true)
       const token = await AsyncStorage.getItem("token")
       const res = await getAllEmployee(token)
-      // console.warn('getAllEmployee', res?.data)
       handleChange("loading", false)
       handleChange("allEmployee", res?.data?.results)
     } catch (error) {

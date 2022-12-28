@@ -126,7 +126,6 @@ export default function Scheduler({ navigation }) {
     if (events?.length > 0) {
       const list = []
       events?.forEach(element => {
-        console.warn('element?.start_time',element?.start_time);
         if (element?.start_time) {
           list.push({
             ...element,
@@ -143,7 +142,6 @@ export default function Scheduler({ navigation }) {
     }
   }
 
-  console.warn("selectedEvent", selectedEvent?.employees)
   return (
     <View style={styles.container}>
       <Header

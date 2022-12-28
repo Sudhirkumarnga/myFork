@@ -32,7 +32,6 @@ export default function EmployeeListScene ({ navigation }) {
       _getAllEmployee()
     }, [])
   )
-  // console.warn('allEmployee',allEmployee);
   const _getAllEmployee = async () => {
     try {
       handleChange('loading', true)
@@ -42,7 +41,6 @@ export default function EmployeeListScene ({ navigation }) {
       handleChange('allEmployee', res?.data?.results)
     } catch (error) {
       handleChange('loading', false)
-      console.warn('err', error?.response?.data)
       const showWError = Object.values(error.response?.data?.error)
       if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)

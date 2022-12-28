@@ -6,7 +6,6 @@ import userProfile from "../../res/Images/common/sample.png"
 import groupAvatar from "../../res/Images/common/groupAvatar.png"
 
 function MessageCell({ navigation, item, user }) {
-  console.warn("item", item)
   const renderTime = () => {
     return (
       <View

@@ -28,7 +28,6 @@ import { Icon } from 'react-native-elements'
 
 export default function AddWorksiteScene ({ navigation, route }) {
   const worksiteData = route?.params?.worksiteData
-  console.warn('worksiteData', worksiteData)
   // State
   const [state, setState] = useState({
     name: worksiteData?.personal_information?.name || '',
@@ -74,7 +73,6 @@ export default function AddWorksiteScene ({ navigation, route }) {
     instruction_video,
     opened
   } = state
-  console.warn('logo', worksiteData)
   const handleChange = (name, value) => {
     setState(pre => ({ ...pre, [name]: value }))
   }
@@ -174,7 +172,6 @@ export default function AddWorksiteScene ({ navigation, route }) {
           handleChange('uploading', false)
         } else {
           const base64 = await RNFS.readFile(response.path, 'base64')
-          console.warn('base64', base64)
           handleChange('instruction_video', base64)
           handleChange('uploading', false)
           Toast.show('Video Added')

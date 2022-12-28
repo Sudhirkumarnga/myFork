@@ -42,7 +42,6 @@ export default function AllWorksiteScene ({ navigation }) {
       const token = await AsyncStorage.getItem('token')
       if (adminProfile?.emergency_contact?.first_name) {
         const res = await getAllWorksitesEmp(token)
-        console.warn('res', res?.data)
         handleChange('allWorksites', res?.data?.response)
       } else {
         const res = await getAllWorksites(token)
@@ -59,7 +58,6 @@ export default function AllWorksiteScene ({ navigation }) {
       }
     }
   }
-  console.warn('adminProfile', allWorksites)
   const renderContent = () => {
     const isEmp = adminProfile?.emergency_contact?.first_name
     return (

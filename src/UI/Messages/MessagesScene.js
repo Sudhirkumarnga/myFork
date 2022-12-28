@@ -22,7 +22,6 @@ import AppContext from "../../Utils/Context"
 export default function MessagesScene({ navigation }) {
   const context = useContext(AppContext)
   const { user } = context
-  console.warn("user", user)
   const [state, setState] = useState({
     loading: false,
     List: [],
@@ -68,7 +67,6 @@ export default function MessagesScene({ navigation }) {
         })
     } catch (error) {
       handleChange("loading", false)
-      console.warn("err", error)
     }
   }
 

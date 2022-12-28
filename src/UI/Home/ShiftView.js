@@ -145,7 +145,6 @@ export default function ShiftView() {
           .utc(moment(clock_out_timeDate))
           .format("YYYY-MM-DD HH:mm:ss")
       }
-      console.warn("payload", payload)
       await createAttendance(payload, token)
       handleChange("loadingSubmit", false)
       handleChange("notes", "")
@@ -206,8 +205,6 @@ export default function ShiftView() {
     { key: "Rushed", icon: Rushed },
     { key: "Upset", icon: Upset }
   ]
-
-  console.warn("upcomingShiftData", upcomingShiftData)
 
   return (
     <>

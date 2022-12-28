@@ -68,8 +68,6 @@ export default function WorksiteMapScene({ navigation, route }) {
     requestGeolocationPermission()
   }, [])
 
-  console.warn("currentLocation", currentLocation)
-
   useEffect(() => {
     Geocoder.from(worksiteData?.location)
       .then(json => {

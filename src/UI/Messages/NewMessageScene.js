@@ -52,7 +52,6 @@ export default function NewMessageScene({ navigation }) {
       handleChange("List", res?.data?.results)
     } catch (error) {
       handleChange("loading", false)
-      console.warn("err", error?.response?.data)
       const showWError = Object.values(error.response?.data?.error)
       if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)

@@ -24,6 +24,7 @@ import {
 import { getUpcomingShift } from "./src/api/employee"
 import { SafeAreaView, View } from "react-native"
 import Colors from "./src/res/Theme/Colors"
+import PushNotification from "react-native-push-notification"
 
 const App = () => {
   const [user, setUser] = useState(null)

@@ -16,6 +16,8 @@ import messaging from "@react-native-firebase/messaging"
 import AsyncHelper from "../../Utils/AsyncHelper"
 import { Fonts } from "../../res"
 import Button from "../Common/Button"
+import PushNotification from "react-native-push-notification"
+import PushNotificationIOS from "@react-native-community/push-notification-ios"
 
 function AuthLoading({ navigation }) {
   const [popUp, setPopUp] = useState(false)
@@ -45,10 +47,8 @@ function AuthLoading({ navigation }) {
         setUser(userData)
         setLocalUser(userData)
       }
-      console.warn("userData", userData)
       const res = await getProfile(token)
       _getNotification()
-      console.warn("res?.data?.response", res?.data?.response)
       if (res?.data?.response) {
         setAdminProfile(res?.data?.response)
       }
@@ -98,7 +98,6 @@ function AuthLoading({ navigation }) {
 
   useEffect(async () => {
     const env = await AsyncHelper.getEnv()
-    console.warn("env", env)
     setLocalUser(env)
     _bootstrapAsync()
     navigation.addListener("focus", () => {
@@ -107,8 +106,45 @@ function AuthLoading({ navigation }) {
   }, [])
   useEffect(() => {
     requestUserPermission()
+    PushNotification.createChannel({
+      channelId: "com.smart_workhorse_33965",
+      channelName: "com.smart_workhorse_33965"
+    })
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      Alert.alert("A new FCM message arrived!", JSON.stringify(remoteMessage))
+      var localNotification = {
+        id: 0, // (optional) Valid unique 32 bit integer specified as string.
+        title: remoteMessage.notification.title, // (optional)
+        message: remoteMessage.notification.body, // (required)
+        // data: remoteMessage.data
+      }
+
+      Platform.OS == "android" &&
+        (localNotification = {
+          ...localNotification,
+          channelId: "com.smart_workhorse_33965" // (required) channelId, if the channel doesn't exist, notification will not trigger.
+        })
+      PushNotification.localNotification(localNotification)
+      PushNotification.configure({
+        onRegister: function (token) {
+          console.log("TOKEN:", token)
+        },
+        onNotification: function (notification) {
+          const { data, title } = notification
+          notification.finish(PushNotificationIOS.FetchResult.NoData)
+        },
+        onRegistrationError: function(err) {
+          console.error(err.message, err);
+        },
+        senderID: "987250699049",
+        permissions: {
+          alert: true,
+          badge: true,
+          sound: true
+        },
+        popInitialNotification: true,
+        requestPermissions: true
+      })
+      // Alert.alert("A new FCM message arrived!", JSON.stringify(remoteMessage))
     })
 
     messaging().setBackgroundMessageHandler(async remoteMessage => {
@@ -125,6 +161,7 @@ function AuthLoading({ navigation }) {
     const token = await AsyncStorage.getItem("token")
     const user = await AsyncStorage.getItem("user")
     const userData = JSON.parse(user)
+    console.warn('getToken',getToken);
     const payloadRead = {
       device_id: getToken, // Send if you can otherwise remove field
       registration_id: getToken,
@@ -159,7 +196,6 @@ function AuthLoading({ navigation }) {
       navigation.navigate("chooseEnv")
     }
   }
-  console.log("localUser", localUser)
 
   const logout = async () => {
     setUser(null)

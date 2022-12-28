@@ -67,7 +67,6 @@ export default function ShiftDetails({ navigation }) {
         console.log("Geolocation permission denied")
       }
     } catch (err) {
-      console.warn(err)
     }
   }
 

@@ -59,7 +59,6 @@ export default function InspectionDetails({ navigation, route }) {
         tasks: task,
         report: item?.id
       }
-      console.warn("payload", payload)
       await createFeedback(payload, token)
       handleClose()
       handleChange("task", "")
@@ -76,7 +75,6 @@ export default function InspectionDetails({ navigation, route }) {
       }
     }
   }
-  console.warn("report", item)
 
   return (
     <View style={styles.container}>

@@ -50,7 +50,6 @@ export default function EmployeeListScene({ navigation }) {
     handleChange("selectedEvent", null)
     handleChange("visible", false)
   }
-  console.warn("earnings", earnings)
 
   return (
     <View style={styles.container}>

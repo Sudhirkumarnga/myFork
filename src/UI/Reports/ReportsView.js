@@ -145,7 +145,6 @@ export default function ReportsView({ navigation, route }) {
     return `${hours}h${minutes > 0 ? ` ${minutes.toFixed(0)}m` : ""}`
   }
 
-  console.warn("reports", reports)
 
   return (
     <View style={styles.container}>

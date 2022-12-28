@@ -74,7 +74,6 @@ export default function EmployeeProfileScene ({ navigation }) {
         if (!response.path) {
           handleChange('uploading', false)
         } else {
-          console.warn('response', response)
           const uri = response.path
           const uploadUri =
             Platform.OS === 'ios' ? uri.replace('file://', '') : uri
@@ -121,7 +120,6 @@ export default function EmployeeProfileScene ({ navigation }) {
       Toast.show(`Your profile has been updated!`)
     } catch (error) {
       handleChange('loading', false)
-      console.warn('err', error.response)
       const showWError = Object.values(error.response?.data?.error)
       Toast.show(`Error: ${showWError[0]}`)
     }

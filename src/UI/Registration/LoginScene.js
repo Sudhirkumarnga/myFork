@@ -78,7 +78,6 @@ export default class LoginScene extends BaseScene {
       }
       const res = await loginUser(payload)
       this.handleChange("loading", false, true)
-      console.warn("signupUser", res?.data)
       if (env === "admin" && res?.data?.user?.role !== "Organization Admin") {
         alert("Please use business user")
         return
@@ -98,7 +97,6 @@ export default class LoginScene extends BaseScene {
       this.props.navigation.navigate("AuthLoading")
       Toast.show("Logged In up Successfully!")
     } catch (error) {
-      console.warn("error", error)
       this.handleChange("loading", false, true)
       const errorText = Object.values(error?.response?.data)
       Toast.show(`Error: ${errorText[0]}`)

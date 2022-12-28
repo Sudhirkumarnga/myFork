@@ -102,7 +102,6 @@ export default function BusinessProfileScene ({ navigation }) {
         if (!response.path) {
           handleChange('uploading', false)
         } else {
-          console.warn('response', response)
           const uri = response.path
           const uploadUri =
             Platform.OS === 'ios' ? uri.replace('file://', '') : uri
@@ -155,7 +154,6 @@ export default function BusinessProfileScene ({ navigation }) {
       Toast.show(`Your profile has been updated!`)
     } catch (error) {
       handleChange('loading', false)
-      console.warn('err', error.response?.data)
       if(error.response?.data?.detail){
         Toast.show(`Error: ${JSON.stringify(error.response?.data?.detail)}`)
         

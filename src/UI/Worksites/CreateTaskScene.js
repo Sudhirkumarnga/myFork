@@ -68,7 +68,6 @@ export default function CreateTaskScene({ navigation, route }) {
       handleChange("loading", true)
       const token = await AsyncStorage.getItem("token")
       const res = await getTask(task?.id, token)
-      console.warn("resresres", res?.data)
       handleChange("name", res?.data?.name)
       handleChange("description", res?.data?.description)
       handleChange("notes", res?.data?.notes)
@@ -145,7 +144,6 @@ export default function CreateTaskScene({ navigation, route }) {
           obj["file" + index + 1] = element
         })
       photos.length > 0 && (formData.files = obj)
-      console.warn("formData", formData)
       if (task) {
         await updateTask(task?.id, formData, token)
       } else {
