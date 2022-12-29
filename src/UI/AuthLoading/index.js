@@ -110,6 +110,22 @@ function AuthLoading({ navigation }) {
       channelId: "com.smart_workhorse_33965",
       channelName: "com.smart_workhorse_33965"
     })
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        setTimeout(() => {
+          if (remoteMessage?.notification?.title) {
+          }
+        }, 2000)
+        // do whatever you want to here
+      })
+      .catch(err => {
+        // alert(err)
+      })
+    messaging().onNotificationOpenedApp(async remoteMessage => {
+      console.log('Message handled in the background!', remoteMessage)
+    })
+
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       var localNotification = {
         id: 0, // (optional) Valid unique 32 bit integer specified as string.
@@ -126,14 +142,14 @@ function AuthLoading({ navigation }) {
       PushNotification.localNotification(localNotification)
       PushNotification.configure({
         onRegister: function (token) {
-          console.log("TOKEN:", token)
+          console.warn("TOKEN:", token)
         },
         onNotification: function (notification) {
           const { data, title } = notification
           notification.finish(PushNotificationIOS.FetchResult.NoData)
         },
-        onRegistrationError: function(err) {
-          console.error(err.message, err);
+        onRegistrationError: function (err) {
+          console.warn(err.message, err);
         },
         senderID: "987250699049",
         permissions: {
@@ -161,7 +177,7 @@ function AuthLoading({ navigation }) {
     const token = await AsyncStorage.getItem("token")
     const user = await AsyncStorage.getItem("user")
     const userData = JSON.parse(user)
-    console.warn('getToken',getToken);
+    console.warn('getToken', getToken);
     const payloadRead = {
       device_id: getToken, // Send if you can otherwise remove field
       registration_id: getToken,
@@ -179,7 +195,7 @@ function AuthLoading({ navigation }) {
     const enabled =
       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
       authStatus === messaging.AuthorizationStatus.PROVISIONAL
-
+    console.warn('enabled', enabled);
     registerAppWithFCM()
     if (enabled) {
     }
