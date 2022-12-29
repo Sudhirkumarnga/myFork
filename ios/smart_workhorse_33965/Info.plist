@@ -37,7 +37,9 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>$(PRODUCT_NAME) Need camera access to take pictures</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+  <key>NSAppleMusicUsageDescription</key>
+  <string>$(PRODUCT_NAME) Need music access to listen musics</string>
+  <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>$(PRODUCT_NAME) Need location access</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>$(PRODUCT_NAME) Need location access</string>
