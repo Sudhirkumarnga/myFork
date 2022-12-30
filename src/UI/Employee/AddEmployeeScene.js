@@ -285,7 +285,7 @@ export default function AddEmployeeScene ({ navigation, route }) {
           {renderPersonalInfoInput()}
           <Text style={styles.title}>{Strings.contact}</Text>
           {renderEmployeeContactInput()}
-          <Text style={styles.title}>{Strings.addressInfo}</Text>
+          <Text style={styles.title}>{"Address"}</Text>
           {renderAddressInfo()}
           <Text style={styles.title}>{Strings.workInfo}</Text>
           {renderWorkInfo()}

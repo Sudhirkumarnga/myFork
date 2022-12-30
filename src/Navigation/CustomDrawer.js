@@ -71,7 +71,7 @@ class CustomDrawer extends BaseComponent {
       { title: 'Employee list', icon: `list`, route: 'EmployeeListScene' },
       { title: 'Worksites', icon: `worksites`, route: 'AllWorksiteScene' },
       { title: 'Report', icon: `report`, route: 'ReportsScene' },
-      { title: 'Timer off Requests', icon: `timer`, route: 'RequestLeaveScene' },
+      { title: 'Time off Requests', icon: `timer`, route: 'RequestLeaveScene' },
       { title: 'Settings', icon: `settings`, route: 'Settings' }
     ]
     return (

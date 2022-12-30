@@ -106,7 +106,7 @@ const fields = {
     countryCodeRequired: true,
     key: 'mobile',
     dateType: false,
-    label: Strings.phoneLabel,
+    label: "Mobile Number",
     placeholder: '',
     regex: /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/,
     phoneNumberValidation: true,

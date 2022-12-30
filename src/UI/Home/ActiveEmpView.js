@@ -74,7 +74,7 @@ export default class ActiveEmpView extends BaseScene {
     return (
       <View style={styles.bottomView}>
         <Text style={styles.title}>
-          {this.ls("payPeriod")} {upcomingShiftData?.total_hours}h
+          {this.ls("payPeriod")} {upcomingShiftData?.total_hours || 0}h
         </Text>
       </View>
     )

@@ -95,7 +95,7 @@ export default class LoginScene extends BaseScene {
         await AsyncStorage.setItem("user", JSON.stringify(res?.data?.user))
       }
       this.props.navigation.navigate("AuthLoading")
-      Toast.show("Logged In up Successfully!")
+      Toast.show("Login Successful")
     } catch (error) {
       this.handleChange("loading", false, true)
       const errorText = Object.values(error?.response?.data)

@@ -146,12 +146,11 @@ class PrimaryTextInput extends Component {
             this.inputRefs = el
           }}
           placeholder={{
-            label:
-              this.state.text 
-                ? this.props.label
-                : !this.props.text
-                ? this.props.label
-                : null,
+            label: this.state.text
+              ? this.props.label
+              : !this.props.text
+              ? this.props.label
+              : null,
             value: null
           }}
           fixAndroidTouchableBug
@@ -246,7 +245,9 @@ class PrimaryTextInput extends Component {
         onChangeText={text => this.onChangeText(text)}
         value={this.state.text || this.props.text}
         secureTextEntry={
-          !this.state.isPwdVisible && !!this.props.onPasswordValidationCheck
+          (this.state.text !== "" || this.props.text !== "") &&
+          !this.state.isPwdVisible &&
+          !!this.props.onPasswordValidationCheck
         }
         {...this.props.textInputProps}
       />

@@ -83,7 +83,7 @@ export const drawerNavigator = props => {
         }}
       />
       <Drawer.Screen
-        name={"Timer off Requests"}
+        name={"Time off Requests"}
         component={RequestLeaveScene}
         options={{
           drawerIcon: ({ focussed, color }) =>

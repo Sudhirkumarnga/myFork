@@ -67,7 +67,9 @@ export default class EmpRequestLeave extends BaseComponent {
     return (
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <Button
-          title={this.ls("approve")}
+          title={
+            leaveItem?.status === "APPROVED" ? "Approved" : this.ls("approve")
+          }
           disabled={
             this.props.loadingApprove ||
             leaveItem?.status === "APPROVED" ||
@@ -77,7 +79,7 @@ export default class EmpRequestLeave extends BaseComponent {
           onPress={() => this.props.UpdateRequest(leaveItem?.id, "APPROVED")}
         />
         <Button
-          title={this.ls("deny")}
+          title={leaveItem?.status === "DENY" ? "Denied" : this.ls("deny")}
           color={Colors.BUTTON_BG}
           style={styles.footerWhiteButton}
           disabled={

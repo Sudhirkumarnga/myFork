@@ -91,7 +91,7 @@ export default function MyEarningsListScene({ navigation }) {
                 >
                   <Text style={styles.title}>{item?.worksite}</Text>
                   <Text style={[styles.job, { ...Fonts.poppinsRegular(10) }]}>
-                    {moment(item?.created_at).fromNow()}
+                    {moment.utc(item?.created_at).local().fromNow()}
                   </Text>
                 </View>
                 <Text style={[styles.job, { marginVertical: 5 }]}>
