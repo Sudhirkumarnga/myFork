@@ -110,6 +110,7 @@ class PrimaryTextInput extends Component {
           format=" MM/DD/YYYY"
           date={new Date(this.props.text ? this.props.text : Date.now())}
           maxDate={this.props.maxDate || new Date()}
+          minDate={this.props.minDate || new Date("1900/01/01")}
           customStyles={{
             dateInput: [
               styles.inputStyle,

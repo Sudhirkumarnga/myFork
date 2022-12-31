@@ -118,8 +118,14 @@ export default function MessagesScene({ navigation }) {
         entry?.type === "group"
           ? entry?.name?.includes(value)
           : entry?.senderId !== user?.id
-          ? entry?.sender?.personal_information?.first_name?.includes(value)
-          : entry?.receiver?.personal_information?.first_name?.includes(value)
+          ? `${
+              entry?.sender?.personal_information?.first_name +
+              entry?.sender?.personal_information?.last_name
+            }`?.includes(value)
+          : `${
+              entry?.receiver?.personal_information?.first_name +
+              entry?.receiver?.personal_information?.last_name
+            }`?.includes(value)
       )
       handleChange("List", filtered)
     } else {

@@ -341,7 +341,7 @@ export default function Scheduler({ navigation }) {
                       />
                       <View>
                         <Text style={{ ...Fonts.poppinsRegular(12) }}>
-                          {item?.user?.first_name + " " +item?.user?.last_name}
+                          {item?.user?.first_name + " " + item?.user?.last_name}
                         </Text>
                         <Text
                           style={{

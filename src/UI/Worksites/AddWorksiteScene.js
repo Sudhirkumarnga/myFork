@@ -27,8 +27,12 @@ import {
 import { Icon } from "react-native-elements"
 import DatePicker from "react-native-date-picker"
 import moment from "moment-timezone"
+import PhoneInput from "react-native-phone-input"
+import { useRef } from "react"
+import { useEffect } from "react"
 
 export default function AddWorksiteScene({ navigation, route }) {
+  const phoneRef = useRef(null)
   const worksiteData = route?.params?.worksiteData
   // State
   const [state, setState] = useState({
@@ -51,13 +55,15 @@ export default function AddWorksiteScene({ navigation, route }) {
       worksiteData?.contact_person?.contact_phone_number || "",
     show_dtails: worksiteData?.show_dtails || false,
     // profile_image: worksiteData?.personal_information?.profile_image || '',
-    logo: worksiteData?.logo || null,
-    instruction_video: worksiteData?.instruction_video || null,
+    logo: null,
+    instruction_video: null,
     loading: false,
     opened: false,
     desired_time_text: new Date(),
-    openStart: false
+    openStart: false,
+    validNumber: false
   })
+  console.warn("worksiteData?.logo", worksiteData?.logo)
 
   const {
     loading,
@@ -77,11 +83,26 @@ export default function AddWorksiteScene({ navigation, route }) {
     instruction_video,
     opened,
     desired_time_text,
-    openStart
+    openStart,
+    validNumber
   } = state
   const handleChange = (name, value) => {
+    if (name === "contact_phone_number") {
+      setState(pre => ({
+        ...pre,
+        validNumber: phoneRef?.current?.isValidNumber()
+      }))
+    }
     setState(pre => ({ ...pre, [name]: value }))
   }
+
+  console.warn("worksiteData", worksiteData)
+
+  useEffect(() => {
+    if (worksiteData) {
+      handleChange("validNumber", phoneRef?.current?.isValidNumber())
+    }
+  }, [worksiteData])
 
   const handleSubmit = async () => {
     try {
@@ -342,14 +363,48 @@ export default function AddWorksiteScene({ navigation, route }) {
 
   const renderEmployeeContactInput = () => {
     return WorksiteForms.fields("worksiteContact")?.map(fields => {
-      return (
-        <PrimaryTextInput
-          {...fields}
-          text={state[fields.key]}
-          key={fields.key}
-          onChangeText={(text, isValid) => handleChange(fields.key, text)}
-        />
-      )
+      if (fields.key === "contact_phone_number") {
+        return (
+          <View
+            style={{
+              height: 50,
+              width: "90%",
+              paddingTop: Platform.OS === "android" ? 15 : 0,
+              borderRadius: 10,
+              color: Colors.TEXT_INPUT_COLOR,
+              paddingHorizontal: 15,
+              ...Fonts.poppinsRegular(14),
+              borderWidth: 1,
+              backgroundColor: Colors.TEXT_INPUT_BG,
+              width: "90%",
+              marginLeft: "5%",
+              marginVertical: 5,
+              borderWidth: 1,
+              borderColor:
+                !state[fields.key] || (state[fields.key] && validNumber)
+                  ? Colors.TEXT_INPUT_BORDER
+                  : Colors.INVALID_TEXT_INPUT
+            }}
+          >
+            <PhoneInput
+              initialValue={state[fields.key]}
+              textProps={{ placeholder: fields.label }}
+              textStyle={{ ...Fonts.poppinsRegular(14), marginTop: 2 }}
+              ref={phoneRef}
+              onChangePhoneNumber={props => handleChange(fields.key, props)}
+            />
+          </View>
+        )
+      } else {
+        return (
+          <PrimaryTextInput
+            {...fields}
+            text={state[fields.key]}
+            key={fields.key}
+            onChangeText={(text, isValid) => handleChange(fields.key, text)}
+          />
+        )
+      }
     })
   }
 
@@ -424,7 +479,7 @@ export default function AddWorksiteScene({ navigation, route }) {
             !supplies_needed ||
             !contact_person_name ||
             !contact_phone_number ||
-            !logo
+            (!worksiteData?.logo && !logo)
           }
           loading={loading}
           style={styles.footerButton}

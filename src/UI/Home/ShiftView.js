@@ -189,7 +189,13 @@ export default function ShiftView() {
             ? Colors.RED_COLOR
             : Colors.BACKGROUND_BG
         }
-        disabled={!upcomingShiftData?.status}
+        disabled={
+          !upcomingShiftData?.status ||
+          !moment
+            .utc(upcomingShiftData?.schedule_shift_start_time)
+            .local()
+            .isBefore(new Date())
+        }
         style={{
           marginTop: 30
         }}

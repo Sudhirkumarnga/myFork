@@ -85,8 +85,14 @@ export default function GroupMessageScene({ navigation }) {
       const re = new RegExp(value, "i")
       var filtered = allEmployee?.filter(entry =>
         entry?.senderId !== user?.id
-          ? entry?.personal_information?.first_name?.includes(value)
-          : entry?.personal_information?.first_name?.includes(value)
+          ? `${
+              entry?.personal_information?.first_name +
+              entry?.personal_information?.last_name
+            }`?.includes(value)
+          : `${
+              entry?.personal_information?.first_name +
+              entry?.personal_information?.last_name
+            }`?.includes(value)
       )
       handleChange("List", filtered)
     } else {

@@ -43,6 +43,7 @@ export default function AddEvents({ navigation, route }) {
     start_time: new Date(),
     start_time_text: "",
     end_time: new Date(),
+    frequency_end_date: new Date(),
     end_time_text: "",
     notes: "",
     openStart: false,
@@ -70,6 +71,7 @@ export default function AddEvents({ navigation, route }) {
     endStart,
     end_time_text,
     frequency,
+    frequency_end_date,
     description,
     notes,
     reminder,
@@ -156,16 +158,21 @@ export default function AddEvents({ navigation, route }) {
         end_time: moment
           .utc(moment(end_date + " " + end_time_text))
           .format("YYYY-MM-DD HH:mm:ss"),
-        frequency,
         description,
         notes,
         reminder,
         schedule_inspection,
         event_status,
         employees,
-        selected_tasks,
-        publishing_reminder
+        selected_tasks
       }
+      publishing_reminder &&
+        (payload["publishing_reminder"] = publishing_reminder)
+      frequency && (payload["frequency"] = frequency)
+      frequency_end_date &&
+        (payload["frequency_end_date"] = moment
+          .utc(moment(frequency_end_date))
+          .format("YYYY-MM-DD"))
       if (selectedEvent) {
         await updateEvent(selectedEvent?.id, payload, token)
         Toast.show("Event has been updated")
@@ -315,7 +322,7 @@ export default function AddEvents({ navigation, route }) {
     )
   }
 
-  // console.warn('allWorksites',allWorksites);
+  console.warn("frequency", frequency)
 
   const getWorksiteTask = id => {
     const filtered = allWorksites?.filter(e => e.id === id)
@@ -483,6 +490,20 @@ export default function AddEvents({ navigation, route }) {
         placeholder="frequency"
         onChangeText={(text, isValid) => handleChange("frequency", text)}
       />
+      {frequency !== "" && frequency && (
+        <PrimaryTextInput
+          dateType={true}
+          maxDate={new Date("2050/01/01")}
+          minDate={new Date()}
+          text={frequency_end_date}
+          label="End Date"
+          key="frequency_end_date"
+          placeholder="End Date"
+          onChangeText={(text, isValid) =>
+            handleChange("frequency_end_date", text)
+          }
+        />
+      )}
       <PrimaryTextInput
         text={description}
         label="Description"
@@ -806,7 +827,7 @@ export default function AddEvents({ navigation, route }) {
           style={{ height: 40 }}
           loading={loading}
           disabled={
-            !frequency ||
+            // !frequency ||
             !description ||
             !notes ||
             !event_status ||
