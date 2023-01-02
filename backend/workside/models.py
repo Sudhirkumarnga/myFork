@@ -17,6 +17,7 @@ from workside.services import (
     calculate_reminder_date, send_event_reminder_to_employees, send_notify_to_employees
 )
 from django.db.models.signals import m2m_changed, post_save
+from random import randrange
 
 
 def business_directory_path(instance, filename):
@@ -35,7 +36,7 @@ class WorkSite(TimeStampedModel):
                                               null=True, blank=True)
     desired_time = models.TimeField(null=True, blank=True)
     number_of_workers_needed = models.IntegerField(_("WorkSide Num Of Workers Needed"), blank=True, null=True)
-    supplies_needed = models.IntegerField(_("WorkSide Supplier Needed"), blank=True, null=True)
+    supplies_needed = models.CharField(_("WorkSide Supplier Needed"), max_length=20000, blank=True, null=True)
     contact_person_name = models.CharField(_("Contact Person Name"), max_length=10, blank=True, null=True)
     contact_phone_number = PhoneNumberField(null=True, blank=True)
     logo = models.FileField(_('Worksidet Logo'), upload_to=business_directory_path, null=True, blank=True)
@@ -93,6 +94,7 @@ class Event(TimeStampedModel):
     end_time = models.DateTimeField(null=True, blank=True)
     frequency = models.CharField(_("Frequency Of Event"), max_length=200, choices=EventFrequency.choices(), null=True,
                                  blank=True)
+    frequency_end_date = models.DateField(null=True, blank=True)
     description = models.TextField(_("WorkSide Description"), blank=True, null=True)
     notes = models.TextField(_("WorkSide Description"), blank=True, null=True)
     reminder = models.BooleanField(_("Reminder for Travel Time"), default=False)
@@ -113,7 +115,7 @@ class Event(TimeStampedModel):
     )
     reminder_date = models.DateField(null=True, blank=True)
     notify = models.BooleanField(default=False)
-
+    color = models.CharField(max_length=200, null=True, blank=True)
     class Meta:
         verbose_name = "Event"
         verbose_name_plural = "Events"
@@ -122,6 +124,8 @@ class Event(TimeStampedModel):
         return f'{self.worksite}'
 
     def save(self, *args, **kwargs):
+        if not self.color:
+            self.color = randrange(1000, 10000)
         super(Event, self).save(*args, **kwargs)
         if self.event_status == "DRAFT":
             self.reminder_date = calculate_reminder_date(

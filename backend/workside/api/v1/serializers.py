@@ -187,7 +187,7 @@ class EventSerializer(ModelSerializer):
         fields = (
             "id", "worksite", "start_time", "end_time",
             "frequency", "description", "notes", "reminder",
-            "schedule_inspection", "event_status", "employees",
+            "schedule_inspection", "event_status", "employees", "frequency_end_date",
             "publishing_reminder", "tasks", "selected_tasks", "notify"
         )
 
@@ -289,7 +289,7 @@ class SchedularSerializer(ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ('id', 'worksite_name', 'employees', 'selected_tasks', 'start_time', 'end_time')
+        fields = ('id', 'worksite_name', 'employees', 'selected_tasks', 'start_time', 'end_time', 'event_status', 'color')
         depth = 2
 
     def to_representation(self, data):
@@ -297,8 +297,7 @@ class SchedularSerializer(ModelSerializer):
         event = Event.objects.get(id=data['id'])
         data['worksite_name'] = event.worksite.name if event.worksite.name else None
         data['logo'] = event.worksite.business.profile_image.url if event.worksite.business.profile_image else None
-        # if request.user.role == "Employee":
-        #     del data['employees']
+        data['color'] = "#{}".format(data['color'])
         return data
 
 

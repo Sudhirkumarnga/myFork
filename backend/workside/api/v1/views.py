@@ -282,6 +282,32 @@ class EventView(ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+    @action(detail=False, methods=["POST"])
+    def delete_events(self, request, *args, **kwargs):
+        try:
+            events = Event.objects.filter(id__in=request.data['events'])
+            for event in events:
+                event.delete()
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=True,
+                    message="All Event's successfully deleted.",
+                    status=SmartWorkHorseStatus.Success.value,
+                ),
+                status=status.HTTP_201_CREATED,
+                headers={},
+            )
+
+        except Exception as e:
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=False,
+                    message="Something went wrong.",
+                    status=SmartWorkHorseStatus.Error.value,
+                    error={str(e)},
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 class SchedularView(APIView):
     queryset = Event.objects.filter()

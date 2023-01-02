@@ -7,7 +7,7 @@ from workside.api.v1.views import (
     EventView,
     SchedularView,
     WorksiteListView,
-    UpcomingShiftView
+    UpcomingShiftView,
 )
 
 router = DefaultRouter()
