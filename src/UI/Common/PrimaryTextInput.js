@@ -195,7 +195,8 @@ class PrimaryTextInput extends Component {
                   alignItems: "center",
                   flexDirection: "row",
                   justifyContent: "space-between",
-                  width: "100%"
+                  width: "100%",
+                  height:"100%"
                 }
               ]}
             >

@@ -229,6 +229,7 @@ export default function AddEmployeeScene({ navigation, route }) {
               borderWidth: 1,
               backgroundColor: Colors.TEXT_INPUT_BG,
               width: "90%",
+              justifyContent:'center',
               marginLeft: "5%",
               marginVertical: 5,
               borderWidth: 1,
