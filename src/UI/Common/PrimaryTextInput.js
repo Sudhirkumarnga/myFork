@@ -10,7 +10,12 @@ import {
   Platform
 } from "react-native"
 import { Fonts, Colors, Images } from "../../res"
-import RNPickerSelect from "react-native-picker-select"
+import {
+  Menu,
+  MenuOptions,
+  MenuOption,
+  MenuTrigger
+} from "react-native-popup-menu"
 import DatePicker from "react-native-datepicker"
 import { Icon } from "react-native-elements"
 
@@ -84,6 +89,7 @@ class PrimaryTextInput extends Component {
   }
 
   onChangeText(text) {
+    console.warn("text", text)
     const isValid = this.isValid(text)
     this.props.onChangeText(text, isValid)
     this.setState({ text, isValid })
@@ -134,42 +140,97 @@ class PrimaryTextInput extends Component {
 
   renderDropDownPicker() {
     if (this.props.dropdown) {
+      const list =
+        this.props.streetCity || !!this.props.secondaryItems
+          ? this.props.secondaryItems
+            ? this.props.secondaryItems
+            : [{ label: "", value: "" }]
+          : this.props.items
       return (
-        <RNPickerSelect
-          items={
-            this.props.streetCity || !!this.props.secondaryItems
-              ? this.props.secondaryItems
-                ? this.props.secondaryItems
-                : [{ label: "", value: "" }]
-              : this.props.items
-          }
-          ref={el => {
-            this.inputRefs = el
-          }}
-          placeholder={{
-            label: this.state.text
-              ? this.props.label
-              : !this.props.text
-              ? this.props.label
-              : null,
-            value: null
-          }}
-          fixAndroidTouchableBug
-          Icon={() => {
-            return <Image {...Images.downArrow} />
-          }}
-          doneText={this.props.text}
-          // value={this.props.text}
-          style={{
-            inputIOS: styles.inputIOS,
-            iconContainer: styles.iconContainer,
-            inputAndroid: styles.inputAndroid,
-            inputAndroidContainer: {}
-          }}
-          onValueChange={(itemValue, itemIndex) => {
-            this.onChangeText(itemValue)
-          }}
-        />
+        // <RNPickerSelect
+        //   items={
+        //     this.props.streetCity || !!this.props.secondaryItems
+        //       ? this.props.secondaryItems
+        //         ? this.props.secondaryItems
+        //         : [{ label: "", value: "" }]
+        //       : this.props.items
+        //   }
+        //   ref={el => {
+        //     this.inputRefs = el
+        //   }}
+        //   placeholder={{
+        //     label: this.state.text
+        //       ? this.props.label
+        //       : !this.props.text
+        //       ? this.props.label
+        //       : null,
+        //     value: null
+        //   }}
+        //   fixAndroidTouchableBug
+        //   Icon={() => {
+        //     return <Image {...Images.downArrow} />
+        //   }}
+        //   doneText={this.props.text}
+        //   // value={this.props.text}
+        //   style={{
+        //     inputIOS: styles.inputIOS,
+        //     iconContainer: styles.iconContainer,
+        //     inputAndroid: styles.inputAndroid,
+        //     inputAndroidContainer: {}
+        //   }}
+        //   onValueChange={(itemValue, itemIndex) => {
+        //     this.onChangeText(itemValue)
+        //   }}
+        // />
+        <Menu
+          // ref={el => {
+          //   this.inputRefs = el
+          // }}
+          style={styles.inputStyle}
+        >
+          <MenuTrigger style={{ width: "100%" }}>
+            <View
+              style={[
+                {
+                  alignItems: "center",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  width: "100%"
+                }
+              ]}
+            >
+              <Text
+                style={{
+                  color: !this.state.text ? Colors.BLUR_TEXT : Colors.BLACK,
+                  ...Fonts.poppinsRegular(12),
+                  textTransform: "capitalize"
+                }}
+              >
+                {this.state.text
+                  ? this.state.text
+                  : this.props.text
+                  ? this.props.text
+                  : this.props.label || this.state.text}
+              </Text>
+              <Icon
+                name="down"
+                size={12}
+                color={Colors.BLACK}
+                style={{ marginLeft: 10 }}
+                type="antdesign"
+              />
+            </View>
+          </MenuTrigger>
+          <MenuOptions>
+            {list?.map((item, index) => (
+              <MenuOption
+                key={index}
+                onSelect={() => this.onChangeText(item?.value)}
+                text={item?.label}
+              />
+            ))}
+          </MenuOptions>
+        </Menu>
       )
     }
   }
@@ -260,7 +321,7 @@ class PrimaryTextInput extends Component {
       return (
         <TouchableOpacity
           disabled={false}
-          onPress={() => this.inputRefs.togglePicker()}
+          // onPress={() => this.inputRefs.togglePicker()}
         >
           <View>{this.renderTextInput(inputStyle)}</View>
         </TouchableOpacity>
@@ -272,10 +333,15 @@ class PrimaryTextInput extends Component {
   render() {
     return (
       <View style={[styles.container, this.props.style]}>
-        {this.renderTextInput(styles)}
-        {this.renderRightInputView(styles)}
-        {this.renderDatePicker(styles)}
-        {this.renderDropDownPicker(styles)}
+        {!this.props.dropdown ? (
+          <>
+            {this.renderTextInput(styles)}
+            {this.renderRightInputView(styles)}
+            {this.renderDatePicker(styles)}
+          </>
+        ) : (
+          this.renderDropDownPicker(styles)
+        )}
       </View>
     )
   }
