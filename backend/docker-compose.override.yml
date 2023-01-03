@@ -21,7 +21,12 @@ services:
   redis:
     ports:
       - "6379:6379"
-
+  stripe-cli:
+    image: stripe/stripe-cli
+    container_name: stripe-cli
+    command: "listen --api-key ${STRIPE_API_KEY} --forward-to web:8000/stripe/webhook/"
+    env_file:
+      - stripe_cli.env
 volumes: 
   postgres-data:
 
