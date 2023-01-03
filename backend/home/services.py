@@ -8,7 +8,6 @@ from django.template.loader import render_to_string
 from smart_workhorse_33965.settings import EMAIL_HOST_USER
 from django.contrib.sites.models import Site
 
-current_site = Site.objects.get_current()
 
 from business.models import (
     Business,
@@ -79,6 +78,7 @@ def generate_user_otp(user):
 
 
 def send_account_confirmation_email(user, otp):
+    current_site = Site.objects.get_current()
     msg_plain = render_to_string('email/account_confirmation_email.txt',
                                  {'user': user, 'otp': otp, 'domain': current_site.domain})
     msg_html = render_to_string('email/account_confirmation_email.html',
@@ -93,6 +93,7 @@ def send_account_confirmation_email(user, otp):
 
 
 def sent_password_reset_email(user, otp):
+    current_site = Site.objects.get_current()
     msg_plain = render_to_string('email/password_reset_email.txt',
                                  {'user': user, 'otp': otp, 'domain': current_site.domain})
     msg_html = render_to_string('email/password_reset_email.html',
@@ -108,6 +109,7 @@ def sent_password_reset_email(user, otp):
 
 
 def send_new_otp(user, otp):
+    current_site = Site.objects.get_current()
     msg_plain = render_to_string('email/otp_email.txt', {'user': user, 'otp': otp, 'domain': current_site.domain})
     msg_html = render_to_string('email/otp_email.html', {'user': user, 'otp': otp, 'domain': current_site.domain})
 
