@@ -124,13 +124,8 @@ def send_new_otp(user, otp):
 
 def update_subscription(business_code):
     business = Business.objects.get(business_code=business_code)
-    print('=====================================')
-    print('before save remaining employees', business.subscription.metadata['remaining_employees'])
-    business.subscription.metadata['remaining_employees'] = int(business.subscription.metadata['allowed_employees']) - 1
+    business.subscription.metadata['remaining_employees'] = int(business.subscription.metadata['remaining_employees']) - 1
     business.subscription.save()
-    print('after save remaining employees', business.subscription.metadata['remaining_employees'])
-
-    print('=====================================')
 
 
 
