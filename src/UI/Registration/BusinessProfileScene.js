@@ -24,17 +24,25 @@ import PhoneInput from "react-native-phone-input"
 import { useRef } from "react"
 import { useEffect } from "react"
 
-export default function BusinessProfileScene({ navigation }) {
+export default function BusinessProfileScene({ navigation, route }) {
   const { _getProfile, _getCountries, cities, states, adminProfile } =
     useContext(AppContext)
   const phoneRef = useRef(null)
+  const userData = route?.params?.userData
   // State
+  console.warn("userData", userData)
   const [state, setState] = useState({
     name: adminProfile?.business_information?.name || "",
     pay_frequency: adminProfile?.business_information?.pay_frequency || "",
-    first_name: adminProfile?.personal_information?.first_name || "",
-    last_name: adminProfile?.personal_information?.last_name || "",
-    phone: adminProfile?.personal_information?.phone || "",
+    first_name:
+      adminProfile?.personal_information?.first_name ||
+      userData?.name?.split(" ")[0] ||
+      "",
+    last_name:
+      adminProfile?.personal_information?.last_name ||
+      userData?.name?.split(" ")[1] ||
+      "",
+    phone: adminProfile?.personal_information?.phone || userData?.phone || "",
     date_of_birth: adminProfile?.personal_information?.date_of_birth || "",
     address_line_one: adminProfile?.business_address?.address_line_one || "",
     address_line_two: adminProfile?.business_address?.address_line_two || "",
@@ -45,7 +53,7 @@ export default function BusinessProfileScene({ navigation }) {
     profile_image: adminProfile?.business_information?.profile_image || "",
     photo: null,
     loading: false,
-    validNumber: false
+    validNumber: userData?.phone ? true : false
   })
 
   const {
@@ -329,9 +337,14 @@ export default function BusinessProfileScene({ navigation }) {
       <ScrollView style={{ flex: 1, paddingBottom: 30 }}>
         <View style={styles.childContainer}>
           <TouchableOpacity style={styles.imageView} onPress={_uploadImage}>
-            {profile_image ? (
+            {adminProfile?.business_information?.profile_image ||
+            profile_image ? (
               <Image
-                source={{ uri: profile_image }}
+                source={{
+                  uri:
+                    adminProfile?.business_information?.profile_image ||
+                    profile_image
+                }}
                 style={{ width: "100%", height: "100%", borderRadius: 10 }}
               />
             ) : (

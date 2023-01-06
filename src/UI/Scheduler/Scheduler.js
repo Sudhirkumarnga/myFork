@@ -31,6 +31,8 @@ import { useCallback } from "react"
 import DatePicker from "react-native-date-picker"
 import momenttimezone from "moment-timezone"
 import Strings from "../../res/Strings"
+import { SvgXml } from "react-native-svg"
+import DRAFTED from "../../res/Svgs/drafted.svg"
 
 export default function Scheduler({ navigation }) {
   const { schedules, user, _getAllSchedules } = useContext(AppContext)
@@ -77,6 +79,11 @@ export default function Scheduler({ navigation }) {
         }
       ]}
     >
+      {event?.event_status === "DRAFT" && (
+        <View style={{ width: "90%", alignItems: "flex-end" }}>
+          <SvgXml xml={DRAFTED} />
+        </View>
+      )}
       <Image
         source={event?.logo ? { uri: event?.logo } : calendarLogo}
         style={{
@@ -130,7 +137,8 @@ export default function Scheduler({ navigation }) {
           list.push({
             ...element,
             title: element?.worksite_name,
-            color: "#FDB48B",
+            color: element?.color || "#FDB48B",
+            event_status: element?.event_status,
             start: new Date(moment.utc(element?.start_time).local()),
             end: moment.utc(element?.end_time).local()
           })
@@ -141,6 +149,8 @@ export default function Scheduler({ navigation }) {
       return []
     }
   }
+
+  console.warn('schedules',schedules);
 
   return (
     <View style={styles.container}>

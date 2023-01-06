@@ -41,11 +41,12 @@ export default function ReportsView({ navigation, route }) {
     loading: false,
     visible: false,
     reports: [],
+    reportsFiltered: [],
     from: "",
     to: ""
   })
 
-  const { loading, visible, reports, from, to } = state
+  const { loading, visible, reportsFiltered, reports, from, to } = state
   const handleChange = (name, value) => {
     setState(pre => ({ ...pre, [name]: value }))
   }
@@ -127,6 +128,10 @@ export default function ReportsView({ navigation, route }) {
       }
       if (res?.data) {
         handleChange("reports", res?.data?.results || res?.data?.response)
+        handleChange(
+          "reportsFiltered",
+          res?.data?.results || res?.data?.response
+        )
       }
       handleChange("loading", false)
     } catch (error) {
@@ -139,12 +144,48 @@ export default function ReportsView({ navigation, route }) {
     handleChange("visible", false)
   }
 
+  const sortBy = type => {
+    if (type === "az") {
+      const sorted = reports?.sort((a, b) =>
+        (title === "Location Variances" || title === "Schedule Variances"
+          ? a?.employee
+          : title === "Inspection"
+          ? a?.worksite?.name
+          : a?.employee?.name
+        ).localeCompare(
+          title === "Location Variances" || title === "Schedule Variances"
+            ? b?.employee
+            : title === "Inspection"
+            ? b?.worksite?.name
+            : b?.employee?.name
+        )
+      )
+      handleChange("reportsFiltered", sorted)
+    }
+    if (type === "za") {
+      const sorted = reports?.sort((a, b) =>
+        (title === "Location Variances" || title === "Schedule Variances"
+          ? b?.employee?.toLowerCase()
+          : title === "Inspection"
+          ? b?.worksite?.name?.toLowerCase()
+          : b?.employee?.name?.toLowerCase()
+        ).localeCompare(
+          title === "Location Variances" || title === "Schedule Variances"
+            ? a?.employee?.toLowerCase()
+            : title === "Inspection"
+            ? a?.worksite?.name?.toLowerCase()
+            : a?.employee?.name?.toLowerCase()
+        )
+      )
+      handleChange("reportsFiltered", sorted)
+    }
+  }
+
   function toHoursAndMinutes(totalMinutes) {
     const hours = Math.floor(totalMinutes / 60)
     const minutes = totalMinutes % 60
     return `${hours}h${minutes > 0 ? ` ${minutes.toFixed(0)}m` : ""}`
   }
-
 
   return (
     <View style={styles.container}>
@@ -219,14 +260,8 @@ export default function ReportsView({ navigation, route }) {
                 width: "40%"
               }}
             >
-              <MenuOption
-                // onSelect={() => handleChange(`mode`, 'month')}
-                text="A to Z"
-              />
-              <MenuOption
-                // onSelect={() => handleChange(`mode`, 'month')}
-                text="Z to A"
-              />
+              <MenuOption onSelect={() => sortBy("az")} text="A to Z" />
+              <MenuOption onSelect={() => sortBy("za")} text="Z to A" />
               <MenuOption
                 // onSelect={() => handleChange(`mode`, 'month')}
                 text="Increasing"
@@ -254,7 +289,7 @@ export default function ReportsView({ navigation, route }) {
             <Text style={styles.title}>{"Variance:"}</Text>
           </View>
         )}
-        {reports?.map((item, index) => (
+        {reportsFiltered?.map((item, index) => (
           <View
             key={index}
             style={{

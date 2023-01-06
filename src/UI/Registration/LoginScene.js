@@ -14,6 +14,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 import AppContext from "../../Utils/Context"
 import { loginUser } from "../../api/auth"
 import AsyncHelper from "../../Utils/AsyncHelper"
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 
 export default class LoginScene extends BaseScene {
   static contextType = AppContext
@@ -151,7 +152,7 @@ export default class LoginScene extends BaseScene {
   render() {
     return (
       <View style={styles.container}>
-        <ScrollView style={{ flex: 1 }}>
+        <KeyboardAwareScrollView style={{ flex: 1 }}>
           <Text style={styles.title}>{this.ls("welcomeBack")}</Text>
           <Text style={styles.description}>{this.ls("loginAccount")}</Text>
           {this.renderTextInput()}
@@ -170,7 +171,7 @@ export default class LoginScene extends BaseScene {
           )}
           {this.renderForgotPwd()}
           {this.renderFooterButton()}
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </View>
     )
   }

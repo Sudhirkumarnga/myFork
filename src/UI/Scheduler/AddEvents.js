@@ -526,7 +526,7 @@ export default function AddEvents({ navigation, route }) {
           alignItems: "center"
         }}
       >
-        <BouncyCheckbox
+        {/* <BouncyCheckbox
           size={20}
           fillColor={Colors.BACKGROUND_BG}
           unfillColor={Colors.WHITE}
@@ -543,8 +543,8 @@ export default function AddEvents({ navigation, route }) {
           }}
           onPress={() => handleChange("reminder", !reminder)}
           isChecked={reminder}
-        />
-        <Text style={styles.inputText}>Reminder for travel time</Text>
+        /> */}
+        <Text style={styles.inputText}>Remember to account for the travel time</Text>
       </View>
       <View
         style={{

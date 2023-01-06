@@ -86,6 +86,9 @@ export default function AddEmployeeScene({ navigation, route }) {
         validNumber1: mobileRef?.current?.isValidNumber()
       }))
     }
+    if(name === 'email'){
+      
+    }
     setState(pre => ({ ...pre, [name]: value }))
   }
 

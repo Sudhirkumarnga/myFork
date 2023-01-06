@@ -23,6 +23,7 @@ import { ScrollView } from "react-native"
 import Header from "../Common/Header"
 import Geolocation from "@react-native-community/geolocation"
 import Geocoder from "react-native-geocoding"
+import moment from "moment-timezone"
 
 Geocoder.init("AIzaSyCndwU13bTZ8w_yhP4ErbFGE1Wr9oiro8Q")
 const { width, height } = Dimensions.get("window")
@@ -66,8 +67,7 @@ export default function ShiftDetails({ navigation }) {
       } else {
         console.log("Geolocation permission denied")
       }
-    } catch (err) {
-    }
+    } catch (err) {}
   }
 
   const getCurrentLocation = async () => {
@@ -229,7 +229,15 @@ export default function ShiftDetails({ navigation }) {
                 { fontSize: 14, marginTop: 0, color: Colors.BLACK }
               ]}
             >
-              {upcomingShiftData?.clock_out_time}
+              {moment
+                .utc(upcomingShiftData?.schedule_shift_start_time)
+                .local()
+                .format("hh:mm A")}{" "}
+              to{" "}
+              {moment
+                .utc(upcomingShiftData?.schedule_shift_end_time)
+                .local()
+                .format("hh:mm A")}
             </Text>
             <Text
               style={[

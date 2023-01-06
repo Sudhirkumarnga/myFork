@@ -18,6 +18,7 @@ import {
 } from "react-native-popup-menu"
 import DatePicker from "react-native-datepicker"
 import { Icon } from "react-native-elements"
+import { ScrollView } from "react-native"
 
 class PrimaryTextInput extends Component {
   constructor(props) {
@@ -74,7 +75,14 @@ class PrimaryTextInput extends Component {
     }
   }
 
-  onBlur() {
+  onBlur = key => {
+    console.log("this.props", this.props.placeholder)
+    if (this.props.placeholder === "Email Address") {
+      if (!this.props.regex?.test(this.props?.text)) {
+        this.props.onChangeText("", false)
+        this.setState({ isFocused: false, text: "" })
+      }
+    }
     this.setState({ isFocused: false })
   }
 
@@ -89,10 +97,15 @@ class PrimaryTextInput extends Component {
   }
 
   onChangeText(text) {
-    console.warn("text", text)
     const isValid = this.isValid(text)
     this.props.onChangeText(text, isValid)
     this.setState({ text, isValid })
+  }
+
+  onChangeDropdownText(item) {
+    const isValid = this.isValid(item?.value)
+    this.props.onChangeText(item?.value, isValid)
+    this.setState({ text: item?.label, isValid })
   }
 
   renderDatePicker() {
@@ -223,13 +236,15 @@ class PrimaryTextInput extends Component {
             </View>
           </MenuTrigger>
           <MenuOptions>
-            {list?.map((item, index) => (
-              <MenuOption
-                key={index}
-                onSelect={() => this.onChangeText(item?.value)}
-                text={item?.label}
-              />
-            ))}
+            <ScrollView style={{ maxHeight: 300 }}>
+              {list?.map((item, index) => (
+                <MenuOption
+                  key={index}
+                  onSelect={() => this.onChangeDropdownText(item)}
+                  text={item?.label}
+                />
+              ))}
+            </ScrollView>
           </MenuOptions>
         </Menu>
       )
@@ -303,7 +318,7 @@ class PrimaryTextInput extends Component {
         multiline={this.props.multiline}
         onFocus={() => this.onFocus()}
         // ref={o => (this.txtInput = o)}
-        onBlur={() => this.onBlur()}
+        onBlur={() => this.onBlur(this.props.key)}
         maxLength={this.props.maxLength}
         onChangeText={text => this.onChangeText(text)}
         value={this.state.text || this.props.text}
