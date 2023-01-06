@@ -19,6 +19,7 @@ import {
 import DatePicker from "react-native-datepicker"
 import { Icon } from "react-native-elements"
 import { ScrollView } from "react-native"
+import Toast from "react-native-simple-toast"
 
 class PrimaryTextInput extends Component {
   constructor(props) {
@@ -78,8 +79,9 @@ class PrimaryTextInput extends Component {
   onBlur = key => {
     console.log("this.props", this.props.placeholder)
     if (this.props.placeholder === "Email Address") {
-      if (!this.props.regex?.test(this.props?.text)) {
+      if (!this.props.regex?.test(this.state?.text)) {
         this.props.onChangeText("", false)
+        Toast.show("Invalid email")
         this.setState({ isFocused: false, text: "" })
       }
     }
@@ -199,7 +201,7 @@ class PrimaryTextInput extends Component {
           // ref={el => {
           //   this.inputRefs = el
           // }}
-          style={styles.inputStyle}
+          style={[styles.inputStyle, { paddingTop: 0 }]}
         >
           <MenuTrigger style={{ width: "100%" }}>
             <View
@@ -209,7 +211,7 @@ class PrimaryTextInput extends Component {
                   flexDirection: "row",
                   justifyContent: "space-between",
                   width: "100%",
-                  height:"100%"
+                  height: "100%"
                 }
               ]}
             >

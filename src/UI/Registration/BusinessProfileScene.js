@@ -47,14 +47,16 @@ export default function BusinessProfileScene({ navigation, route }) {
     address_line_one: adminProfile?.business_address?.address_line_one || "",
     address_line_two: adminProfile?.business_address?.address_line_two || "",
     city: adminProfile?.business_address?.city || "",
+    selectedState: adminProfile?.business_address?.state || "",
     country: "",
     zipcode: adminProfile?.business_address?.zipcode || "",
-    selectedState: adminProfile?.business_address?.state || "",
     profile_image: adminProfile?.business_information?.profile_image || "",
     photo: null,
     loading: false,
     validNumber: userData?.phone ? true : false
   })
+
+  console.warn("adminProfile?.business_address", adminProfile?.business_address)
 
   const {
     loading,
@@ -163,11 +165,12 @@ export default function BusinessProfileScene({ navigation, route }) {
         business_address: {
           address_line_one,
           address_line_two,
-          city: getCityTValue(city),
+          city: getCityValue(city),
           state: getStateValue(selectedState),
           zipcode
         }
       }
+      console.warn("formData", formData)
       await createAdminProfile(formData, token)
       _getProfile(token)
       handleChange("loading", false)
@@ -206,7 +209,7 @@ export default function BusinessProfileScene({ navigation, route }) {
             style={{
               height: 50,
               width: "90%",
-              paddingTop: Platform.OS === "android" ? 15 : 0,
+              paddingTop: 0,
               borderRadius: 10,
               color: Colors.TEXT_INPUT_COLOR,
               paddingHorizontal: 15,
@@ -215,8 +218,8 @@ export default function BusinessProfileScene({ navigation, route }) {
               backgroundColor: Colors.TEXT_INPUT_BG,
               width: "90%",
               marginLeft: "5%",
-              alignItems:'center',
-              justifyContent:'center',
+              alignItems: "center",
+              justifyContent: "center",
               marginVertical: 5,
               borderWidth: 1,
               borderColor:
@@ -247,13 +250,13 @@ export default function BusinessProfileScene({ navigation, route }) {
     })
   }
 
-  const getCityTValue = value => {
-    const filtered = cities?.filter(e => e.name === value)
+  const getCityValue = value => {
+    const filtered = cities?.filter(e => e.name === value || e.id === value)
     return filtered.length > 0 ? filtered[0].id : ""
   }
 
   const getStateValue = value => {
-    const filtered = states?.filter(e => e.name === value)
+    const filtered = states?.filter(e => e.name === value || e.id === value)
     return filtered.length > 0 ? filtered[0].id : ""
   }
   const getStateText = (list, value) => {

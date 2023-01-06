@@ -369,7 +369,7 @@ export default function AddWorksiteScene({ navigation, route }) {
             style={{
               height: 50,
               width: "90%",
-              paddingTop: Platform.OS === "android" ? 15 : 0,
+              paddingTop: 0,
               borderRadius: 10,
               color: Colors.TEXT_INPUT_COLOR,
               paddingHorizontal: 15,

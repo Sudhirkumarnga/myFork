@@ -86,8 +86,7 @@ export default function AddEmployeeScene({ navigation, route }) {
         validNumber1: mobileRef?.current?.isValidNumber()
       }))
     }
-    if(name === 'email'){
-      
+    if (name === "email") {
     }
     setState(pre => ({ ...pre, [name]: value }))
   }
@@ -224,7 +223,7 @@ export default function AddEmployeeScene({ navigation, route }) {
             style={{
               height: 50,
               width: "90%",
-              paddingTop: Platform.OS === "android" ? 15 : 0,
+              paddingTop: 0,
               borderRadius: 10,
               color: Colors.TEXT_INPUT_COLOR,
               paddingHorizontal: 15,
@@ -232,7 +231,7 @@ export default function AddEmployeeScene({ navigation, route }) {
               borderWidth: 1,
               backgroundColor: Colors.TEXT_INPUT_BG,
               width: "90%",
-              justifyContent:'center',
+              justifyContent: "center",
               marginLeft: "5%",
               marginVertical: 5,
               borderWidth: 1,
