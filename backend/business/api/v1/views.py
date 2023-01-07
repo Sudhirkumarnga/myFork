@@ -46,6 +46,8 @@ class CityListApiView(ListAPIView):
     queryset = City.objects.filter()
     http_method_names = ['get']
 
+    def paginate_queryset(self, queryset, view=None):
+        return None
 
 class RegionListAPIView(ListAPIView):
     permission_classes = [IsAuthenticated]
