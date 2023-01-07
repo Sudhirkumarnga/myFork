@@ -2,15 +2,15 @@ import base64
 import datetime
 import calendar
 from datetime import date
+from django.forms import model_to_dict
 from django.core.files.base import ContentFile
-
+from dateutil.relativedelta import relativedelta
 from push_notification.services import create_notification
 from workside import models
 from workside.tasks import event_publishing_reminder_task, event_start_notification_task
 from business.models import (
     Business, Employee, Attendance
 )
-
 
 def convert_file_from_bse64_to_blob(file):
     data = ContentFile(base64.b64decode(file), name='file.jpg')
@@ -160,7 +160,6 @@ def send_notify_to_employees(employees, worksite):
         }
         )
 
-
 def get_total_hours(request):
     all_attendance = Attendance.objects.filter(employee__user=request.user, status="CLOCK_OUT")
     attendance_hours = 0
@@ -168,3 +167,54 @@ def get_total_hours(request):
         for attendance in all_attendance:
             attendance_hours += attendance.total_hours
     return attendance_hours
+
+def create_events_according_to_frequency(event, employees, selected_tasks):
+    try:
+        from workside.models import Event
+        start_dates = get_dates(event.start_time.date(),event.frequency_end_date, event.frequency)
+        end_dates = get_dates(event.end_time.date(),event.frequency_end_date, event.frequency)
+        for start_date, end_date in zip(start_dates, end_dates):
+            new_event = Event.objects.create(
+                parent=event,
+                start_time=event.start_time.replace(year=start_date.year, month=start_date.month, day=start_date.day),
+                end_time=event.end_time.replace(year=end_date.year, month=end_date.month, day=end_date.day),
+                worksite=event.worksite,
+                frequency=event.frequency,
+                description=event.description,
+                notes=event.notes,
+                reminder=event.reminder,
+                schedule_inspection=event.schedule_inspection,
+                event_status=event.event_status,
+                publishing_reminder=event.publishing_reminder,
+                reminder_date=event.reminder_date,
+                notify=event.notify,
+                color=event.color
+            )
+            new_event.employees.set(employees)
+            new_event.selected_tasks.set(selected_tasks)
+    except Exception as e:
+        print(e)
+
+
+def get_dates(start_date, end_date, frequency):
+    dates = []
+    current_date = start_date + datetime.timedelta(days=1)
+    if frequency == "DAILY":
+        while current_date < end_date:
+            current_date += datetime.timedelta(days=1)
+            dates.append(current_date)    
+    elif frequency == "WEEKLY":
+        while current_date < end_date:
+            current_date += datetime.timedelta(weeks=1)
+            if not current_date.year > end_date.year:
+                dates.append(current_date)
+    elif frequency == "MONTHLY":
+        while current_date.month < end_date.month:
+            current_date += relativedelta(months=1)
+            dates.append(current_date)
+    elif frequency == "YEARLY":
+        while current_date.year < end_date.year:
+            current_date += relativedelta(years=1)
+            dates.append(current_date)
+    
+    return dates

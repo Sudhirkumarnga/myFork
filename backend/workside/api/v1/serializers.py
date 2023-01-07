@@ -5,7 +5,10 @@ from workside.services import (
     create_worksite,
     update_worksite,
     create_task,
-    create_task_attachment, send_notification_to_employees
+    create_task_attachment,
+    send_event_reminder_to_employees,
+    send_notify_to_employees,
+    send_notification_to_employees
 )
 from business.models import Attendance
 from django.utils.translation import ugettext_lazy as _
@@ -231,6 +234,8 @@ class EventSerializer(ModelSerializer):
         del validated_data['employees']
         del validated_data['selected_tasks']
         event = Event.objects.create(**validated_data)
+        event.parent = event
+        event.save()
         event.employees.set(
             employees
         )
@@ -248,6 +253,7 @@ class EventSerializer(ModelSerializer):
                 [employee.id for employee in event.employees.all()],
                 event.worksite.id
             )
+        create_events_according_to_frequency(event, employees, selected_tasks)
         return event
 
     def update(self, instance, validated_data):

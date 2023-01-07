@@ -14,9 +14,9 @@ from workside.enums import (
     EventPublishingReminder
 )
 from workside.services import (
-    calculate_reminder_date, send_event_reminder_to_employees, send_notify_to_employees
+    calculate_reminder_date, 
+    create_events_according_to_frequency
 )
-from django.db.models.signals import m2m_changed, post_save
 from random import randrange
 
 
@@ -89,6 +89,7 @@ class TaskAttachments(TimeStampedModel):
 
 
 class Event(TimeStampedModel):
+    parent = models.ForeignKey('self', on_delete=models.SET_NULL, blank=True, null=True, related_name="parent_event")
     worksite = models.ForeignKey(WorkSite, on_delete=models.CASCADE, null=True, blank=True)
     start_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)

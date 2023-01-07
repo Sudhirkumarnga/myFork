@@ -285,9 +285,27 @@ class EventView(ModelViewSet):
     @action(detail=False, methods=["POST"])
     def delete_events(self, request, *args, **kwargs):
         try:
-            events = Event.objects.filter(id__in=request.data['events'])
-            for event in events:
-                event.delete()
+            event_id = request.data.get('event')
+            this_and_following_event = request.data.get('this_and_following_event')
+            all_events = request.data.get('all_events')
+
+            if event_id and this_and_following_event:
+                event = Event.objects.filter(id=event_id)
+                if event.exists():
+                    events = Event.objects.filter(parent=event.first().parent, start_time__gte=event.first().start_time)
+                    for event in events:
+                        event.delete()
+            
+            elif all_events:
+                events = Event.objects.filter(worksite__business__user=request.user)
+                for event in events:
+                    event.delete()
+            
+            elif event_id:
+                event = Event.objects.filter(id=event_id)
+                if event.exists():
+                    event.first().delete()
+
             return Response(
                 SmartWorkHorseResponse.get_response(
                     success=True,
