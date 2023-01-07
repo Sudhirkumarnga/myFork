@@ -24,7 +24,10 @@ from workside.api.v1.serializers import (
 )
 from workside.services import (
     update_serializer_data,
-    get_filtered_queryset, send_notification_to_employees, get_total_hours
+    get_filtered_queryset, 
+    send_notification_to_employees, 
+    send_event_reminder_to_employees,
+    get_total_hours
 )
 from datetime import datetime
 from rest_framework.filters import SearchFilter
@@ -310,6 +313,44 @@ class EventView(ModelViewSet):
                 SmartWorkHorseResponse.get_response(
                     success=True,
                     message="All Event's successfully deleted.",
+                    status=SmartWorkHorseStatus.Success.value,
+                ),
+                status=status.HTTP_201_CREATED,
+                headers={},
+            )
+
+        except Exception as e:
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=False,
+                    message="Something went wrong.",
+                    status=SmartWorkHorseStatus.Error.value,
+                    error={str(e)},
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+    @action(detail=False, methods=["POST"])
+    def publish_all_events(self, request, *args, **kwargs):
+        try:
+            events = Event.objects.filter(worksite__business__user=request.user, event_status="DRAFT")
+            for event in events:
+                send_event_reminder_to_employees(
+                event.start_time,
+                [employee.id for employee in event.employees.all()],
+                event.worksite.id
+            )
+            create_events_according_to_frequency(
+                event, 
+                [employee.id for employee in event.employees.all()], 
+                [task.id for task in event.selected_tasks.all()]
+            )
+            event.event_status = "PUBLISHED"
+            event.save()
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=True,
+                    message="All Drafted Event's successfully published.",
                     status=SmartWorkHorseStatus.Success.value,
                 ),
                 status=status.HTTP_201_CREATED,

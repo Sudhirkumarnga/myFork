@@ -152,7 +152,6 @@ class EmployeeSerializer(ModelSerializer):
         employee_user, password = create_user_for_employee(request.data)
         employee = create_employee(employee_user, request.data, request.user)
         send_email_to_employee(employee_user, password)
-        print('--------------------call update subscription--------------------------')
         update_subscription(business.business_code)
         return employee
 

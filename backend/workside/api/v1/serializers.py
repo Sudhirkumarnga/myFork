@@ -253,7 +253,11 @@ class EventSerializer(ModelSerializer):
                 [employee.id for employee in event.employees.all()],
                 event.worksite.id
             )
-        create_events_according_to_frequency(event, employees, selected_tasks)
+            create_events_according_to_frequency(
+                event, 
+                employees, 
+                selected_tasks
+            )
         return event
 
     def update(self, instance, validated_data):
