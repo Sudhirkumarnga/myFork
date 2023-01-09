@@ -33,6 +33,9 @@ import momenttimezone from "moment-timezone"
 import Strings from "../../res/Strings"
 import { SvgXml } from "react-native-svg"
 import DRAFTED from "../../res/Svgs/drafted.svg"
+import { publishAllEvent } from "../../api/business"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import Toast from "react-native-simple-toast"
 
 export default function Scheduler({ navigation }) {
   const { schedules, user, _getAllSchedules } = useContext(AppContext)
@@ -43,7 +46,8 @@ export default function Scheduler({ navigation }) {
     visible: false,
     date: new Date(),
     date_text: "",
-    selectedEvent: null
+    selectedEvent: null,
+    loadingPublish: false
   })
   useFocusEffect(
     useCallback(() => {
@@ -51,7 +55,15 @@ export default function Scheduler({ navigation }) {
     }, [])
   )
 
-  const { mode, date_text, openSelect, date, visible, selectedEvent } = state
+  const {
+    mode,
+    date_text,
+    openSelect,
+    date,
+    visible,
+    selectedEvent,
+    loadingPublish
+  } = state
 
   const handleChange = (key, value) => {
     setState(pre => ({ ...pre, [key]: value }))
@@ -129,6 +141,25 @@ export default function Scheduler({ navigation }) {
     }
   }
 
+  const _publishAllEvent = async () => {
+    try {
+      handleChange("loadingPublish", true)
+      const token = await AsyncStorage.getItem("token")
+      await publishAllEvent(token)
+      _getAllSchedules("")
+      Toast.show(`All events has been published`)
+      handleChange("loadingPublish", false)
+    } catch (error) {
+      handleChange("loadingPublish", false)
+      const showWError = Object.values(error.response?.data?.error)
+      if (showWError.length > 0) {
+        Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
+      } else {
+        Toast.show(`Error: ${JSON.stringify(error)}`)
+      }
+    }
+  }
+
   const getEvents = events => {
     if (events?.length > 0) {
       const list = []
@@ -149,8 +180,6 @@ export default function Scheduler({ navigation }) {
       return []
     }
   }
-
-  console.warn('schedules',schedules);
 
   return (
     <View style={styles.container}>
@@ -263,6 +292,8 @@ export default function Scheduler({ navigation }) {
           {mode !== "month" && (
             <Button
               backgroundColor={Colors.BLUR_TEXT}
+              onPress={!isEmp && _publishAllEvent}
+              loading={loadingPublish}
               style={{ height: 40 }}
               title={isEmp ? "Worksites" : "Publish All"}
             />

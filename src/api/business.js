@@ -72,8 +72,12 @@ export const updateEvent = (id, payload, token) => {
   return API.put(`api/v1/event/${id}/`, payload, token)
 }
 
-export const deleteEvent = (id, token) => {
-  return API.delete(`api/v1/event/${id}/`, {}, token)
+export const deleteEvent = (payload, token) => {
+  return API.post(`api/v1/event/delete_events/`, payload, token)
+}
+
+export const publishAllEvent = token => {
+  return API.post(`api/v1/event/publish_all_events/`, {}, token)
 }
 
 export const getEarnings = (payload, token) => {

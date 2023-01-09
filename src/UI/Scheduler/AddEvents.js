@@ -61,7 +61,10 @@ export default function AddEvents({ navigation, route }) {
     employees: [],
     event_status: "",
     publishing_reminder: "",
-    eventDetails: null
+    eventDetails: null,
+    deleteAll: false,
+    deleteThis: true,
+    deleteFollowing: false
   })
   const {
     end_date,
@@ -91,7 +94,10 @@ export default function AddEvents({ navigation, route }) {
     visible,
     visible1,
     loadingDelete,
-    loadingMain
+    loadingMain,
+    deleteAll,
+    deleteFollowing,
+    deleteThis
   } = state
 
   const reminderList = [
@@ -301,7 +307,12 @@ export default function AddEvents({ navigation, route }) {
     try {
       handleChange("loadingDelete", true)
       const token = await AsyncStorage.getItem("token")
-      const res = await deleteEvent(selectedEvent?.id, token)
+      const payload = {
+        event: selectedEvent?.id,
+        all_events: deleteAll,
+        this_and_following_event: deleteFollowing
+      }
+      const res = await deleteEvent(payload, token)
       handleChange("loadingDelete", false)
       handleChange("visible", false)
       navigation.goBack()
@@ -544,7 +555,9 @@ export default function AddEvents({ navigation, route }) {
           onPress={() => handleChange("reminder", !reminder)}
           isChecked={reminder}
         /> */}
-        <Text style={styles.inputText}>Remember to account for the travel time</Text>
+        <Text style={styles.inputText}>
+          *Remember to account for the travel time
+        </Text>
       </View>
       <View
         style={{
@@ -858,6 +871,105 @@ export default function AddEvents({ navigation, route }) {
             <Text style={[styles.title, { textAlign: "center" }]}>
               {"Are you sure you want to delete this event?"}
             </Text>
+            <View
+              style={{
+                flexDirection: "row",
+                width: "80%",
+                marginLeft: "5%",
+                marginTop: 10,
+                alignItems: "center"
+              }}
+            >
+              <BouncyCheckbox
+                size={20}
+                fillColor={Colors.BACKGROUND_BG}
+                disableBuiltInState
+                innerIconStyle={{
+                  borderColor: Colors.BLUR_TEXT,
+                  borderRadius: 20,
+                  marginBottom: 2
+                }}
+                iconStyle={{
+                  borderColor: Colors.BLUR_TEXT,
+                  borderRadius: 20,
+                  marginBottom: 2
+                }}
+                onPress={() => {
+                  handleChange("deleteFollowing", false)
+                  handleChange("deleteThis", false)
+                  handleChange("deleteAll", !deleteAll)
+                }}
+                isChecked={deleteAll}
+              />
+              <Text style={styles.inputText}>Delete All Frequency Events</Text>
+            </View>
+
+            <View
+              style={{
+                flexDirection: "row",
+                width: "80%",
+                marginLeft: "5%",
+                marginTop: 10,
+                alignItems: "center"
+              }}
+            >
+              <BouncyCheckbox
+                size={20}
+                fillColor={Colors.BACKGROUND_BG}
+                disableBuiltInState
+                innerIconStyle={{
+                  borderColor: Colors.BLUR_TEXT,
+                  borderRadius: 20,
+                  marginBottom: 2
+                }}
+                iconStyle={{
+                  borderColor: Colors.BLUR_TEXT,
+                  borderRadius: 20,
+                  marginBottom: 2
+                }}
+                onPress={() => {
+                  handleChange("deleteAll", false)
+                  handleChange("deleteThis", false)
+                  handleChange("deleteFollowing", !deleteFollowing)
+                }}
+                isChecked={deleteFollowing}
+              />
+              <Text style={styles.inputText}>
+                Delete This And Following Events
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                width: "80%",
+                marginLeft: "5%",
+                marginTop: 10,
+                alignItems: "center"
+              }}
+            >
+              <BouncyCheckbox
+                size={20}
+                fillColor={Colors.BACKGROUND_BG}
+                disableBuiltInState
+                innerIconStyle={{
+                  borderColor: Colors.BLUR_TEXT,
+                  borderRadius: 20,
+                  marginBottom: 2
+                }}
+                iconStyle={{
+                  borderColor: Colors.BLUR_TEXT,
+                  borderRadius: 20,
+                  marginBottom: 2
+                }}
+                onPress={() => {
+                  handleChange("deleteFollowing", false)
+                  handleChange("deleteAll", false)
+                  handleChange("deleteThis", !deleteThis)
+                }}
+                isChecked={deleteThis}
+              />
+              <Text style={styles.inputText}>Delete This Event</Text>
+            </View>
             <Button
               style={{ height: 40 }}
               onPress={_deleteEvent}
