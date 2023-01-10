@@ -52,7 +52,7 @@ class CityListApiView(ListAPIView):
     def get_queryset(self):
         search = self.request.query_params.get('search', None)
         if search is not None and len(search) >= 3:
-            queryset = self.queryset.filter(name__icontains=search)
+            queryset = self.queryset.filter(name__startswith=search)[:10]
         else:
             queryset = self.queryset[:10]
         return queryset
