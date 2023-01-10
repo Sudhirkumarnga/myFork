@@ -45,7 +45,7 @@ class CountrySerializer(ModelSerializer):
 class CitySerializer(ModelSerializer):
     class Meta:
         model = City
-        fields = "__all__"
+        fields = ['id', 'name']
 
 
 class RegionSerializer(ModelSerializer):
