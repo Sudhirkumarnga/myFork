@@ -54,7 +54,7 @@ class CityListApiView(ListAPIView):
         if search is not None and len(search) >= 3:
             queryset = self.queryset.filter(name__icontains=search)
         else:
-            queryset = queryset[:10]
+            queryset = self.queryset[:10]
         return queryset
 
 class RegionListAPIView(ListAPIView):
