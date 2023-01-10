@@ -48,6 +48,14 @@ class CityListApiView(ListAPIView):
 
     def paginate_queryset(self, queryset, view=None):
         return None
+    
+    def get_queryset(self):
+        search = self.request.query_params.get('search', None)
+        if len(search) >= 3:
+            queryset = self.queryset.filter(name__icontains=search)
+        else:
+            queryset = queryset[:10]
+        return queryset
 
 class RegionListAPIView(ListAPIView):
     permission_classes = [IsAuthenticated]
