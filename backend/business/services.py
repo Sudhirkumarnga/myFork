@@ -26,7 +26,8 @@ def update_profile(user, data):
     User.objects.filter(id=user.id).update(**data['personal_information'])
     if user.role == 'Organization Admin':
         business = Business.objects.get(user=user)
-        business.profile_image = convert_image_from_bse64_to_blob(data['business_information']['profile_image'])
+        if 'profile_image' in data['business_information']:
+            business.profile_image = convert_image_from_bse64_to_blob(data['business_information']['profile_image'])
         business.pay_frequency = data['business_information']['pay_frequency']
         business.name = data['business_information']['name']
         business.save()
