@@ -478,10 +478,9 @@ class UpcomingShiftView(APIView):
         employee = Employee.objects.filter(user=self.request.user)
         queryset = self.queryset.filter(
             ~Q(event_status='DRAFT'),
-            start_time__lte=datetime.now(),
             end_time__gte=datetime.now(),
             employees__in=employee,
-        )
+        ).order_by('start_time')
         if queryset.exists():
             attendance = Attendance.objects.filter(
                 event=queryset.first(),
