@@ -143,40 +143,29 @@ export default function ReportsView({ navigation, route }) {
   const handleClose = () => {
     handleChange("visible", false)
   }
-
+  // console.warn("reports", reports)
   const sortBy = type => {
-    if (type === "az") {
-      const sorted = reports?.sort((a, b) =>
-        (title === "Location Variances" || title === "Schedule Variances"
-          ? a?.employee
-          : title === "Inspection"
-          ? a?.worksite?.name
-          : a?.employee?.name
-        ).localeCompare(
-          title === "Location Variances" || title === "Schedule Variances"
-            ? b?.employee
-            : title === "Inspection"
-            ? b?.worksite?.name
-            : b?.employee?.name
-        )
-      )
+    function sortFunction(a, b) {}
+    if (type === "za") {
+      const sorted = reports?.sort(function (a, b) {
+        // Turn your strings into dates, and then subtract them
+        // to get a value that is either negative, positive, or zero.
+        var dateA = new Date(b.updated_at || b?.created_at).getTime()
+        var dateB = new Date(a.updated_at || a?.created_at).getTime()
+        return dateA > dateB ? 1 : -1
+      })
+      console.warn("sorted", sorted)
       handleChange("reportsFiltered", sorted)
     }
-    if (type === "za") {
-      const sorted = reports?.sort((a, b) =>
-        (title === "Location Variances" || title === "Schedule Variances"
-          ? b?.employee?.toLowerCase()
-          : title === "Inspection"
-          ? b?.worksite?.name?.toLowerCase()
-          : b?.employee?.name?.toLowerCase()
-        ).localeCompare(
-          title === "Location Variances" || title === "Schedule Variances"
-            ? a?.employee?.toLowerCase()
-            : title === "Inspection"
-            ? a?.worksite?.name?.toLowerCase()
-            : a?.employee?.name?.toLowerCase()
-        )
-      )
+    if (type === "az") {
+      const sorted = reports?.sort(function (a, b) {
+        // Turn your strings into dates, and then subtract them
+        // to get a value that is either negative, positive, or zero.
+        var dateA = new Date(a.updated_at || a?.created_at).getTime()
+        var dateB = new Date(b.updated_at || b?.created_at).getTime()
+        return dateA > dateB ? 1 : -1
+      })
+      console.warn("sorted", sorted)
       handleChange("reportsFiltered", sorted)
     }
   }
@@ -260,16 +249,16 @@ export default function ReportsView({ navigation, route }) {
                 width: "40%"
               }}
             >
-              <MenuOption onSelect={() => sortBy("az")} text="A to Z" />
-              <MenuOption onSelect={() => sortBy("za")} text="Z to A" />
-              <MenuOption
+              <MenuOption onSelect={() => sortBy("az")} text="Newest" />
+              <MenuOption onSelect={() => sortBy("za")} text="Oldest" />
+              {/* <MenuOption
                 // onSelect={() => handleChange(`mode`, 'month')}
                 text="Increasing"
               />
               <MenuOption
                 // onSelect={() => handleChange(`mode`, 'month')}
                 text="Decreasing"
-              />
+              /> */}
             </MenuOptions>
           </Menu>
           <Button
