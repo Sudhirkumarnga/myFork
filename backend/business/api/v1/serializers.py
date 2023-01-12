@@ -340,12 +340,13 @@ class EarningSerializer(serializers.ModelSerializer):
             dict = {}
             dict['employee_hours'], dict['employee_earnings'] = 0, 0
             for attendance in attendances:
-                dict['employee_hourly_rate'] = attendances.first().employee.hourly_rate
-                dict['created_at'] = attendances.first().created_at.date()
-            
-            dict['employee_hours'] += attendances.first().total_hours
-            dict['employee_earnings'] += attendances.first().earnings
+                dict['employee_hours'] += attendance.total_hours
+                dict['employee_earnings'] += attendance.earnings
+                
+            dict['employee_hourly_rate'] = attendances.first().employee.hourly_rate
+            dict['created_at'] = attendances.first().created_at.date()
             dict['employee_name'] = attendances.first().employee.user.get_full_name()
+            dict['employee_id'] = attendances.first().employee.id
             dict['employee_image'] = attendances.first().employee.profile_image.url if attendance.employee.profile_image else None
             dict['employee_position'] = attendances.first().employee.position
             employees_list.append(dict)
