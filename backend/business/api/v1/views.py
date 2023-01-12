@@ -445,11 +445,11 @@ class EarningsView(APIView):
             )
 
             if date:
-                queryset = self.queryset.filter(updated_at__day=date)
+                queryset = queryset.filter(updated_at__day=date)
             if month:
-                queryset = self.queryset.filter(updated_at__month=month)
+                queryset = queryset.filter(updated_at__month=month)
             if year:
-                queryset = self.queryset.filter(updated_at__year=year)
+                queryset = queryset.filter(updated_at__year=year)
 
             serializer = EarningSerializer(
                 queryset.first(),
@@ -467,11 +467,11 @@ class EarningsView(APIView):
             )
 
             if date:
-                queryset = self.queryset.filter(updated_at__day=date)
+                queryset = queryset.filter(updated_at__day=date)
             if month:
-                queryset = self.queryset.filter(updated_at__month=month)
+                queryset = queryset.filter(updated_at__month=month)
             if year:
-                queryset = self.queryset.filter(updated_at__year=year)
+                queryset = queryset.filter(updated_at__year=year)
 
             data = EmployeeEarningSerializer(
                 queryset.first(),
