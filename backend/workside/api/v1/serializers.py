@@ -174,7 +174,7 @@ class FrequencyTaskSerializer(ModelSerializer):
 class TaskAttachmentSerializer(ModelSerializer):
     class Meta:
         model = TaskAttachments
-        fields = ('id', 'task')
+        fields = ('id', 'task', 'file')
 
     def create(self, validated_data):
         request = self.context['request']
