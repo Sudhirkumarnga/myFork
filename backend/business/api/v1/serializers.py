@@ -348,28 +348,14 @@ class EarningSerializer(serializers.ModelSerializer):
             dict['employee_id'] = attendances.first().employee.id
             dict['employee_image'] = attendances.first().employee.profile_image.url if attendance.employee.profile_image else None
             dict['employee_position'] = attendances.first().employee.position
+            print(dict)
+            print('==================================')
             employees_list.append(dict)
+            print('==================================')
+
         data['employees'] = employees_list
         data['date'] = queryset.first().updated_at.date()
         return data
-
-        
-        # employees = []
-        # for attendance in attendances:
-        #     dict = {}
-        #     dict['employee_name'] = attendance.employee.user.get_full_name()
-        #     dict['employee_image'] = attendance.employee.profile_image.url if attendance.employee.profile_image else None
-        #     dict['employee_position'] = attendance.employee.position
-        #     dict['employee_hourly_rate'] = attendance.employee.hourly_rate
-        #     dict['created_at'] = attendance.created_at.date()
-        #     dict['employee_hours'], dict['employee_earnings'] = 0, 0
-        #     for attendance in attendances.filter(employee=attendance.employee):
-        #         dict['employee_hours'] += attendance.total_hours
-        #         dict['employee_earnings'] += attendance.earnings
-        #     employees.append(dict)
-        # data['employees'] = employees
-        # data['date'] = attendances.first().updated_at.date()
-
 
 class EmployeeEarningSerializer(serializers.ModelSerializer):
     class Meta:
