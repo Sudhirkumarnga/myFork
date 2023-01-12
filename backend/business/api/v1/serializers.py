@@ -312,6 +312,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
         request = self.context['request']
         validated_data['employee'] = Employee.objects.get(user=request.user)
         validated_data['clock_in_time'] = datetime.now()
+        validated_data['worksite_name'] = validated_data['event'].worksite.name
         attendance = Attendance.objects.create(
             **validated_data
         )
@@ -361,7 +362,7 @@ class EmployeeEarningSerializer(serializers.ModelSerializer):
         worksites = []
         for attendance in attendances:
             worksite = {
-                'worksite': attendance.event.worksite.name if attendance.event else None,
+                'worksite': attendance.worksite_name,
                 'amount_clocked': attendance.total_hours,
                 'earned': attendance.earnings,
                 'created_at': attendance.created_at.date()

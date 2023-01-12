@@ -145,6 +145,7 @@ class Attendance(TimeStampedModel):
     )
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True, blank=True)
     event = models.ForeignKey('workside.Event', on_delete=models.SET_NULL, null=True, blank=True)
+    worksite_name = models.CharField(max_length=2000, null=True, blank=True)
     completed_tasks = models.ManyToManyField('workside.Task', blank=True)
     notes = models.CharField(max_length=2000, null=True, blank=True)
     notes_media = models.FileField(_('Attendance Note Media'), upload_to=employee_directory_path, null=True, blank=True)
