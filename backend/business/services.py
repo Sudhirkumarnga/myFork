@@ -93,7 +93,7 @@ def create_employee(user, data, business_user):
     employee = Employee.objects.create(
         user=user,
         business=Business.objects.get(user=business_user),
-        profile_image=convert_image_from_bse64_to_blob(data['personal_information']['profile_image']),
+        profile_image = convert_image_from_bse64_to_blob(data['personal_information']['profile_image']) if 'profile_image' in data['personal_information'] else None,
         mobile=data['contact']['mobile'],
         address_line_one=data['address_information']['address_line_one'],
         address_line_two=data['address_information']['address_line_two'],
