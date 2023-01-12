@@ -198,23 +198,22 @@ def create_events_according_to_frequency(event, employees, selected_tasks):
 
 def get_dates(start_date, end_date, frequency):
     dates = []
-    current_date = start_date + datetime.timedelta(days=1)
     if frequency == "DAILY":
-        while current_date < end_date:
-            current_date += datetime.timedelta(days=1)
-            dates.append(current_date)    
+        while start_date < end_date:
+            start_date += datetime.timedelta(days=1)
+            dates.append(start_date)    
     elif frequency == "WEEKLY":
-        while current_date < end_date:
-            current_date += datetime.timedelta(weeks=1)
-            if not current_date.year > end_date.year:
-                dates.append(current_date)
+        while start_date < end_date:
+            start_date += datetime.timedelta(weeks=1)
+            if not start_date.year > end_date.year:
+                dates.append(start_date)
     elif frequency == "MONTHLY":
-        while current_date.month < end_date.month:
-            current_date += relativedelta(months=1)
-            dates.append(current_date)
+        while start_date.month < end_date.month:
+            start_date += relativedelta(months=1)
+            dates.append(start_date)
     elif frequency == "YEARLY":
-        while current_date.year < end_date.year:
-            current_date += relativedelta(years=1)
-            dates.append(current_date)
+        while start_date.year < end_date.year:
+            start_date += relativedelta(years=1)
+            dates.append(start_date)
     
     return dates
