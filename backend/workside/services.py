@@ -65,7 +65,7 @@ def create_task(validated_data):
         criticality=validated_data['criticality'],
         frequency_of_task=validated_data['frequency_of_task']
     )
-    if "files" in validated_data['files']:
+    if "files" in validated_data:
         for key, val in validated_data['files'].items():
             models.TaskAttachments.objects.create(task=task, file=convert_file_from_bse64_to_blob(val))
     return task
