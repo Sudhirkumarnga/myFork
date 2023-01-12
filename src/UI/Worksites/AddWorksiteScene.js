@@ -479,8 +479,9 @@ export default function AddWorksiteScene({ navigation, route }) {
             !number_of_workers_needed ||
             !supplies_needed ||
             !contact_person_name ||
-            !contact_phone_number ||
-            (!worksiteData?.logo && !logo)
+            !contact_phone_number 
+            // ||
+            // (!worksiteData?.logo && !logo)
           }
           loading={loading}
           style={styles.footerButton}

@@ -23,10 +23,17 @@ import { useContext } from "react"
 import PhoneInput from "react-native-phone-input"
 import { useRef } from "react"
 import { useEffect } from "react"
+import Autocomplete from "react-native-autocomplete-input"
 
 export default function BusinessProfileScene({ navigation, route }) {
-  const { _getProfile, _getCountries, cities, states, adminProfile } =
-    useContext(AppContext)
+  const {
+    _getProfile,
+    _getCountries,
+    cities,
+    states,
+    adminProfile,
+    _getCities
+  } = useContext(AppContext)
   const phoneRef = useRef(null)
   const userData = route?.params?.userData
   // State
@@ -152,8 +159,8 @@ export default function BusinessProfileScene({ navigation, route }) {
       const formData = {
         business_information: {
           name,
-          pay_frequency,
-          profile_image: photo
+          pay_frequency
+          // profile_image: photo
         },
         personal_information: {
           first_name,
@@ -170,6 +177,7 @@ export default function BusinessProfileScene({ navigation, route }) {
           zipcode
         }
       }
+      photo && (formData.business_information.profile_image = photo)
       console.warn("formData", formData)
       await createAdminProfile(formData, token)
       _getProfile(token)
@@ -251,13 +259,13 @@ export default function BusinessProfileScene({ navigation, route }) {
   }
 
   const getCityValue = value => {
-    const filtered = cities?.filter(e => e.name === value || e.id === value)
-    return filtered.length > 0 ? filtered[0].id : ""
+    const filtered = cities?.filter(e => e?.name === value || e?.id === value)
+    return filtered?.length > 0 && filtered[0]?.id ? filtered[0]?.id : ""
   }
 
   const getStateValue = value => {
     const filtered = states?.filter(e => e.name === value || e.id === value)
-    return filtered.length > 0 ? filtered[0].id : ""
+    return filtered?.length > 0 ? filtered[0].id : ""
   }
   const getStateText = (list, value) => {
     const filtered = list?.filter(e => e?.id === value)
@@ -268,15 +276,60 @@ export default function BusinessProfileScene({ navigation, route }) {
     return Forms.fields("businessAddress").map(fields => {
       if (fields.key === "city") {
         return (
-          <PrimaryTextInput
-            text={getStateText(cities, city)}
-            dropdown={true}
-            items={getDropdownItem(cities)}
-            label={"City"}
-            key="city"
-            // placeholder='City'
-            onChangeText={(text, isValid) => handleChange("city", text)}
-          />
+          <View
+            style={{
+              // height: 50,
+              width: "90%",
+              paddingTop: 0,
+              borderRadius: 10,
+              color: Colors.TEXT_INPUT_COLOR,
+              paddingHorizontal: 15,
+              ...Fonts.poppinsRegular(14),
+              borderWidth: 1,
+              backgroundColor: Colors.TEXT_INPUT_BG,
+              width: "90%",
+              marginLeft: "5%",
+              alignItems: "center",
+              justifyContent: "center",
+              marginVertical: 5,
+              borderWidth: 1,
+              borderColor: Colors.TEXT_INPUT_BORDER
+            }}
+          >
+            <Autocomplete
+              containerStyle={{
+                width: "100%",
+                // backgroundColor: Colors.INVALID_TEXT_INPUT,
+                borderWidth: 0
+              }}
+              inputContainerStyle={{
+                borderWidth: 0,
+                backgroundColor: Colors.INVALID_TEXT_INPUT
+              }}
+              onChangeText={text => _getCities(`?city=${text}`)}
+              // value={getStateText(cities, city)}
+              data={cities}
+              flatListProps={{
+                keyExtractor: (_, idx) => idx,
+                renderItem: ({ item }) => (
+                  <TouchableOpacity
+                    onPress={() => handleChange("city", item?.id)}
+                  >
+                    <Text>{item?.name}</Text>
+                  </TouchableOpacity>
+                )
+              }}
+            />
+          </View>
+          // <PrimaryTextInput
+          //   text={getStateText(cities, city)}
+          //   dropdown={true}
+          //   items={getDropdownItem(cities)}
+          //   label={"City"}
+          //   key="city"
+          //   // placeholder='City'
+          //   onChangeText={(text, isValid) => handleChange("city", text)}
+          // />
         )
       } else if (fields.key === "state") {
         return (
@@ -321,7 +374,7 @@ export default function BusinessProfileScene({ navigation, route }) {
           !city ||
           !selectedState ||
           !zipcode ||
-          !profile_image ||
+          // !profile_image ||
           !validNumber
         }
         loading={loading}
@@ -344,9 +397,10 @@ export default function BusinessProfileScene({ navigation, route }) {
             profile_image ? (
               <Image
                 source={{
-                  uri:
-                    adminProfile?.business_information?.profile_image ||
-                    profile_image
+                  uri: photo
+                    ? profile_image
+                    : adminProfile?.business_information?.profile_image ||
+                      profile_image
                 }}
                 style={{ width: "100%", height: "100%", borderRadius: 10 }}
               />

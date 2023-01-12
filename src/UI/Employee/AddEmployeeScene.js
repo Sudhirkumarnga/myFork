@@ -55,7 +55,7 @@ export default function AddEmployeeScene({ navigation, route }) {
   })
 
   useEffect(() => {
-    // _getCountries()
+    _getCountries()
   }, [])
 
   const {
@@ -77,6 +77,8 @@ export default function AddEmployeeScene({ navigation, route }) {
     validNumber,
     validNumber1
   } = state
+
+  console.warn('cities',cities);
 
   const handleChange = (name, value) => {
     if (name === "phone" || name === "mobile") {
@@ -137,7 +139,7 @@ export default function AddEmployeeScene({ navigation, route }) {
       const token = await AsyncStorage.getItem("token")
       const formData = {
         personal_information: {
-          profile_image: photo,
+          // profile_image: photo,
           first_name,
           last_name,
           date_of_birth: moment(date_of_birth).format("YYYY-MM-DD"),
@@ -158,6 +160,7 @@ export default function AddEmployeeScene({ navigation, route }) {
           hourly_rate: Number(price)
         }
       }
+      photo && (formData.personal_information.profile_image = photo)
       if (item) {
         await updateEmployee(item?.id, formData, token)
       } else {
@@ -314,7 +317,7 @@ export default function AddEmployeeScene({ navigation, route }) {
         title={item ? Strings.update : Strings.submit}
         style={styles.footerButton}
         disabled={
-          !photo ||
+          // !photo ||
           !first_name ||
           !last_name ||
           !date_of_birth ||

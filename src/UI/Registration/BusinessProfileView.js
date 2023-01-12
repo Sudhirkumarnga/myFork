@@ -39,7 +39,7 @@ export default function BusinessProfileView ({ navigation }) {
 
   const getCityTValue = (list, value) => {
     const filtered = list?.filter(e => e.id === value)
-    return filtered.length > 0 ? filtered[0].name : ''
+    return filtered?.length > 0 ? filtered[0]?.name : ''
   }
 
   const handleSubmit = async () => {

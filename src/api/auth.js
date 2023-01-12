@@ -88,8 +88,8 @@ export const getCountries = token => {
   return API.get(`api/v1/country/`, token)
 }
 
-export const getCities = token => {
-  return API.get(`api/v1/city/`, token)
+export const getCities = (body, token) => {
+  return API.get(`api/v1/city/${body}`, token)
 }
 
 export const getStates = token => {

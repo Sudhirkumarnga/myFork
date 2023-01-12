@@ -250,8 +250,9 @@ export default function CreateTaskScene({ navigation, route }) {
             !description ||
             !criticality ||
             !notes ||
-            !frequency_of_task ||
-            (!task && photos.length === 0)
+            !frequency_of_task 
+            // ||
+            // (!task && photos.length === 0)
           }
           title={task ? "Update" : Strings.create}
         />

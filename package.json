@@ -36,6 +36,7 @@
     "moment-timezone": "^0.5.37",
     "react": "17.0.1",
     "react-native": "0.64.0",
+    "react-native-autocomplete-input": "^5.2.0",
     "react-native-big-calendar": "^3.2.3",
     "react-native-bouncy-checkbox": "^3.0.2",
     "react-native-credit-card-input": "^0.4.1",

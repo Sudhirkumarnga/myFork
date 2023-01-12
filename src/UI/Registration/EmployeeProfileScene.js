@@ -172,6 +172,7 @@ export default function EmployeeProfileScene({ navigation, route }) {
               backgroundColor: Colors.TEXT_INPUT_BG,
               width: "90%",
               marginLeft: "5%",
+              justifyContent: "center",
               marginVertical: 5,
               borderWidth: 1,
               borderColor:

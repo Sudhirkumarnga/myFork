@@ -48,11 +48,31 @@ const App = () => {
     try {
       const token = await AsyncStorage.getItem("token")
       const countries = await getCountries(token)
-      const cities = await getCities(token)
+      _getCities("")
       const states = await getStates(token)
       setCountries(countries?.data?.results)
-      setCities(cities?.data?.results)
+      setCities(cities?.data)
       setStates(states?.data?.results)
+    } catch (error) {
+      const showWError = error.response?.data?.error
+        ? Object.values(error.response?.data?.error)
+        : error.response?.data
+        ? Object.values(error.response?.data)
+        : ""
+      if (showWError.length > 0) {
+        Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
+      } else {
+        Toast.show(`Error: ${JSON.stringify(error)}`)
+      }
+    }
+  }
+
+  const _getCities = async payload => {
+    try {
+      const body = payload || ""
+      const token = await AsyncStorage.getItem("token")
+      const cities = await getCities(body, token)
+      setCities(cities?.data)
     } catch (error) {
       const showWError = error.response?.data?.error
         ? Object.values(error.response?.data?.error)
@@ -230,7 +250,8 @@ const App = () => {
         _readDevice,
         notifications,
         _getNotification,
-        earningLoading
+        earningLoading,
+        _getCities
       }}
     >
       <MenuProvider>

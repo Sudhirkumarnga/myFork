@@ -223,7 +223,11 @@ export default function ShiftView() {
             }}
           >
             <View>
-              <Text style={styles.title}>{Strings.upcomingShift}</Text>
+              <Text style={styles.title}>
+                {upcomingShiftData?.status === "CLOCK_OUT"
+                  ? "Current Shift"
+                  : Strings.upcomingShift}
+              </Text>
               <Text style={styles.description}>
                 {upcomingShiftData?.worksite?.name}
               </Text>
@@ -246,12 +250,30 @@ export default function ShiftView() {
                   {moment
                     .utc(upcomingShiftData?.schedule_shift_start_time)
                     .local()
-                    .format("HH:mm")}{" "}
+                    .format("hh:mm A")}{" "}
                   to{" "}
                   {moment
                     .utc(upcomingShiftData?.schedule_shift_end_time)
                     .local()
-                    .format("HH:mm")}
+                    .format("hh:mm A")}
+                </Text>
+              )}
+              {upcomingShiftData?.status === "CLOCK_OUT" && (
+                <Text
+                  style={[
+                    styles.description,
+                    { fontSize: 14, color: Colors.HOME_DES }
+                  ]}
+                >
+                  Clock in time:{" "}
+                  <Text
+                    style={{ ...Fonts.poppinsMedium(18), color: Colors.BLACK }}
+                  >
+                    {moment
+                      .utc(upcomingShiftData?.schedule_shift_start_time)
+                      .local()
+                      .format("hh:mm A")}{" "}
+                  </Text>
                 </Text>
               )}
             </View>
