@@ -457,7 +457,7 @@ class EarningsView(APIView):
                 context={
                     'request': request,
                     'queryset': queryset,
-                    'employees': [attendance.employee for attendance in queryset] 
+                    'employees': [attendance.employee for attendance in queryset.distinct("employee")] 
                 }
             )
             data = serializer.data

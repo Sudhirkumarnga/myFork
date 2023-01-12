@@ -342,7 +342,6 @@ class EarningSerializer(serializers.ModelSerializer):
             for attendance in attendances:
                 dict['employee_hours'] += attendance.total_hours
                 dict['employee_earnings'] += attendance.earnings
-                
             dict['employee_hourly_rate'] = attendances.first().employee.hourly_rate
             dict['created_at'] = attendances.first().created_at.date()
             dict['employee_name'] = attendances.first().employee.user.get_full_name()
