@@ -338,6 +338,7 @@ class EarningSerializer(serializers.ModelSerializer):
         for employee in employees:
             attendances = Attendance.objects.filter(employee=employee)
             dict = {}
+            dict['employee_hours'], dict['employee_earnings'] = 0, 0
             for attendance in attendances:
                 dict['employee_hours'] += attendance.total_hours
                 dict['employee_earnings'] += attendance.earnings
