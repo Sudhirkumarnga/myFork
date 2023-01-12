@@ -361,7 +361,7 @@ class EmployeeEarningSerializer(serializers.ModelSerializer):
         worksites = []
         for attendance in attendances:
             worksite = {
-                'worksite': attendance.event.worksite.name,
+                'worksite': attendance.event.worksite.name if attendance.event else None,
                 'amount_clocked': attendance.total_hours,
                 'earned': attendance.earnings,
                 'created_at': attendance.created_at.date()
