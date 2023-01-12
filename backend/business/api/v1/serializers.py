@@ -332,23 +332,41 @@ class EarningSerializer(serializers.ModelSerializer):
 
     def to_representation(self, data):
         data = super(EarningSerializer, self).to_representation(data)
-        attendances = self.context['queryset']
-        employees = []
-        for attendance in attendances:
+        queryset = self.context['queryset']
+        employees = self.context['employees']
+        employees_list = []
+        for employee in employees:
+            attendances = Attendance.objects.filter(employee=employee)
             dict = {}
-            dict['employee_name'] = attendance.employee.user.get_full_name()
-            dict['employee_image'] = attendance.employee.profile_image.url if attendance.employee.profile_image else None
-            dict['employee_position'] = attendance.employee.position
-            dict['employee_hourly_rate'] = attendance.employee.hourly_rate
-            dict['created_at'] = attendance.created_at.date()
-            dict['employee_hours'], dict['employee_earnings'] = 0, 0
-            for attendance in attendances.filter(employee=attendance.employee):
+            for attendance in attendances:
                 dict['employee_hours'] += attendance.total_hours
                 dict['employee_earnings'] += attendance.earnings
-            employees.append(dict)
+                dict['employee_name'] = attendances.first().employee.user.get_full_name()
+                dict['employee_image'] = attendances.first().employee.profile_image.url if attendance.employee.profile_image else None
+                dict['employee_position'] = attendances.first().employee.position
+                dict['employee_hourly_rate'] = attendances.first().employee.hourly_rate
+                dict['created_at'] = attendances.first().created_at.date()
+                employees_list.append(dict)
         data['employees'] = employees
-        data['date'] = attendances.first().updated_at.date()
+        data['date'] = queryset.first().updated_at.date()
         return data
+
+        
+        # employees = []
+        # for attendance in attendances:
+        #     dict = {}
+        #     dict['employee_name'] = attendance.employee.user.get_full_name()
+        #     dict['employee_image'] = attendance.employee.profile_image.url if attendance.employee.profile_image else None
+        #     dict['employee_position'] = attendance.employee.position
+        #     dict['employee_hourly_rate'] = attendance.employee.hourly_rate
+        #     dict['created_at'] = attendance.created_at.date()
+        #     dict['employee_hours'], dict['employee_earnings'] = 0, 0
+        #     for attendance in attendances.filter(employee=attendance.employee):
+        #         dict['employee_hours'] += attendance.total_hours
+        #         dict['employee_earnings'] += attendance.earnings
+        #     employees.append(dict)
+        # data['employees'] = employees
+        # data['date'] = attendances.first().updated_at.date()
 
 
 class EmployeeEarningSerializer(serializers.ModelSerializer):

@@ -454,7 +454,11 @@ class EarningsView(APIView):
             serializer = EarningSerializer(
                 queryset.first(),
                 many=False,
-                context={'request': request, 'queryset': queryset}
+                context={
+                    'request': request,
+                    'queryset': queryset,
+                    'employees': [attendance.employee for attendance in queryset] 
+                }
             )
             data = serializer.data
             if data:
