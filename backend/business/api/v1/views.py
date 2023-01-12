@@ -490,15 +490,15 @@ class EarningsView(APIView):
 
 
 class DeleteAccountView(APIView):
-    queryset = Business.objects.filter()
-    permission_classes = [IsAuthenticated, IsOrganizationAdmin, IsActiveSubscription]
+    permission_classes = [IsAuthenticated, IsActiveSubscription]
 
     def delete(self, request, *args, **kwargs):
-        queryset = self.queryset.filter(
-            user = self.request.user
-        )
-        Employee.objects.filter(business=queryset.first()).delete()
-        queryset.delete()
+
+        # queryset = self.queryset.filter(
+        #     user = self.request.user
+        # )
+        # Employee.objects.filter(business=queryset.first()).delete()
+        # queryset.delete()
         self.request.user.delete()
         return Response(status=status.HTTP_200_OK)
 
