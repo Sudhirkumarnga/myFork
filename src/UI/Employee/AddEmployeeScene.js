@@ -7,7 +7,10 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity,
   Platform,
-  Image
+  Image,
+  Modal,
+  ActivityIndicator,
+  FlatList
 } from "react-native"
 import { Header, PrimaryTextInput, Forms, Button } from "../Common"
 import { Fonts, Colors, Images } from "../../res"
@@ -22,10 +25,11 @@ import { useContext } from "react"
 import { useEffect } from "react"
 import PhoneInput from "react-native-phone-input"
 import { useRef } from "react"
+import { Icon } from "react-native-elements"
 
 export default function AddEmployeeScene({ navigation, route }) {
   const item = route?.params?.item
-  const { _getProfile, _getCountries, cities, states, adminProfile } =
+  const { _getCountries, cities, loadingCity, _getCities } =
     useContext(AppContext)
   const phoneRef = useRef(null)
   const mobileRef = useRef(null)
@@ -44,14 +48,16 @@ export default function AddEmployeeScene({ navigation, route }) {
     city: item?.address_information?.city || "",
     country: "",
     zipcode: "",
-    photo: item?.personal_information?.profile_image || "",
+    photo: "",
     profile_image: item?.personal_information?.profile_image || "",
     position: item?.work_information?.position || "",
     price: item?.work_information?.hourly_rate?.toString() || "",
     gender: item?.personal_information?.gender || "",
     loading: false,
     validNumber: false,
-    validNumber1: false
+    validNumber1: false,
+    cityText: "",
+    openCity: false
   })
 
   useEffect(() => {
@@ -75,10 +81,10 @@ export default function AddEmployeeScene({ navigation, route }) {
     email,
     position,
     validNumber,
-    validNumber1
+    validNumber1,
+    cityText,
+    openCity
   } = state
-
-  console.warn('cities',cities);
 
   const handleChange = (name, value) => {
     if (name === "phone" || name === "mobile") {
@@ -99,6 +105,10 @@ export default function AddEmployeeScene({ navigation, route }) {
       handleChange("validNumber1", mobileRef?.current?.isValidNumber())
     }
   }, [item])
+
+  const hideModal = () => {
+    handleChange("openCity", false)
+  }
 
   const _uploadImage = async type => {
     handleChange("uploading", true)
@@ -162,6 +172,7 @@ export default function AddEmployeeScene({ navigation, route }) {
       }
       photo && (formData.personal_information.profile_image = photo)
       if (item) {
+        console.warn("formData", formData)
         await updateEmployee(item?.id, formData, token)
       } else {
         await createEmployee(formData, token)
@@ -287,15 +298,35 @@ export default function AddEmployeeScene({ navigation, route }) {
     return Forms?.fields("employeeAddress")?.map(fields => {
       if (fields.key === "city") {
         return (
-          <PrimaryTextInput
-            text={getStateText(cities, city)}
-            dropdown={true}
-            items={getDropdownItem(cities)}
-            label={"City"}
-            key="city"
-            // placeholder='City'
-            onChangeText={(text, isValid) => handleChange("city", text)}
-          />
+          <TouchableOpacity
+            onPress={() => handleChange("openCity", true)}
+            style={{
+              height: 50,
+              width: "90%",
+              paddingTop: 0,
+              borderRadius: 10,
+              color: Colors.TEXT_INPUT_COLOR,
+              paddingHorizontal: 15,
+              borderWidth: 1,
+              marginLeft: "5%",
+              backgroundColor: Colors.TEXT_INPUT_BG,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              borderColor: Colors.TEXT_INPUT_BORDER
+            }}
+          >
+            <Text style={{ ...Fonts.poppinsRegular(14), color: Colors.BLACK }}>
+              {getStateText(cities, city)}
+            </Text>
+            <Icon
+              name="down"
+              size={12}
+              color={Colors.BLACK}
+              style={{ marginLeft: 10 }}
+              type="antdesign"
+            />
+          </TouchableOpacity>
         )
       } else {
         return (
@@ -381,6 +412,67 @@ export default function AddEmployeeScene({ navigation, route }) {
         />
         {renderContent()}
       </View>
+      <Modal
+        visible={openCity}
+        transparent
+        onDismiss={hideModal}
+        onRequestClose={hideModal}
+      >
+        <View style={styles.centerMode}>
+          <View style={styles.modal}>
+            <View style={{ alignItems: "flex-end" }}>
+              <TouchableOpacity onPress={hideModal}>
+                <Icon name="close" type="antdesign" />
+              </TouchableOpacity>
+            </View>
+            <View style={{ width: "110%", marginLeft: "-5%" }}>
+              <PrimaryTextInput
+                text={cityText}
+                key="cityText"
+                label="Enter city name"
+                onChangeText={(text, isValid) => {
+                  _getCities(`?search=${cityText}`)
+                  handleChange("cityText", text)
+                }}
+              />
+            </View>
+            {loadingCity && (
+              <ActivityIndicator color={Colors.BACKGROUND_BG} size={"small"} />
+            )}
+            <FlatList
+              data={cities}
+              renderItem={({ item, index }) => {
+                return (
+                  <TouchableOpacity
+                    onPress={() => {
+                      handleChange("openCity", false)
+                      handleChange("cityText", "")
+                      handleChange("city", item?.id)
+                    }}
+                    key={index}
+                    style={{
+                      width: "100%",
+                      height: 30,
+                      justifyContent: "center",
+                      borderBottomWidth: 1,
+                      borderBottomColor: Colors.TEXT_INPUT_BORDER
+                    }}
+                  >
+                    <Text
+                      style={{
+                        ...Fonts.poppinsRegular(14),
+                        color: Colors.BLACK
+                      }}
+                    >
+                      {item?.name}
+                    </Text>
+                  </TouchableOpacity>
+                )
+              }}
+            />
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   )
 }
@@ -423,5 +515,18 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.DARK_GREY,
     borderRadius: 10,
     alignSelf: "center"
+  },
+  centerMode: {
+    backgroundColor: Colors.MODAL_BG,
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  modal: {
+    backgroundColor: Colors.WHITE,
+    borderRadius: 10,
+    padding: 20,
+    width: "90%"
   }
 })

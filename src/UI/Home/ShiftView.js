@@ -250,7 +250,7 @@ export default function ShiftView() {
                   {moment
                     .utc(upcomingShiftData?.schedule_shift_start_time)
                     .local()
-                    .format("hh:mm A")}{" "}
+                    .format("DD,MMM YYYY hh:mm A")}{" "}
                   to{" "}
                   {moment
                     .utc(upcomingShiftData?.schedule_shift_end_time)

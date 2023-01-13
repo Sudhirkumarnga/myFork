@@ -7,7 +7,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
-  Image
+  Image,
+  Modal,
+  FlatList,
+  ActivityIndicator
 } from "react-native"
 import { Header, PrimaryTextInput, Forms, Button } from "../Common"
 import { Fonts, Colors, Images } from "../../res"
@@ -24,12 +27,14 @@ import PhoneInput from "react-native-phone-input"
 import { useRef } from "react"
 import { useEffect } from "react"
 import Autocomplete from "react-native-autocomplete-input"
+import { Icon } from "react-native-elements"
 
 export default function BusinessProfileScene({ navigation, route }) {
   const {
     _getProfile,
     _getCountries,
     cities,
+    loadingCity,
     states,
     adminProfile,
     _getCities
@@ -60,10 +65,10 @@ export default function BusinessProfileScene({ navigation, route }) {
     profile_image: adminProfile?.business_information?.profile_image || "",
     photo: null,
     loading: false,
-    validNumber: userData?.phone ? true : false
+    validNumber: userData?.phone ? true : false,
+    cityText: "",
+    openCity: false
   })
-
-  console.warn("adminProfile?.business_address", adminProfile?.business_address)
 
   const {
     loading,
@@ -81,7 +86,9 @@ export default function BusinessProfileScene({ navigation, route }) {
     zipcode,
     profile_image,
     photo,
-    validNumber
+    validNumber,
+    cityText,
+    openCity
   } = state
 
   const handleChange = (name, value) => {
@@ -276,60 +283,35 @@ export default function BusinessProfileScene({ navigation, route }) {
     return Forms.fields("businessAddress").map(fields => {
       if (fields.key === "city") {
         return (
-          <View
+          <TouchableOpacity
+            onPress={() => handleChange("openCity", true)}
             style={{
-              // height: 50,
+              height: 50,
               width: "90%",
               paddingTop: 0,
               borderRadius: 10,
               color: Colors.TEXT_INPUT_COLOR,
               paddingHorizontal: 15,
-              ...Fonts.poppinsRegular(14),
               borderWidth: 1,
-              backgroundColor: Colors.TEXT_INPUT_BG,
-              width: "90%",
               marginLeft: "5%",
+              backgroundColor: Colors.TEXT_INPUT_BG,
+              flexDirection: "row",
+              justifyContent: "space-between",
               alignItems: "center",
-              justifyContent: "center",
-              marginVertical: 5,
-              borderWidth: 1,
               borderColor: Colors.TEXT_INPUT_BORDER
             }}
           >
-            <Autocomplete
-              containerStyle={{
-                width: "100%",
-                // backgroundColor: Colors.INVALID_TEXT_INPUT,
-                borderWidth: 0
-              }}
-              inputContainerStyle={{
-                borderWidth: 0,
-                backgroundColor: Colors.INVALID_TEXT_INPUT
-              }}
-              onChangeText={text => _getCities(`?city=${text}`)}
-              // value={getStateText(cities, city)}
-              data={cities}
-              flatListProps={{
-                keyExtractor: (_, idx) => idx,
-                renderItem: ({ item }) => (
-                  <TouchableOpacity
-                    onPress={() => handleChange("city", item?.id)}
-                  >
-                    <Text>{item?.name}</Text>
-                  </TouchableOpacity>
-                )
-              }}
+            <Text style={{ ...Fonts.poppinsRegular(14), color: Colors.BLACK }}>
+              {getStateText(cities, city)}
+            </Text>
+            <Icon
+              name="down"
+              size={12}
+              color={Colors.BLACK}
+              style={{ marginLeft: 10 }}
+              type="antdesign"
             />
-          </View>
-          // <PrimaryTextInput
-          //   text={getStateText(cities, city)}
-          //   dropdown={true}
-          //   items={getDropdownItem(cities)}
-          //   label={"City"}
-          //   key="city"
-          //   // placeholder='City'
-          //   onChangeText={(text, isValid) => handleChange("city", text)}
-          // />
+          </TouchableOpacity>
         )
       } else if (fields.key === "state") {
         return (
@@ -388,9 +370,17 @@ export default function BusinessProfileScene({ navigation, route }) {
     navigation.navigate("home")
   }
 
+  const hideModal = () => {
+    handleChange("openCity", false)
+  }
+
   const renderContent = () => {
     return (
-      <ScrollView style={{ flex: 1, paddingBottom: 30 }}>
+      <ScrollView
+        keyboardShouldPersistTaps={"handled"}
+        nestedScrollEnabled
+        style={{ flex: 1, paddingBottom: 30 }}
+      >
         <View style={styles.childContainer}>
           <TouchableOpacity style={styles.imageView} onPress={_uploadImage}>
             {adminProfile?.business_information?.profile_image ||
@@ -434,6 +424,67 @@ export default function BusinessProfileScene({ navigation, route }) {
         />
         {renderContent()}
       </View>
+      <Modal
+        visible={openCity}
+        transparent
+        onDismiss={hideModal}
+        onRequestClose={hideModal}
+      >
+        <View style={styles.centerMode}>
+          <View style={styles.modal}>
+            <View style={{ alignItems: "flex-end" }}>
+              <TouchableOpacity onPress={hideModal}>
+                <Icon name="close" type="antdesign" />
+              </TouchableOpacity>
+            </View>
+            <View style={{ width: "110%", marginLeft: "-5%" }}>
+              <PrimaryTextInput
+                text={cityText}
+                key="cityText"
+                label="Enter city name"
+                onChangeText={(text, isValid) => {
+                  _getCities(`?search=${cityText}`)
+                  handleChange("cityText", text)
+                }}
+              />
+            </View>
+            {loadingCity && (
+              <ActivityIndicator color={Colors.BACKGROUND_BG} size={"small"} />
+            )}
+            <FlatList
+              data={cities}
+              renderItem={({ item, index }) => {
+                return (
+                  <TouchableOpacity
+                    onPress={() => {
+                      handleChange("openCity", false)
+                      handleChange("cityText", "")
+                      handleChange("city", item?.id)
+                    }}
+                    key={index}
+                    style={{
+                      width: "100%",
+                      height: 30,
+                      justifyContent: "center",
+                      borderBottomWidth: 1,
+                      borderBottomColor: Colors.TEXT_INPUT_BORDER
+                    }}
+                  >
+                    <Text
+                      style={{
+                        ...Fonts.poppinsRegular(14),
+                        color: Colors.BLACK
+                      }}
+                    >
+                      {item?.name}
+                    </Text>
+                  </TouchableOpacity>
+                )
+              }}
+            />
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   )
 }
@@ -477,5 +528,18 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.DARK_GREY,
     borderRadius: 10,
     alignSelf: "center"
+  },
+  centerMode: {
+    backgroundColor: Colors.MODAL_BG,
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  modal: {
+    backgroundColor: Colors.WHITE,
+    borderRadius: 10,
+    padding: 20,
+    width: "90%"
   }
 })

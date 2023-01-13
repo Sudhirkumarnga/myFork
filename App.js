@@ -37,6 +37,7 @@ const App = () => {
   const [earningLoading, setEarningLoading] = useState(false)
   const [notifications, setNotifications] = useState([])
   const [leaveRequest, setLeaveRequest] = useState([])
+  const [loadingCity, setLoadingCity] = useState(false)
   const [upcomingShiftData, setUpcomingShiftData] = useState(null)
   useEffect(() => {
     setTimeout(() => {
@@ -69,11 +70,14 @@ const App = () => {
 
   const _getCities = async payload => {
     try {
+      setLoadingCity(true)
       const body = payload || ""
       const token = await AsyncStorage.getItem("token")
       const cities = await getCities(body, token)
       setCities(cities?.data)
+      setLoadingCity(false)
     } catch (error) {
+      setLoadingCity(false)
       const showWError = error.response?.data?.error
         ? Object.values(error.response?.data?.error)
         : error.response?.data
@@ -251,7 +255,8 @@ const App = () => {
         notifications,
         _getNotification,
         earningLoading,
-        _getCities
+        _getCities,
+        loadingCity
       }}
     >
       <MenuProvider>
