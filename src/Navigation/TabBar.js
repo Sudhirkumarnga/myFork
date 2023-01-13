@@ -9,11 +9,14 @@ import {
   EmployeeListScene,
   AllWorksiteScene,
   Scheduler,
-  PayrollScene
+  PayrollScene,
+  ReportsScene,
+  ReportsView,
+  CreateInspection
 } from '../UI'
 import { Fonts, Colors } from '../res'
 import Images from '../res/Images'
-import { createStackNavigator } from "@react-navigation/stack"
+import { createStackNavigator } from '@react-navigation/stack'
 
 const Tab = createBottomTabNavigator()
 const Stack = createStackNavigator()
@@ -29,6 +32,23 @@ function HomeStack () {
       <Stack.Screen name='Splash' component={HomeScene} />
       <Stack.Screen name='EmployeeListScene' component={EmployeeListScene} />
       <Stack.Screen name='AllWorksiteScene' component={AllWorksiteScene} />
+      <Stack.Screen name='ReportsScene' component={ReportsScene} />
+      <Stack.Screen name='ReportsView' component={ReportsView} />
+      <Stack.Screen name='RequestLeaveScene' component={RequestLeaveScene} />
+      <Stack.Screen name='CreateInspection' component={CreateInspection} />
+    </Stack.Navigator>
+  )
+}
+
+function SchedulerStack () {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        presentation: 'card'
+      }}
+    >
+      <Stack.Screen name='Scheduler' component={Scheduler} />
     </Stack.Navigator>
   )
 }
@@ -80,7 +100,7 @@ export const TabBar = props => {
       />
       <Tab.Screen
         name='Scheduler'
-        component={Scheduler}
+        component={SchedulerStack}
         options={{
           tabBarIcon: ({ focussed, color }) =>
             defaultOptions(focussed, color, 'scheduler')

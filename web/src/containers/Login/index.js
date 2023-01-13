@@ -59,7 +59,7 @@ export default function Login ({}) {
       handleChange('loading', false)
       // _getProfile()
       // setUser(res?.data?.user)
-      enqueueSnackbar(`Login Successfully`, {
+      enqueueSnackbar(`Login Successful`, {
         variant: 'success',
         anchorOrigin: {
           vertical: 'bottom',

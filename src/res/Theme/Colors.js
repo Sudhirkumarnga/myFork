@@ -7,6 +7,7 @@ const greyColor = '#8B8B8B'
 const greyColor1 = '#A8A8A8'
 const lightGrey = '#F7F7F7'
 const darkColor = '#202020'
+const redColor = '#F84F31'
 
 const common = {
   BACKGROUND_BG: greenColor,
@@ -20,6 +21,7 @@ const common = {
   TEXT_INPUT_BG: lightGrey,
   TEXT_INPUT_BORDER: '#CECECE',
   SLIDER_COLOR: '#4CDED3',
+  RED_COLOR: redColor,
   BUTTON_BG1: greyColor1,
   HEADER_BG: greenColor,
   TEXT_COLOR: darkColor,

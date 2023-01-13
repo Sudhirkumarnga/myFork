@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from "react"
 import {
   View,
   Text,
@@ -7,42 +7,62 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity,
   Platform,
-  Image
-} from 'react-native'
-import { Header, PrimaryTextInput, Forms, Button } from '../Common'
-import { Fonts, Colors, Images } from '../../res'
-import Strings from '../../res/Strings'
-import ImagePicker from 'react-native-image-crop-picker'
-import Toast from 'react-native-simple-toast'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { createEmployee, updateEmployee } from '../../api/business'
-import moment from 'moment'
+  Image,
+  Modal,
+  ActivityIndicator,
+  FlatList
+} from "react-native"
+import { Header, PrimaryTextInput, Forms, Button } from "../Common"
+import { Fonts, Colors, Images } from "../../res"
+import Strings from "../../res/Strings"
+import ImagePicker from "react-native-image-crop-picker"
+import Toast from "react-native-simple-toast"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { createEmployee, updateEmployee } from "../../api/business"
+import moment from "moment"
+import AppContext from "../../Utils/Context"
+import { useContext } from "react"
+import { useEffect } from "react"
+import PhoneInput from "react-native-phone-input"
+import { useRef } from "react"
+import { Icon } from "react-native-elements"
 
-export default function AddEmployeeScene ({ navigation, route }) {
+export default function AddEmployeeScene({ navigation, route }) {
   const item = route?.params?.item
-  console.warn('item', item)
+  const { _getCountries, cities, loadingCity, _getCities } =
+    useContext(AppContext)
+  const phoneRef = useRef(null)
+  const mobileRef = useRef(null)
   // State
   const [state, setState] = useState({
-    name: '',
-    pay_frequency: '',
-    first_name: item?.personal_information?.first_name || '',
-    last_name: item?.personal_information?.last_name || '',
-    phone: item?.contact?.phone || '',
-    mobile: item?.contact?.mobile || '',
-    email: item?.contact?.email || '',
-    date_of_birth: item?.personal_information?.date_of_birth || '',
-    address_line_one: item?.address_information?.address_line_one || '',
-    address_line_two: item?.address_information?.address_line_two || '',
-    city: item?.address_information?.city || '',
-    country: '',
-    zipcode: '',
-    photo: item?.personal_information?.profile_image || '',
-    profile_image: item?.personal_information?.profile_image || '',
-    position: item?.work_information?.position || '',
-    price: item?.work_information?.hourly_rate?.toString() || '',
-    gender: item?.personal_information?.gender || '',
-    loading: false
+    name: "",
+    pay_frequency: "",
+    first_name: item?.personal_information?.first_name || "",
+    last_name: item?.personal_information?.last_name || "",
+    phone: item?.contact?.phone || "",
+    mobile: item?.contact?.mobile || "",
+    email: item?.contact?.email || "",
+    date_of_birth: item?.personal_information?.date_of_birth || "",
+    address_line_one: item?.address_information?.address_line_one || "",
+    address_line_two: item?.address_information?.address_line_two || "",
+    city: item?.address_information?.city || "",
+    country: "",
+    zipcode: "",
+    photo: "",
+    profile_image: item?.personal_information?.profile_image || "",
+    position: item?.work_information?.position || "",
+    price: item?.work_information?.hourly_rate?.toString() || "",
+    gender: item?.personal_information?.gender || "",
+    loading: false,
+    validNumber: false,
+    validNumber1: false,
+    cityText: "",
+    openCity: false
   })
+
+  useEffect(() => {
+    _getCountries()
+  }, [])
 
   const {
     loading,
@@ -59,19 +79,43 @@ export default function AddEmployeeScene ({ navigation, route }) {
     price,
     gender,
     email,
-    position
+    position,
+    validNumber,
+    validNumber1,
+    cityText,
+    openCity
   } = state
 
   const handleChange = (name, value) => {
+    if (name === "phone" || name === "mobile") {
+      setState(pre => ({
+        ...pre,
+        validNumber: phoneRef?.current?.isValidNumber(),
+        validNumber1: mobileRef?.current?.isValidNumber()
+      }))
+    }
+    if (name === "email") {
+    }
     setState(pre => ({ ...pre, [name]: value }))
   }
 
+  useEffect(() => {
+    if (item) {
+      handleChange("validNumber", phoneRef?.current?.isValidNumber())
+      handleChange("validNumber1", mobileRef?.current?.isValidNumber())
+    }
+  }, [item])
+
+  const hideModal = () => {
+    handleChange("openCity", false)
+  }
+
   const _uploadImage = async type => {
-    handleChange('uploading', true)
+    handleChange("uploading", true)
     let OpenImagePicker =
-      type == 'camera'
+      type == "camera"
         ? ImagePicker.openCamera
-        : type == ''
+        : type == ""
         ? ImagePicker.openPicker
         : ImagePicker.openPicker
     OpenImagePicker({
@@ -82,33 +126,33 @@ export default function AddEmployeeScene ({ navigation, route }) {
     })
       .then(async response => {
         if (!response.path) {
-          handleChange('uploading', false)
+          handleChange("uploading", false)
         } else {
           const uri = response.path
           const uploadUri =
-            Platform.OS === 'ios' ? uri.replace('file://', '') : uri
-          handleChange('profile_image', uploadUri)
-          handleChange('photo', response.data)
-          handleChange('uploading', false)
-          Toast.show('Profile Add Successfully')
+            Platform.OS === "ios" ? uri.replace("file://", "") : uri
+          handleChange("profile_image", uploadUri)
+          handleChange("photo", response.data)
+          handleChange("uploading", false)
+          Toast.show("Profile Add Successfully")
         }
       })
       .catch(err => {
-        handleChange('showAlert', false)
-        handleChange('uploading', false)
+        handleChange("showAlert", false)
+        handleChange("uploading", false)
       })
   }
 
   const handleSubmit = async () => {
     try {
-      handleChange('loading', true)
-      const token = await AsyncStorage.getItem('token')
+      handleChange("loading", true)
+      const token = await AsyncStorage.getItem("token")
       const formData = {
         personal_information: {
-          profile_image: photo,
+          // profile_image: photo,
           first_name,
           last_name,
-          date_of_birth: moment(date_of_birth).format('YYYY-MM-DD'),
+          date_of_birth: moment(date_of_birth).format("YYYY-MM-DD"),
           gender
         },
         contact: {
@@ -119,26 +163,32 @@ export default function AddEmployeeScene ({ navigation, route }) {
         address_information: {
           address_line_one,
           address_line_two,
-          city: 1
+          city: getCityTValue(city)
         },
         work_information: {
           position,
           hourly_rate: Number(price)
         }
       }
+      photo && (formData.personal_information.profile_image = photo)
       if (item) {
+        console.warn("formData", formData)
         await updateEmployee(item?.id, formData, token)
       } else {
         await createEmployee(formData, token)
       }
-      handleChange('loading', false)
-      navigation.navigate('home')
+      handleChange("loading", false)
+      navigation.navigate("home")
       Toast.show(`Employee has been added!`)
     } catch (error) {
-      handleChange('loading', false)
-      console.warn('err', error?.response?.data)
-      const showWError = Object.values(error.response?.data?.error)
-      if (showWError.length > 0) {
+      handleChange("loading", false)
+      console.warn("err", error?.response?.data)
+      const showWError =
+        error.response?.data?.error &&
+        Object.values(error.response?.data?.error)
+      if (error?.response?.data?.subscription) {
+        Toast.show(`Error: ${error?.response?.data?.subscription}`)
+      } else if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
       } else {
         Toast.show(`Error: ${JSON.stringify(error)}`)
@@ -146,8 +196,13 @@ export default function AddEmployeeScene ({ navigation, route }) {
     }
   }
 
+  const getCityTValue = value => {
+    const filtered = cities?.filter(e => e.name === value)
+    return filtered.length > 0 ? filtered[0].id : ""
+  }
+
   const renderPersonalInfoInput = () => {
-    return Forms.fields('employeePersonalInfo')?.map(fields => {
+    return Forms.fields("employeePersonalInfo")?.map(fields => {
       return (
         <PrimaryTextInput
           {...fields}
@@ -161,7 +216,7 @@ export default function AddEmployeeScene ({ navigation, route }) {
   }
 
   const renderWorkInfo = () => {
-    return Forms?.fields('employeeWorkInfo')?.map(fields => {
+    return Forms?.fields("employeeWorkInfo")?.map(fields => {
       return (
         <PrimaryTextInput
           {...fields}
@@ -175,30 +230,115 @@ export default function AddEmployeeScene ({ navigation, route }) {
   }
 
   const renderEmployeeContactInput = () => {
-    return Forms?.fields('employeeContact')?.map(fields => {
-      return (
-        <PrimaryTextInput
-          {...fields}
-          text={state[fields.key]}
-          // ref={o => (this[fields.key] = o)}
-          key={fields.key}
-          onChangeText={(text, isValid) => handleChange(fields.key, text)}
-        />
-      )
+    return Forms?.fields("employeeContact")?.map(fields => {
+      if (fields.key === "mobile" || fields.key === "phone") {
+        return (
+          <View
+            style={{
+              height: 50,
+              width: "90%",
+              paddingTop: 0,
+              borderRadius: 10,
+              color: Colors.TEXT_INPUT_COLOR,
+              paddingHorizontal: 15,
+              ...Fonts.poppinsRegular(14),
+              borderWidth: 1,
+              backgroundColor: Colors.TEXT_INPUT_BG,
+              width: "90%",
+              justifyContent: "center",
+              marginLeft: "5%",
+              marginVertical: 5,
+              borderWidth: 1,
+              borderColor:
+                (fields.key === "phone" && !phone) ||
+                (fields.key === "mobile" && !mobile) ||
+                (fields.key === "phone" && phone && validNumber) ||
+                (fields.key === "mobile" && mobile && validNumber1)
+                  ? Colors.TEXT_INPUT_BORDER
+                  : Colors.INVALID_TEXT_INPUT
+            }}
+          >
+            <PhoneInput
+              initialValue={state[fields.key]}
+              textProps={{ placeholder: fields.label }}
+              textStyle={{ ...Fonts.poppinsRegular(14), marginTop: 2 }}
+              ref={fields.key === "mobile" ? mobileRef : phoneRef}
+              onChangePhoneNumber={props => handleChange(fields.key, props)}
+            />
+          </View>
+        )
+      } else {
+        return (
+          <PrimaryTextInput
+            {...fields}
+            text={state[fields.key]}
+            // ref={o => (this[fields.key] = o)}
+            key={fields.key}
+            onChangeText={(text, isValid) => handleChange(fields.key, text)}
+          />
+        )
+      }
     })
   }
 
+  const getDropdownItem = list => {
+    const newList = []
+    list?.forEach(element => {
+      newList.push({ label: element?.name, value: element?.name })
+    })
+    return newList
+  }
+
+  const getStateText = (list, value) => {
+    const filtered = list?.filter(e => e?.name === value || e?.id === value)
+    return filtered?.length > 0 ? filtered[0]?.name : ""
+  }
+
   const renderAddressInfo = () => {
-    return Forms?.fields('employeeAddress')?.map(fields => {
-      return (
-        <PrimaryTextInput
-          {...fields}
-          text={state[fields.key]}
-          // ref={o => (this[fields.key] = o)}
-          key={fields.key}
-          onChangeText={(text, isValid) => handleChange(fields.key, text)}
-        />
-      )
+    return Forms?.fields("employeeAddress")?.map(fields => {
+      if (fields.key === "city") {
+        return (
+          <TouchableOpacity
+            onPress={() => handleChange("openCity", true)}
+            style={{
+              height: 50,
+              width: "90%",
+              paddingTop: 0,
+              borderRadius: 10,
+              color: Colors.TEXT_INPUT_COLOR,
+              paddingHorizontal: 15,
+              borderWidth: 1,
+              marginLeft: "5%",
+              backgroundColor: Colors.TEXT_INPUT_BG,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              borderColor: Colors.TEXT_INPUT_BORDER
+            }}
+          >
+            <Text style={{ ...Fonts.poppinsRegular(14), color: Colors.BLACK }}>
+              {getStateText(cities, city)}
+            </Text>
+            <Icon
+              name="down"
+              size={12}
+              color={Colors.BLACK}
+              style={{ marginLeft: 10 }}
+              type="antdesign"
+            />
+          </TouchableOpacity>
+        )
+      } else {
+        return (
+          <PrimaryTextInput
+            {...fields}
+            text={state[fields.key]}
+            // ref={o => (this[fields.key] = o)}
+            key={fields.key}
+            onChangeText={(text, isValid) => handleChange(fields.key, text)}
+          />
+        )
+      }
     })
   }
 
@@ -207,6 +347,21 @@ export default function AddEmployeeScene ({ navigation, route }) {
       <Button
         title={item ? Strings.update : Strings.submit}
         style={styles.footerButton}
+        disabled={
+          // !photo ||
+          !first_name ||
+          !last_name ||
+          !date_of_birth ||
+          !gender ||
+          !email ||
+          !mobile ||
+          !phone ||
+          !address_line_one ||
+          !address_line_two ||
+          !city ||
+          !position ||
+          !price
+        }
         loading={loading}
         onPress={handleSubmit}
       />
@@ -221,7 +376,7 @@ export default function AddEmployeeScene ({ navigation, route }) {
             {profile_image ? (
               <Image
                 source={{ uri: profile_image }}
-                style={{ width: '100%', height: '100%', borderRadius: 10 }}
+                style={{ width: "100%", height: "100%", borderRadius: 10 }}
               />
             ) : (
               <>
@@ -234,7 +389,7 @@ export default function AddEmployeeScene ({ navigation, route }) {
           {renderPersonalInfoInput()}
           <Text style={styles.title}>{Strings.contact}</Text>
           {renderEmployeeContactInput()}
-          <Text style={styles.title}>{Strings.addressInfo}</Text>
+          <Text style={styles.title}>{"Address"}</Text>
           {renderAddressInfo()}
           <Text style={styles.title}>{Strings.workInfo}</Text>
           {renderWorkInfo()}
@@ -247,7 +402,7 @@ export default function AddEmployeeScene ({ navigation, route }) {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : null}
+      behavior={Platform.OS === "ios" ? "padding" : null}
     >
       <View style={styles.container}>
         <Header
@@ -257,6 +412,67 @@ export default function AddEmployeeScene ({ navigation, route }) {
         />
         {renderContent()}
       </View>
+      <Modal
+        visible={openCity}
+        transparent
+        onDismiss={hideModal}
+        onRequestClose={hideModal}
+      >
+        <View style={styles.centerMode}>
+          <View style={styles.modal}>
+            <View style={{ alignItems: "flex-end" }}>
+              <TouchableOpacity onPress={hideModal}>
+                <Icon name="close" type="antdesign" />
+              </TouchableOpacity>
+            </View>
+            <View style={{ width: "110%", marginLeft: "-5%" }}>
+              <PrimaryTextInput
+                text={cityText}
+                key="cityText"
+                label="Enter city name"
+                onChangeText={(text, isValid) => {
+                  _getCities(`?search=${cityText}`)
+                  handleChange("cityText", text)
+                }}
+              />
+            </View>
+            {loadingCity && (
+              <ActivityIndicator color={Colors.BACKGROUND_BG} size={"small"} />
+            )}
+            <FlatList
+              data={cities}
+              renderItem={({ item, index }) => {
+                return (
+                  <TouchableOpacity
+                    onPress={() => {
+                      handleChange("openCity", false)
+                      handleChange("cityText", "")
+                      handleChange("city", item?.id)
+                    }}
+                    key={index}
+                    style={{
+                      width: "100%",
+                      height: 30,
+                      justifyContent: "center",
+                      borderBottomWidth: 1,
+                      borderBottomColor: Colors.TEXT_INPUT_BORDER
+                    }}
+                  >
+                    <Text
+                      style={{
+                        ...Fonts.poppinsRegular(14),
+                        color: Colors.BLACK
+                      }}
+                    >
+                      {item?.name}
+                    </Text>
+                  </TouchableOpacity>
+                )
+              }}
+            />
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   )
 }
@@ -275,29 +491,42 @@ const styles = StyleSheet.create({
     flex: 1
   },
   footerButton: {
-    marginVertical: '5%'
+    marginVertical: "5%"
   },
   description: {
     ...Fonts.poppinsRegular(14),
     color: Colors.TEXT_COLOR,
-    textAlign: 'left',
+    textAlign: "left",
     marginTop: 20,
     lineHeight: 24
   },
   uploadText: {
     ...Fonts.poppinsRegular(10),
-    alignSelf: 'center',
+    alignSelf: "center",
     color: Colors.GREEN_COLOR,
     marginTop: 5
   },
   imageView: {
     width: 102,
     height: 102,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginVertical: 30,
     backgroundColor: Colors.DARK_GREY,
     borderRadius: 10,
-    alignSelf: 'center'
+    alignSelf: "center"
+  },
+  centerMode: {
+    backgroundColor: Colors.MODAL_BG,
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  modal: {
+    backgroundColor: Colors.WHITE,
+    borderRadius: 10,
+    padding: 20,
+    width: "90%"
   }
 })

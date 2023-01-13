@@ -14,8 +14,12 @@ import { useFocusEffect } from '@react-navigation/native'
 import Toast from 'react-native-simple-toast'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { getAllWorksites } from '../../api/business'
+import AppContext from '../../Utils/Context'
+import { useContext } from 'react'
+import { getAllWorksitesEmp } from '../../api/employee'
 
 export default function AllWorksiteScene ({ navigation }) {
+  const { adminProfile } = useContext(AppContext)
   const [state, setState] = useState({
     loading: false,
     allWorksites: []
@@ -36,13 +40,16 @@ export default function AllWorksiteScene ({ navigation }) {
     try {
       handleChange('loading', true)
       const token = await AsyncStorage.getItem('token')
-      const res = await getAllWorksites(token)
-      console.warn('getAllWorksites', res?.data)
+      if (adminProfile?.emergency_contact?.first_name) {
+        const res = await getAllWorksitesEmp(token)
+        handleChange('allWorksites', res?.data?.response)
+      } else {
+        const res = await getAllWorksites(token)
+        handleChange('allWorksites', res?.data?.results)
+      }
       handleChange('loading', false)
-      handleChange('allWorksites', res?.data?.results)
     } catch (error) {
       handleChange('loading', false)
-      console.warn('err', error?.response?.data)
       const showWError = Object.values(error.response?.data?.error)
       if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
@@ -51,23 +58,37 @@ export default function AllWorksiteScene ({ navigation }) {
       }
     }
   }
-  console.warn('allWorksites', allWorksites)
   const renderContent = () => {
+    const isEmp = adminProfile?.emergency_contact?.first_name
     return (
       <ScrollView style={styles.childContainer}>
-        <Text style={styles.title}>{Strings.listWorksites}</Text>
+        {!isEmp && <Text style={styles.title}>{Strings.listWorksites}</Text>}
+        {!isEmp && allWorksites?.length === 0 && (
+          <View style={{ width: '100%', alignItems: 'center' }}>
+            <Text
+              style={{ ...Fonts.poppinsRegular(14), color: Colors.BLUR_TEXT }}
+            >
+              No List
+            </Text>
+          </View>
+        )}
         {allWorksites?.map(item => (
           <View style={styles.cellContainer}>
             <View>
               <Text style={styles.cellTitle}>
-                {item?.personal_information?.name}
+                {isEmp ? item?.worksite_name : item?.personal_information?.name}
               </Text>
               <Text style={styles.description}>
-                {item?.personal_information?.location}
+                {isEmp ? item?.location : item?.personal_information?.location}
               </Text>
             </View>
             <TouchableOpacity
-              onPress={() => navigation.navigate('worksiteDetail', { item })}
+              onPress={() =>
+                navigation.navigate(
+                  isEmp ? 'WorksiteMapScene' : 'worksiteDetail',
+                  { item }
+                )
+              }
               style={{ justifyContent: 'flex-end' }}
             >
               <Text
@@ -76,7 +97,7 @@ export default function AllWorksiteScene ({ navigation }) {
                   { color: Colors.BLUR_TEXT, ...Fonts.poppinsRegular(13) }
                 ]}
               >
-                View Details
+                {isEmp ? 'Map view' : 'View Details'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -101,7 +122,9 @@ export default function AllWorksiteScene ({ navigation }) {
         leftButton
       />
       {renderContent()}
-      <Fab onPress={() => navigation.navigate('addWorksite')} />
+      {!adminProfile?.emergency_contact?.first_name && (
+        <Fab onPress={() => navigation.navigate('addWorksite')} />
+      )}
     </View>
   )
 }

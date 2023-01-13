@@ -21,7 +21,7 @@ const registration = {
   termsConditions: 'Terms and conditions',
   tokenInput: 'Token Input',
   resendToken: 'Resend token',
-  enterCode: 'PLease enter 4 digit code sent to your phone',
+  enterCode: 'Enter the One Time Password sent to your email',
   enterEmail: 'Please enter your email address in order to reset your password',
   personalInfo: 'Personal Information',
   emergencyContact: 'Emergency Contact',

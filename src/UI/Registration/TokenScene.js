@@ -36,9 +36,7 @@ export default class TokenScene extends BaseScene {
         email,
         otp: this.state.code
       }
-      console.warn('payload', payload)
       const res = await verifyEmail(payload)
-      console.warn('verifyEmail', res)
       this.handleChange('loading', false)
       this.props.navigation.navigate('resetPwd', {
         email

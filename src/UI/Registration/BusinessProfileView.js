@@ -39,7 +39,7 @@ export default function BusinessProfileView ({ navigation }) {
 
   const getCityTValue = (list, value) => {
     const filtered = list?.filter(e => e.id === value)
-    return filtered.length > 0 ? filtered[0].name : ''
+    return filtered?.length > 0 ? filtered[0]?.name : ''
   }
 
   const handleSubmit = async () => {
@@ -47,7 +47,6 @@ export default function BusinessProfileView ({ navigation }) {
       handleChange('loading', true)
       const token = await AsyncStorage.getItem('token')
       const res = await deleteEmployee(adminProfile?.id, token)
-      console.warn('createAdminProfile', res?.data)
       handleChange('loading', false)
       navigation.goBack()
       Toast.show(`Employee has been deleted!`)

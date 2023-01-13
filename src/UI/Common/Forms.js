@@ -17,6 +17,22 @@ const fields = {
     regex: /^[a-zA-Z- .' \\s ]*$/,
     textInputProps: { autoCapitalize: 'words' }
   },
+  first_name1: {
+    key: 'first_name1',
+    dateType: false,
+    label: Strings.firstNameLabel,
+    placeholder: Strings.firstNameLabel,
+    regex: /^[a-zA-Z- .' \\s ]*$/,
+    textInputProps: { autoCapitalize: 'words' }
+  },
+  last_name1: {
+    key: 'last_name1',
+    dateType: false,
+    label: Strings.lastNameLabel,
+    placeholder: '',
+    regex: /^[a-zA-Z- .' \\s ]*$/,
+    textInputProps: { autoCapitalize: 'words' }
+  },
   name: {
     key: 'name',
     dateType: false,
@@ -62,6 +78,23 @@ const fields = {
     phoneNumberValidation: true,
     textInputProps: { keyboardType: 'phone-pad' }
   },
+  phone1: {
+    code: {
+      key: 'countrycode',
+      label: 'Country Code',
+      placeholder: '',
+      regex: /^(\+\d{1,4})$/,
+      textInputProps: { keyboardType: 'phone-pad' }
+    },
+    countryCodeRequired: true,
+    key: 'phone1',
+    dateType: false,
+    label: Strings.phoneLabel,
+    placeholder: '',
+    regex: /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/,
+    phoneNumberValidation: true,
+    textInputProps: { keyboardType: 'phone-pad' }
+  },
   mobile: {
     code: {
       key: 'countrycode',
@@ -73,7 +106,7 @@ const fields = {
     countryCodeRequired: true,
     key: 'mobile',
     dateType: false,
-    label: Strings.phoneLabel,
+    label: "Mobile Number",
     placeholder: '',
     regex: /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/,
     phoneNumberValidation: true,
@@ -124,7 +157,7 @@ const fields = {
   address_line_two: {
     key: 'address_line_two',
     dateType: false,
-    label: Strings.addressLine1,
+    label: Strings.addressLine2,
     placeholder: '',
     textInputProps: { autoCapitalize: 'none' }
   },
@@ -189,7 +222,7 @@ const fields = {
   pay_frequency: {
     key: 'pay_frequency',
     dateType: false,
-    label: Strings.payFreq,
+    label: 'Pay Frequency',
     placeholder: '',
     dropdown: true,
     items: [
@@ -242,7 +275,7 @@ let formDetails = {
     show: ['firstName', 'lastName', 'email', 'phone']
   },
   emergencyContact: {
-    show: ['firstName', 'lastName', 'phone']
+    show: ['first_name1', 'last_name1', 'phone1']
   },
   employeePersonalInfo: {
     show: ['first_name', 'last_name', 'date_of_birth', 'gender']
