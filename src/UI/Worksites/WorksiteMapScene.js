@@ -5,7 +5,9 @@ import {
   StyleSheet,
   Dimensions,
   PermissionsAndroid,
-  Platform
+  Platform,
+  TouchableOpacity,
+  Linking
 } from "react-native"
 import { Header } from "../Common"
 import { Colors, Fonts } from "../../res"
@@ -90,7 +92,12 @@ export default function WorksiteMapScene({ navigation, route }) {
   }, [worksiteData])
 
   const calcDistance = () => {
-    return (pinLocation && currentLocation && haversine(pinLocation, currentLocation)) || 0
+    return (
+      (pinLocation &&
+        currentLocation &&
+        haversine(pinLocation, currentLocation)) ||
+      0
+    )
   }
 
   async function requestGeolocationPermission() {
@@ -132,7 +139,11 @@ export default function WorksiteMapScene({ navigation, route }) {
         // mapRef && mapRef?.current?.animateToRegion(region)
       },
       error => console.log("Error", JSON.stringify(error)),
-      Platform.OS !== "ios" &&  { enableHighAccuracy: Platform.OS === "ios" ? false : true, timeout: 20000, maximumAge: 1000 }
+      Platform.OS !== "ios" && {
+        enableHighAccuracy: Platform.OS === "ios" ? false : true,
+        timeout: 20000,
+        maximumAge: 1000
+      }
     )
     Geolocation.watchPosition(position => {
       var lat = parseFloat(position.coords.latitude)
@@ -145,6 +156,32 @@ export default function WorksiteMapScene({ navigation, route }) {
       }
       setState(pre => ({ ...pre, currentLocation: region }))
       // mapRef && mapRef?.current?.animateToRegion(region)
+    })
+  }
+
+  const openMap = () => {
+    const latitude = pinLocation?.latitude || "40.7127753"
+    const longitude = pinLocation?.longitude || "-74.0059728"
+    const label = worksiteData?.location || "New York, NY, USA"
+
+    const url = Platform.select({
+      ios: "maps:" + latitude + "," + longitude + "?q=" + label,
+      android: "geo:" + latitude + "," + longitude + "?q=" + label
+    })
+
+    Linking.canOpenURL(url).then(supported => {
+      if (supported) {
+        return Linking.openURL(url)
+      } else {
+        const browser_url =
+          "https://www.google.de/maps/@" +
+          latitude +
+          "," +
+          longitude +
+          "?q=" +
+          label
+        return Linking.openURL(browser_url)
+      }
     })
   }
 
@@ -163,10 +200,10 @@ export default function WorksiteMapScene({ navigation, route }) {
           initialRegion={
             pinLocation
               ? {
-                ...pinLocation,
-                latitudeDelta: LATITUDE_DELTA,
-                longitudeDelta: LONGITUDE_DELTA
-              }
+                  ...pinLocation,
+                  latitudeDelta: LATITUDE_DELTA,
+                  longitudeDelta: LONGITUDE_DELTA
+                }
               : currentLocation
           }
           // onPress={props => onMapPress(props.nativeEvent.coordinate)}
@@ -200,12 +237,16 @@ export default function WorksiteMapScene({ navigation, route }) {
         </MapView>
       </View>
       <View style={{ height: "20%", width: "100%", padding: 20 }}>
-        <Text style={{ ...Fonts.poppinsRegular(14), color: Colors.BLUR_TEXT }}>
-          Street Address:{" "}
-          <Text style={{ color: Colors.TEXT_COLOR }}>
-            {worksiteData?.location}
+        <TouchableOpacity onPress={openMap}>
+          <Text
+            style={{ ...Fonts.poppinsRegular(14), color: Colors.BLUR_TEXT }}
+          >
+            Street Address:{" "}
+            <Text style={{ color: Colors.TEXT_COLOR }}>
+              {worksiteData?.location}
+            </Text>
           </Text>
-        </Text>
+        </TouchableOpacity>
         <Text
           style={{
             marginTop: 5,

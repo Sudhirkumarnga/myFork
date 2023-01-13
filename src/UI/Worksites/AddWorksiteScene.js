@@ -49,6 +49,8 @@ export default function AddWorksiteScene({ navigation, route }) {
       "",
     supplies_needed:
       worksiteData?.personal_information?.supplies_needed?.toString() || "",
+    upload_instruction_video_link:
+      worksiteData?.personal_information?.upload_instruction_video_link || "",
     contact_person_name:
       worksiteData?.contact_person?.contact_person_name || "",
     contact_phone_number:
@@ -84,7 +86,8 @@ export default function AddWorksiteScene({ navigation, route }) {
     opened,
     desired_time_text,
     openStart,
-    validNumber
+    validNumber,
+    upload_instruction_video_link
   } = state
   const handleChange = (name, value) => {
     if (name === "contact_phone_number") {
@@ -118,7 +121,8 @@ export default function AddWorksiteScene({ navigation, route }) {
           clear_frequency_by_day,
           desired_time,
           number_of_workers_needed,
-          supplies_needed
+          supplies_needed,
+          upload_instruction_video_link
         },
         contact_person: {
           contact_person_name,
@@ -378,7 +382,7 @@ export default function AddWorksiteScene({ navigation, route }) {
               backgroundColor: Colors.TEXT_INPUT_BG,
               width: "90%",
               marginLeft: "5%",
-              justifyContent:'center',
+              justifyContent: "center",
               marginVertical: 5,
               borderWidth: 1,
               borderColor:
@@ -479,7 +483,7 @@ export default function AddWorksiteScene({ navigation, route }) {
             !number_of_workers_needed ||
             !supplies_needed ||
             !contact_person_name ||
-            !contact_phone_number 
+            !contact_phone_number
             // ||
             // (!worksiteData?.logo && !logo)
           }

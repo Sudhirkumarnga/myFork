@@ -74,6 +74,14 @@ const fields = {
     regex: null,
     textInputProps: { keyboardType: "default" }
   },
+  upload_instruction_video_link: {
+    key: "upload_instruction_video_link",
+    dateType: false,
+    label: "Upload Instruction Video Link",
+    placeholder: "",
+    regex: null,
+    textInputProps: { keyboardType: "default" }
+  },
   taskName: {
     key: "name",
     dateType: false,
@@ -147,7 +155,8 @@ let formDetails = {
       "cleaningFreq",
       "desiredTime",
       "numWorkers",
-      "supplies"
+      "supplies",
+      "upload_instruction_video_link"
     ]
   },
   worksiteContact: {

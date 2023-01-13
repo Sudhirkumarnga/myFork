@@ -34,9 +34,9 @@ export default function BusinessProfileScene({ navigation, route }) {
     _getProfile,
     _getCountries,
     cities,
-    loadingCity,
     states,
     adminProfile,
+    loadingCity,
     _getCities
   } = useContext(AppContext)
   const phoneRef = useRef(null)
