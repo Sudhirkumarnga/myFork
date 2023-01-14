@@ -11,23 +11,30 @@ import { BaseScene, Header } from '../Common'
 import { Fonts, Colors } from '../../res'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import AppContext from '../../Utils/Context'
+import LogoutModal from './LogoutModal'
+import DeleteModal from './DeleteModal'
+import { deleteAccount } from '../../api/auth'
+import Toast from 'react-native-simple-toast'
 
 export default class SettingScene extends BaseScene {
   static contextType = AppContext
   constructor (props) {
     super(props)
     this.state = {
+      visible: false,
+      visible1: false,
+      loadingDelete: false,
       data: [
         {
           icon: 'lock',
           screen: 'changePassword',
           title: 'Change Password'
         },
-        {
-          icon: 'lock',
-          screen: 'paymentScene',
-          title: 'Payments'
-        },
+        // {
+        //   icon: 'lock',
+        //   screen: 'paymentScene',
+        //   title: 'Payments'
+        // },
         {
           icon: 'terms',
           screen: 'termsPrivacy',
@@ -58,12 +65,27 @@ export default class SettingScene extends BaseScene {
   }
 
   logout = async () => {
-    const { setUser } = this.context
+    const { setAdminProfile, setUser } = this.context
     const navigation = this.props.navigation
     setUser(null)
+    setAdminProfile(null)
     await AsyncStorage.removeItem('token')
     await AsyncStorage.removeItem('user')
     navigation.navigate('AuthLoading')
+  }
+
+  _deleteAccount = async () => {
+    try {
+      this.setState({ loadingDelete: true })
+      const token = await AsyncStorage.getItem('token')
+      await deleteAccount(token)
+      this.logout()
+      this.setState({ loadingDelete: false })
+      Toast.show(`Account has been deleted`)
+    } catch (error) {
+      this.setState({ loadingDelete: false })
+      Toast.show(`Error: ${error.message}`)
+    }
   }
 
   renderContent () {
@@ -81,7 +103,9 @@ export default class SettingScene extends BaseScene {
             }}
             onPress={() =>
               item.title === 'Logout'
-                ? this.logout()
+                ? this.setState({ visible: true })
+                : item.title === 'Delete account'
+                ? this.setState({ visible1: true })
                 : this.props.navigation.navigate(item.screen)
             }
           >
@@ -105,6 +129,17 @@ export default class SettingScene extends BaseScene {
           onLeftPress={() => this.props.navigation.goBack()}
         />
         {this.renderContent()}
+        <LogoutModal
+          visible={this.state.visible}
+          onCancel={() => this.setState({ visible: false })}
+          logout={this.logout}
+        />
+        <DeleteModal
+          visible={this.state.visible1}
+          loading={this.state.loadingDelete}
+          onCancel={() => this.setState({ visible1: false })}
+          logout={this._deleteAccount}
+        />
       </View>
     )
   }

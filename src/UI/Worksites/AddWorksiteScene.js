@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from "react"
 import {
   View,
   Text,
@@ -7,46 +7,63 @@ import {
   Platform,
   TouchableOpacity,
   Image
-} from 'react-native'
-import { Header, PrimaryTextInput, Button } from '../Common'
-import { Fonts, Colors, Images } from '../../res'
-import Strings from '../../res/Strings'
-import WorksiteForms from '../Common/WorksiteForms'
-import ImagePicker from 'react-native-image-crop-picker'
-import { createWorksite, updateWorksite } from '../../api/business'
-import Toast from 'react-native-simple-toast'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import RNFS from 'react-native-fs'
+} from "react-native"
+import { Header, PrimaryTextInput, Button } from "../Common"
+import { Fonts, Colors, Images } from "../../res"
+import Strings from "../../res/Strings"
+import WorksiteForms from "../Common/WorksiteForms"
+import ImagePicker from "react-native-image-crop-picker"
+import { createWorksite, updateWorksite } from "../../api/business"
+import Toast from "react-native-simple-toast"
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import RNFS from "react-native-fs"
+import {
+  Menu,
+  MenuOptions,
+  MenuOption,
+  MenuTrigger
+} from "react-native-popup-menu"
+import { Icon } from "react-native-elements"
+import DatePicker from "react-native-date-picker"
+import moment from "moment-timezone"
+import PhoneInput from "react-native-phone-input"
+import { useRef } from "react"
+import { useEffect } from "react"
 
-export default function AddWorksiteScene ({ navigation, route }) {
+export default function AddWorksiteScene({ navigation, route }) {
+  const phoneRef = useRef(null)
   const worksiteData = route?.params?.worksiteData
-  console.warn('worksiteData', worksiteData)
   // State
   const [state, setState] = useState({
-    name: worksiteData?.personal_information?.name || '',
-    location: worksiteData?.personal_information?.location || '',
-    description: worksiteData?.personal_information?.description || '',
-    notes: worksiteData?.personal_information?.notes || '',
-    monthly_rates: worksiteData?.personal_information?.monthly_rates || '',
+    name: worksiteData?.personal_information?.name || "",
+    location: worksiteData?.personal_information?.location || "",
+    description: worksiteData?.personal_information?.description || "",
+    notes: worksiteData?.personal_information?.notes || "",
+    monthly_rates: worksiteData?.personal_information?.monthly_rates || "",
     clear_frequency_by_day:
-      worksiteData?.personal_information?.clear_frequency_by_day || '',
-    desired_time: worksiteData?.personal_information?.desired_time || '',
+      worksiteData?.personal_information?.clear_frequency_by_day || [],
+    desired_time: worksiteData?.personal_information?.desired_time || "",
     number_of_workers_needed:
       worksiteData?.personal_information?.number_of_workers_needed?.toString() ||
-      '',
+      "",
     supplies_needed:
-      worksiteData?.personal_information?.supplies_needed?.toString() || '',
+      worksiteData?.personal_information?.supplies_needed?.toString() || "",
     contact_person_name:
-      worksiteData?.contact_person?.contact_person_name || '',
+      worksiteData?.contact_person?.contact_person_name || "",
     contact_phone_number:
-      worksiteData?.contact_person?.contact_phone_number || '',
+      worksiteData?.contact_person?.contact_phone_number || "",
     show_dtails: worksiteData?.show_dtails || false,
     // profile_image: worksiteData?.personal_information?.profile_image || '',
-    logo: worksiteData?.logo || null,
-    instruction_video: worksiteData?.instruction_video || null,
-    loading: false
+    logo: null,
+    instruction_video: null,
+    loading: false,
+    opened: false,
+    desired_time_text: new Date(),
+    openStart: false,
+    validNumber: false
   })
+  console.warn("worksiteData?.logo", worksiteData?.logo)
 
   const {
     loading,
@@ -63,17 +80,34 @@ export default function AddWorksiteScene ({ navigation, route }) {
     contact_phone_number,
     show_dtails,
     logo,
-    instruction_video
+    instruction_video,
+    opened,
+    desired_time_text,
+    openStart,
+    validNumber
   } = state
-
   const handleChange = (name, value) => {
+    if (name === "contact_phone_number") {
+      setState(pre => ({
+        ...pre,
+        validNumber: phoneRef?.current?.isValidNumber()
+      }))
+    }
     setState(pre => ({ ...pre, [name]: value }))
   }
 
+  console.warn("worksiteData", worksiteData)
+
+  useEffect(() => {
+    if (worksiteData) {
+      handleChange("validNumber", phoneRef?.current?.isValidNumber())
+    }
+  }, [worksiteData])
+
   const handleSubmit = async () => {
     try {
-      handleChange('loading', true)
-      const token = await AsyncStorage.getItem('token')
+      handleChange("loading", true)
+      const token = await AsyncStorage.getItem("token")
       const formData = {
         worksite_information: {
           name,
@@ -90,22 +124,23 @@ export default function AddWorksiteScene ({ navigation, route }) {
           contact_person_name,
           contact_phone_number
         },
-        show_dtails,
-        logo,
-        instruction_video
+        show_dtails
       }
+      logo && (formData.logo = logo)
+      instruction_video && (formData.instruction_video = instruction_video)
       if (worksiteData) {
         await updateWorksite(worksiteData?.id, formData, token)
         Toast.show(`Worksite has been updated!`)
+        navigation.navigate("AllWorksiteScene")
       } else {
         await createWorksite(formData, token)
+        navigation.goBack()
         Toast.show(`Worksite has been added!`)
       }
-      handleChange('loading', false)
-      navigation.goBack()
+      handleChange("loading", false)
     } catch (error) {
-      handleChange('loading', false)
-      console.warn('err', error?.response?.data)
+      handleChange("loading", false)
+      console.warn("err", error?.response?.data)
       const showWError = Object.values(error.response?.data?.error)
       if (showWError.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
@@ -116,11 +151,11 @@ export default function AddWorksiteScene ({ navigation, route }) {
   }
 
   const _uploadImage = async type => {
-    handleChange('uploading', true)
+    handleChange("uploading", true)
     let OpenImagePicker =
-      type == 'camera'
+      type == "camera"
         ? ImagePicker.openCamera
-        : type == ''
+        : type == ""
         ? ImagePicker.openPicker
         : ImagePicker.openPicker
     OpenImagePicker({
@@ -131,75 +166,246 @@ export default function AddWorksiteScene ({ navigation, route }) {
     })
       .then(async response => {
         if (!response.path) {
-          handleChange('uploading', false)
+          handleChange("uploading", false)
         } else {
           const uri = response.path
           const uploadUri =
-            Platform.OS === 'ios' ? uri.replace('file://', '') : uri
-          handleChange('profile_image', uploadUri)
-          handleChange('logo', response.data)
-          handleChange('uploading', false)
-          Toast.show('Logo Added')
+            Platform.OS === "ios" ? uri.replace("file://", "") : uri
+          handleChange("profile_image", uploadUri)
+          handleChange("logo", response.data)
+          handleChange("uploading", false)
+          Toast.show("Logo Added")
         }
       })
       .catch(err => {
-        handleChange('showAlert', false)
-        handleChange('uploading', false)
+        handleChange("showAlert", false)
+        handleChange("uploading", false)
       })
   }
 
   const _uploadVideo = async type => {
-    handleChange('uploading', true)
+    handleChange("uploading", true)
     let OpenImagePicker =
-      type == 'camera'
+      type == "camera"
         ? ImagePicker.openCamera
-        : type == ''
+        : type == ""
         ? ImagePicker.openPicker
         : ImagePicker.openPicker
     OpenImagePicker({
       includeBase64: true,
-      mediaType: 'video'
+      mediaType: "video"
     })
       .then(async response => {
         if (!response.path) {
-          handleChange('uploading', false)
+          handleChange("uploading", false)
         } else {
-          const base64 = await RNFS.readFile(response.path, 'base64')
-          console.warn('base64', base64)
-          handleChange('instruction_video', base64)
-          handleChange('uploading', false)
-          Toast.show('Video Added')
+          const base64 = await RNFS.readFile(response.path, "base64")
+          handleChange("instruction_video", base64)
+          handleChange("uploading", false)
+          Toast.show("Video Added")
         }
       })
       .catch(err => {
-        handleChange('showAlert', false)
-        handleChange('uploading', false)
+        handleChange("showAlert", false)
+        handleChange("uploading", false)
       })
   }
 
   const renderPersonalInfoInput = () => {
-    return WorksiteForms.fields('addWorksite')?.map(fields => {
-      return (
-        <PrimaryTextInput
-          {...fields}
-          text={state[fields.key]}
-          key={fields.key}
-          onChangeText={(text, isValid) => handleChange(fields.key, text)}
-        />
-      )
+    return WorksiteForms.fields("addWorksite")?.map(fields => {
+      if (fields?.key === "clear_frequency_by_day") {
+        return (
+          <Menu
+            opened={opened}
+            style={{ width: "100%" }}
+            onBackdropPress={() => handleChange("opened", !opened)}
+          >
+            <MenuTrigger
+              onPress={() => handleChange("opened", !opened)}
+              style={{ width: "100%", alignItems: "center", marginTop: 10 }}
+            >
+              <View
+                style={[
+                  {
+                    alignItems: "center",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    width: "90%",
+                    height: 50,
+                    width: "90%",
+                    borderRadius: 10,
+                    color: Colors.TEXT_INPUT_COLOR,
+                    paddingHorizontal: 15,
+                    ...Fonts.poppinsRegular(14),
+                    borderWidth: 1,
+                    backgroundColor: Colors.TEXT_INPUT_BG,
+                    borderColor: Colors.TEXT_INPUT_BORDER,
+                    paddingHorizontal: 15,
+                    marginBottom: 10
+                  }
+                ]}
+              >
+                <Text
+                  style={{
+                    ...Fonts.poppinsRegular(12),
+                    color:
+                      clear_frequency_by_day?.length > 0
+                        ? Colors.BLACK
+                        : Colors.BLUR_TEXT
+                  }}
+                >
+                  {clear_frequency_by_day?.length > 0
+                    ? clear_frequency_by_day?.toString()
+                    : Strings.cleaningFreq}
+                </Text>
+                <Icon
+                  name="down"
+                  size={12}
+                  color={Colors.BLUR_TEXT}
+                  style={{ marginLeft: 10 }}
+                  type="antdesign"
+                />
+              </View>
+            </MenuTrigger>
+            <MenuOptions style={{ width: "100%" }}>
+              {fields?.items?.map(item => {
+                const isSelected = clear_frequency_by_day?.some(
+                  e => e === item?.value
+                )
+                return (
+                  <MenuOption
+                    style={{ width: "100%" }}
+                    onSelect={() => {
+                      if (isSelected) {
+                        const removed = clear_frequency_by_day?.filter(
+                          e => e !== item?.value
+                        )
+                        handleChange(fields?.key, removed)
+                      } else {
+                        handleChange(fields?.key, [
+                          ...clear_frequency_by_day,
+                          item?.value
+                        ])
+                      }
+                    }}
+                  >
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        width: "100%",
+                        justifyContent: "space-between",
+                        paddingHorizontal: 10
+                      }}
+                    >
+                      <Text style={{ ...Fonts.poppinsRegular(14) }}>
+                        {item?.label}
+                      </Text>
+                      <Image {...Images[isSelected ? "checked" : "checkbox"]} />
+                    </View>
+                  </MenuOption>
+                )
+              })}
+            </MenuOptions>
+          </Menu>
+        )
+      } else if (fields.key === "desired_time") {
+        return (
+          <View style={styles.dateInput}>
+            <TouchableOpacity
+              style={styles.inputStyle}
+              onPress={() => handleChange("openStart", true)}
+            >
+              <Text
+                style={[
+                  styles.inputText,
+                  {
+                    color: desired_time ? Colors.TEXT_COLOR : Colors.BLUR_TEXT
+                  }
+                ]}
+              >
+                {desired_time || "Desired Time"}
+              </Text>
+              <Icon
+                name={"time-outline"}
+                type={"ionicon"}
+                color={Colors.BLUR_TEXT}
+              />
+            </TouchableOpacity>
+            <DatePicker
+              modal
+              open={openStart}
+              mode={"time"}
+              date={desired_time_text}
+              onConfirm={date => {
+                handleChange("openStart", false)
+                handleChange("desired_time_text", date)
+                handleChange("desired_time", moment(date).format("hh:mm A"))
+              }}
+              onCancel={() => {
+                handleChange("openStart", false)
+              }}
+            />
+          </View>
+        )
+      } else {
+        return (
+          <PrimaryTextInput
+            {...fields}
+            text={state[fields.key]}
+            key={fields.key}
+            onChangeText={(text, isValid) => handleChange(fields.key, text)}
+          />
+        )
+      }
     })
   }
 
   const renderEmployeeContactInput = () => {
-    return WorksiteForms.fields('worksiteContact')?.map(fields => {
-      return (
-        <PrimaryTextInput
-          {...fields}
-          text={state[fields.key]}
-          key={fields.key}
-          onChangeText={(text, isValid) => handleChange(fields.key, text)}
-        />
-      )
+    return WorksiteForms.fields("worksiteContact")?.map(fields => {
+      if (fields.key === "contact_phone_number") {
+        return (
+          <View
+            style={{
+              height: 50,
+              width: "90%",
+              paddingTop: 0,
+              borderRadius: 10,
+              color: Colors.TEXT_INPUT_COLOR,
+              paddingHorizontal: 15,
+              ...Fonts.poppinsRegular(14),
+              borderWidth: 1,
+              backgroundColor: Colors.TEXT_INPUT_BG,
+              width: "90%",
+              marginLeft: "5%",
+              justifyContent:'center',
+              marginVertical: 5,
+              borderWidth: 1,
+              borderColor:
+                !state[fields.key] || (state[fields.key] && validNumber)
+                  ? Colors.TEXT_INPUT_BORDER
+                  : Colors.INVALID_TEXT_INPUT
+            }}
+          >
+            <PhoneInput
+              initialValue={state[fields.key]}
+              textProps={{ placeholder: fields.label }}
+              textStyle={{ ...Fonts.poppinsRegular(14), marginTop: 2 }}
+              ref={phoneRef}
+              onChangePhoneNumber={props => handleChange(fields.key, props)}
+            />
+          </View>
+        )
+      } else {
+        return (
+          <PrimaryTextInput
+            {...fields}
+            text={state[fields.key]}
+            key={fields.key}
+            onChangeText={(text, isValid) => handleChange(fields.key, text)}
+          />
+        )
+      }
     })
   }
 
@@ -210,12 +416,12 @@ export default function AddWorksiteScene ({ navigation, route }) {
           onPress={_uploadImage}
           style={[styles.footerWhiteButton]}
           isWhiteBg
-          icon={'upload'}
+          icon={"upload"}
           iconStyle={{
             width: 20,
             height: 20,
             tintColor: Colors.GREEN_COLOR,
-            resizeMode: 'contain'
+            resizeMode: "contain"
           }}
           color={Colors.BUTTON_BG}
           title={Strings.uploadWorksiteLogo}
@@ -224,17 +430,17 @@ export default function AddWorksiteScene ({ navigation, route }) {
           onPress={_uploadVideo}
           style={[styles.footerWhiteButton]}
           isWhiteBg
-          icon={'upload'}
+          icon={"upload"}
           iconStyle={{
             width: 20,
             height: 20,
             tintColor: Colors.GREEN_COLOR,
-            resizeMode: 'contain'
+            resizeMode: "contain"
           }}
           color={Colors.BUTTON_BG}
           title={Strings.uploadVideo}
         />
-        <Button
+        {/* <Button
           style={[styles.footerWhiteButton]}
           isWhiteBg
           icon={'add'}
@@ -246,7 +452,7 @@ export default function AddWorksiteScene ({ navigation, route }) {
           }}
           color={Colors.BUTTON_BG}
           title={Strings.createTask}
-        />
+        /> */}
         {/* <Button
           style={[styles.footerWhiteButton]}
           title={Strings.edit}
@@ -267,14 +473,15 @@ export default function AddWorksiteScene ({ navigation, route }) {
             !location ||
             !description ||
             !notes ||
-            !monthly_rates ||
-            !clear_frequency_by_day ||
+            // !monthly_rates ||
+            clear_frequency_by_day.length === 0 ||
             !desired_time ||
             !number_of_workers_needed ||
             !supplies_needed ||
             !contact_person_name ||
-            !contact_phone_number ||
-            !logo
+            !contact_phone_number 
+            // ||
+            // (!worksiteData?.logo && !logo)
           }
           loading={loading}
           style={styles.footerButton}
@@ -288,11 +495,11 @@ export default function AddWorksiteScene ({ navigation, route }) {
     return (
       <View style={styles.termsContainer}>
         <TouchableOpacity
-          onPress={() => handleChange('show_dtails', !show_dtails)}
+          onPress={() => handleChange("show_dtails", !show_dtails)}
         >
-          <Image {...Images[show_dtails ? 'checked' : 'checkbox']} />
+          <Image {...Images[show_dtails ? "checked" : "checkbox"]} />
         </TouchableOpacity>
-        <Text style={styles.textStyle}>{'Show details'}</Text>
+        <Text style={styles.textStyle}>{"Show details"}</Text>
       </View>
     )
   }
@@ -300,8 +507,8 @@ export default function AddWorksiteScene ({ navigation, route }) {
   const renderContent = () => {
     return (
       <KeyboardAwareScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ flexGrow: 1 }}
+        style={{ flex: 1, width: "100%" }}
+        contentContainerStyle={{ flexGrow: 1, width: "100%" }}
       >
         <View style={styles.childContainer}>
           {/* <TouchableOpacity style={styles.imageView} onPress={_uploadImage}>
@@ -317,7 +524,7 @@ export default function AddWorksiteScene ({ navigation, route }) {
               </>
             )}
           </TouchableOpacity> */}
-          <Text style={styles.title}>{'Worksitesite Information'}</Text>
+          <Text style={styles.title}>{"Worksite Information"}</Text>
           {renderPersonalInfoInput()}
           <Text style={styles.title}>{Strings.contactInfo}</Text>
           {renderEmployeeContactInput()}
@@ -330,8 +537,9 @@ export default function AddWorksiteScene ({ navigation, route }) {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : null}
+      style={{ flex: 1, width: "100%" }}
+      contentContainerStyle={{ width: "100%" }}
+      behavior={Platform.OS === "ios" ? "padding" : null}
     >
       <View style={styles.container}>
         <Header
@@ -348,7 +556,30 @@ export default function AddWorksiteScene ({ navigation, route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: "100%",
     backgroundColor: Colors.WHITE
+  },
+  dateInput: {
+    width: "90%",
+    marginLeft: "5%"
+  },
+  inputStyle: {
+    height: 50,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    borderRadius: 10,
+    color: Colors.TEXT_INPUT_COLOR,
+    paddingHorizontal: 15,
+    ...Fonts.poppinsRegular(14),
+    borderWidth: 1,
+    backgroundColor: Colors.TEXT_INPUT_BG,
+    borderColor: Colors.TEXT_INPUT_BORDER
+  },
+  inputText: {
+    color: Colors.TEXT_INPUT_COLOR,
+    ...Fonts.poppinsRegular(14)
   },
   title: {
     ...Fonts.poppinsMedium(22),
@@ -356,29 +587,30 @@ const styles = StyleSheet.create({
     margin: 20
   },
   childContainer: {
-    flex: 1
+    flex: 1,
+    width: "100%"
   },
   footerButton: {
-    marginTop: '5%',
-    width: '100%'
+    marginTop: "5%",
+    width: "100%"
   },
   description: {
     ...Fonts.poppinsRegular(14),
     color: Colors.TEXT_COLOR,
-    textAlign: 'left',
+    textAlign: "left",
     marginTop: 20,
     lineHeight: 24
   },
   footerWhiteButton: {
-    marginTop: '5%',
-    width: '100%',
-    backgroundColor: 'red',
+    marginTop: "5%",
+    width: "100%",
+    backgroundColor: "red",
     borderWidth: 1,
     borderColor: Colors.BUTTON_BG
   },
   termsContainer: {
-    justifyContent: 'flex-start',
-    flexDirection: 'row',
+    justifyContent: "flex-start",
+    flexDirection: "row",
     marginTop: 10,
     paddingHorizontal: 20
   },
@@ -389,18 +621,18 @@ const styles = StyleSheet.create({
   },
   uploadText: {
     ...Fonts.poppinsRegular(10),
-    alignSelf: 'center',
+    alignSelf: "center",
     color: Colors.GREEN_COLOR,
     marginTop: 5
   },
   imageView: {
     width: 102,
     height: 102,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginVertical: 30,
     backgroundColor: Colors.DARK_GREY,
     borderRadius: 10,
-    alignSelf: 'center'
+    alignSelf: "center"
   }
 })

@@ -150,7 +150,6 @@ export default function Checkout ({}) {
     }
   }
 
-  console.warn('expiry', expiry)
 
   return (
     <div>

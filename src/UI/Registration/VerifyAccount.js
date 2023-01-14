@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react"
 import {
   View,
   Text,
@@ -6,23 +6,24 @@ import {
   TouchableOpacity,
   ImageBackground,
   Image
-} from 'react-native'
-import { BaseScene, Button } from '../Common'
-import { Fonts, Colors } from '../../res'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import Toast from 'react-native-simple-toast'
-import { resetEmail, verifyEmail } from '../../api/auth'
-import OTPInputView from '@twotalltotems/react-native-otp-input'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+} from "react-native"
+import { BaseScene, Button } from "../Common"
+import { Fonts, Colors } from "../../res"
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
+import Toast from "react-native-simple-toast"
+import { resetEmail, verifyEmail } from "../../api/auth"
+import OTPInputView from "@twotalltotems/react-native-otp-input"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import AsyncHelper from "../../Utils/AsyncHelper"
 
 export default class TokenScene extends BaseScene {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       index: 0,
       loading: false,
       seconds: 60,
-      text: '',
+      text: "",
       code: 0,
       disabled: true,
       confirmResult: null
@@ -31,22 +32,27 @@ export default class TokenScene extends BaseScene {
 
   handleVerify = async () => {
     try {
+      const env = await AsyncHelper.getEnv()
       const email = this.props.route?.params?.email
-      this.handleChange('loading', true)
+      const userData = this.props.route?.params?.userData
+      this.handleChange("loading", true)
       const payload = {
         email,
         otp: this.state.code
       }
       const res = await verifyEmail(payload)
-      console.warn('verifyEmail', res?.data)
-      this.handleChange('loading', false)
-      Toast.show('Your account has been verified!')
-      await AsyncStorage.setItem('token', res?.data?.response?.token)
-      this.props.navigation.navigate('businessProfileCreation')
+      console.warn("verifyEmail", res?.data)
+      this.handleChange("loading", false)
+      Toast.show("Your account has been verified!")
+      await AsyncStorage.setItem("token", res?.data?.response?.token)
+      this.props.navigation.navigate(
+        env === "employee" ? "EmployeeProfileScene" : "businessProfileCreation",
+        { userData }
+      )
       // setUser(res?.data?.user)
       // await AsyncStorage.setItem('token', res?.data?.token)
     } catch (error) {
-      this.handleChange('loading', false)
+      this.handleChange("loading", false)
       Toast.show(`Error: Invalid OTP!`)
     }
   }
@@ -58,23 +64,23 @@ export default class TokenScene extends BaseScene {
   handleResendOTP = async () => {
     try {
       const email = this.props.route?.params?.email
-      this.handleChange('loading', true)
+      this.handleChange("loading", true)
 
       const payload = {
         email
       }
       await resetEmail(payload)
-      this.handleChange('loading', false)
+      this.handleChange("loading", false)
       Toast.show(`Email has been sent to ${email}`)
     } catch (error) {
-      this.handleChange('loading', false)
+      this.handleChange("loading", false)
       Toast.show(`Error: ${error.message}`)
     }
   }
 
-  renderTextInput () {
+  renderTextInput() {
     return (
-      <View style={{ flexDirection: 'row', marginTop: 20 }}>
+      <View style={{ flexDirection: "row", marginTop: 20 }}>
         <OTPInputView
           pinCount={4}
           autoFocusOnLoad
@@ -82,10 +88,10 @@ export default class TokenScene extends BaseScene {
           placeholderTextColor={Colors.BLUR_TEXT}
           codeInputHighlightStyle={styles.underlineStyleHighLighted}
           onCodeFilled={otp => {
-            this.handleChange('code', otp)
+            this.handleChange("code", otp)
           }}
           style={{
-            width: '80%',
+            width: "80%",
             paddingTop: 5,
             height: 70
           }}
@@ -94,48 +100,48 @@ export default class TokenScene extends BaseScene {
     )
   }
 
-  renderFooterButton () {
+  renderFooterButton() {
     return (
       <Button
         onPress={() => this.handleVerify()}
         disabled={this.state.code.toString().length < 4}
-        title={this.ls('submit')}
+        title={this.ls("submit")}
         loading={this.state.loading}
         style={styles.footerButton}
       />
     )
   }
 
-  renderResendButton () {
+  renderResendButton() {
     return (
       <TouchableOpacity
         onPress={this.handleResendOTP}
         style={{
-          justifyContent: 'center',
-          alignItems: 'center',
+          justifyContent: "center",
+          alignItems: "center",
           paddingVertical: 20
         }}
       >
-        <Text style={styles.cancelText}>{this.ls('resendToken')}</Text>
+        <Text style={styles.cancelText}>{this.ls("resendToken")}</Text>
       </TouchableOpacity>
     )
   }
 
-  render () {
+  render() {
     return (
       <ImageBackground
-        source={this.images('splashBg').source}
+        source={this.images("splashBg").source}
         style={{ flex: 1 }}
       >
         <KeyboardAwareScrollView style={styles.container}>
           <Image
-            source={this.images('appLogo').source}
-            style={{ height: 30, alignSelf: 'center' }}
-            resizeMode='contain'
+            source={this.images("appLogo").source}
+            style={{ height: 30, alignSelf: "center" }}
+            resizeMode="contain"
           />
           <View style={styles.childContainer}>
-            <Text style={styles.title}>{this.ls('tokenInput')}</Text>
-            <Text style={styles.description}>{this.ls('enterCode')}</Text>
+            <Text style={styles.title}>{this.ls("tokenInput")}</Text>
+            <Text style={styles.description}>{this.ls("enterCode")}</Text>
             {this.renderTextInput()}
             {this.renderFooterButton()}
             {this.renderResendButton()}
@@ -154,8 +160,8 @@ const styles = StyleSheet.create({
   title: {
     ...Fonts.poppinsRegular(28),
     color: Colors.BLACK,
-    textAlign: 'center',
-    marginTop: '20%'
+    textAlign: "center",
+    marginTop: "20%"
   },
   underlineStyleBase: {
     width: 50,
@@ -172,11 +178,11 @@ const styles = StyleSheet.create({
   childContainer: {
     // flex: 1,
     borderWidth: 2,
-    alignItems: 'center',
+    alignItems: "center",
     backgroundColor: Colors.WHITE,
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
-    marginTop: '30%'
+    marginTop: "30%"
   },
   description: {
     ...Fonts.poppinsRegular(14),
@@ -184,7 +190,7 @@ const styles = StyleSheet.create({
     marginVertical: 10
   },
   footerButton: {
-    marginTop: '15%'
+    marginTop: "15%"
   },
   forgotPwdText: {
     ...Fonts.poppinsRegular(14),

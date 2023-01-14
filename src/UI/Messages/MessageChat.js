@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from "react"
 import {
   StyleSheet,
   View,
@@ -8,41 +8,60 @@ import {
   TouchableOpacity,
   FlatList,
   Image,
-  BackHandler
-} from 'react-native'
-import { Icon, Input } from 'react-native-elements'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-// import database from '@react-native-firebase/database'
-// import Toast from 'react-native-simple-toast'
-// import AppContext from '../../store/Context'
+  BackHandler,
+  Platform,
+  ActivityIndicator
+} from "react-native"
+import { Icon, Input } from "react-native-elements"
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
+import database from "@react-native-firebase/database"
+import Toast from "react-native-simple-toast"
 // import { COLORS, FONT1REGULAR, FONT2REGULAR } from '../../constants'
-import userProfile from '../../res/Images/common/sample.png'
-import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
-import moment from 'moment'
-import { SvgXml } from 'react-native-svg'
-import sendIcon from '../../res/Svgs/sendIcon.svg'
-import smileIcon from '../../res/Svgs/smileIcon.svg'
-import insertIcon from '../../res/Svgs/galleryIcon.svg'
-import Colors from '../../res/Theme/Colors'
-import { Fonts } from '../../res'
-// import { Header } from '../../components'
+import userProfile from "../../res/Images/common/sample.png"
+import { heightPercentageToDP as hp } from "react-native-responsive-screen"
+import moment from "moment"
+import { SvgXml } from "react-native-svg"
+import sendIcon from "../../res/Svgs/sendIcon.svg"
+import smileIcon from "../../res/Svgs/smileIcon.svg"
+import insertIcon from "../../res/Svgs/galleryIcon.svg"
+import Colors from "../../res/Theme/Colors"
+import { Fonts } from "../../res"
+import AppContext from "../../Utils/Context"
+import { useRef } from "react"
+import EmojiPicker from "react-native-emoji-picker-staltz"
+import ImagePicker from "react-native-image-crop-picker"
+import storage from "@react-native-firebase/storage"
 
-function MessageChat ({ navigation, route }) {
-  const orderID = route?.params?.orderID
+function MessageChat({ navigation, route }) {
+  const messageuid = route?.params?.messageuid
   const orderData = route?.params?.orderData
+  const inputRef = useRef()
   // Context
-  // const context = useContext(AppContext)
-  // const { user } = context
-  const user = ''
-  const messageuid = orderID
+  const context = useContext(AppContext)
+  const { user } = context
+  // const user = ''
   let scrollView
   const [state, setState] = useState({
     listHeight: 0,
     scrollViewHeight: 0,
-    messages: [0, 0, 0, 0],
-    messageText: '',
+    uploading: false,
+    messages: [],
+    messageText: "",
     messageData: null
   })
+
+  const { messageData, show } = state
+
+  const handleChange = (key, value) => {
+    setState(pre => ({ ...pre, [key]: value }))
+  }
+
+  const onClickEmoji = emoji => {
+    setState(prevState => ({
+      ...prevState,
+      messageText: prevState.messageText + emoji
+    }))
+  }
 
   const downButtonHandler = () => {
     if (scrollView !== null) {
@@ -57,52 +76,58 @@ function MessageChat ({ navigation, route }) {
       return true
     }
     const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
+      "hardwareBackPress",
       backAction
     )
     return () => backHandler.remove()
   }, [])
 
   useEffect(() => {
-    // const db = database()
-    // if (user) {
-    //   db.ref('Messages/' + messageuid).on('value', snapshot => {
-    //     if (snapshot.val()) {
-    //       if (snapshot.val().senderId === user.uid) {
-    //         db.ref('Messages/' + messageuid)
-    //           .update({ senderRead: 0 })
-    //           .then(res => {
-    //             db.ref('Messages/' + messageuid).once('value', snapshot => {
-    //               if (snapshot.val()) {
-    //                 // getMessages()
-    //                 setState(prevState => ({
-    //                   ...prevState,
-    //                   messages: snapshot.val().messages,
-    //                   messageData: snapshot.val()
-    //                 }))
-    //               }
-    //             })
-    //           })
-    //       }
-    //       if (snapshot.val().receiverId === user.uid) {
-    //         db.ref('Messages/' + messageuid)
-    //           .update({ receiverRead: 0 })
-    //           .then(res => {
-    //             db.ref('Messages/' + messageuid).once('value', snapshot => {
-    //               if (snapshot.val()) {
-    //                 // getMessages()
-    //                 setState(prevState => ({
-    //                   ...prevState,
-    //                   messages: snapshot.val().messages,
-    //                   messageData: snapshot.val()
-    //                 }))
-    //               }
-    //             })
-    //           })
-    //       }
-    //     }
-    //   })
-    // }
+    const db = database()
+    if (user && messageuid) {
+      db.ref("Messages/" + messageuid).on("value", snapshot => {
+        if (snapshot.val()) {
+          if (
+            snapshot.val()?.senderId === user?.id ||
+            snapshot.val()?.senderId === user?.employee_id
+          ) {
+            db.ref("Messages/" + messageuid)
+              .update({ senderRead: 0 })
+              .then(res => {
+                db.ref("Messages/" + messageuid).once("value", snapshot => {
+                  if (snapshot.val()) {
+                    // getMessages()
+                    setState(prevState => ({
+                      ...prevState,
+                      messages: snapshot.val().messages || [],
+                      messageData: snapshot.val()
+                    }))
+                  }
+                })
+              })
+          }
+          if (
+            snapshot.val()?.receiverId === user?.id ||
+            snapshot.val()?.receiverId === user?.employee_id
+          ) {
+            db.ref("Messages/" + messageuid)
+              .update({ receiverRead: 0 })
+              .then(res => {
+                db.ref("Messages/" + messageuid).once("value", snapshot => {
+                  if (snapshot.val()) {
+                    // getMessages()
+                    setState(prevState => ({
+                      ...prevState,
+                      messages: snapshot.val()?.messages || [],
+                      messageData: snapshot.val()
+                    }))
+                  }
+                })
+              })
+          }
+        }
+      })
+    }
   }, [user])
 
   useEffect(() => {
@@ -111,11 +136,61 @@ function MessageChat ({ navigation, route }) {
     }
   })
 
-  const onSend = e => {
+  const _uploadImage = async type => {
+    handleChange("uploading", true)
+    let OpenImagePicker =
+      type == "camera"
+        ? ImagePicker.openCamera
+        : type == ""
+        ? ImagePicker.openPicker
+        : ImagePicker.openPicker
+
+    OpenImagePicker({
+      cropping: true
+    })
+      .then(async response => {
+        if (!response.path) {
+          handleChange("uploading", false)
+        } else {
+          const uri = response.path
+          const filename = Date.now()
+          const uploadUri =
+            Platform.OS === "ios" ? uri.replace("file://", "") : uri
+          const task = storage()
+            .ref("Chat/" + filename)
+            .putFile(uploadUri)
+          // set progress state
+          task.on("state_changed", snapshot => {})
+          try {
+            const durl = await task
+            task.snapshot.ref.getDownloadURL().then(downloadURL => {
+              onSend(downloadURL, "image")
+            })
+          } catch (e) {
+            console.error(e)
+          }
+          handleChange("uploading", false)
+        }
+      })
+      .catch(err => {
+        handleChange("showAlert", false)
+        handleChange("uploading", false)
+      })
+  }
+
+  function onlySpaces(str) {
+    return /^\s*$/.test(str)
+  }
+
+  const onSend = (text, type) => {
+    if (onlySpaces(text || state.messageText)) {
+      Toast.show("Please enter any character", Toast.LONG)
+      return
+    }
     const data = {
-      text: state.messageText,
+      text: text || state.messageText,
       timeStamp: Date.now(),
-      type: 'text',
+      type: type || "text",
       senderId: user?.id
     }
     let messages = state.messages.concat(data)
@@ -131,28 +206,28 @@ function MessageChat ({ navigation, route }) {
           : 1
     }
 
-    // database()
-    //   .ref('Messages/' + messageuid)
-    //   .update(values)
-    //   .then(res => {
-    //     setState(prevState => ({
-    //       ...prevState,
-    //       loading: false,
-    //       messageText: ''
-    //     }))
-    //     downButtonHandler()
-    //   })
-    //   .catch(err => {
-    //     console.log(err)
-    //     Toast.show('Something went wrong!', Toast.LONG)
-    //   })
+    database()
+      .ref("Messages/" + messageuid)
+      .update(values)
+      .then(res => {
+        setState(prevState => ({
+          ...prevState,
+          loading: false,
+          messageText: ""
+        }))
+        downButtonHandler()
+      })
+      .catch(err => {
+        console.log(err)
+        Toast.show("Something went wrong!", Toast.LONG)
+      })
   }
 
   const _handleSend = (message, id) => {
     var data = {
-      app_id: '15b1f37a-b123-45e3-a8c4-f0ef7e091130',
-      android_channel_id: '97ad04d8-51d2-4739-8e83-0479a7e8cd60',
-      headings: { en: user?.username ? user?.username : 'Guest User' },
+      app_id: "15b1f37a-b123-45e3-a8c4-f0ef7e091130",
+      android_channel_id: "97ad04d8-51d2-4739-8e83-0479a7e8cd60",
+      headings: { en: user?.username ? user?.username : "Guest User" },
       contents: { en: message },
       include_player_ids: [id]
     }
@@ -172,9 +247,9 @@ function MessageChat ({ navigation, route }) {
   return (
     <View
       style={{
-        width: '100%',
-        height: '100%',
-        alignItems: 'center'
+        width: "100%",
+        height: "100%",
+        alignItems: "center"
         // backgroundColor: COLORS.backgroud
       }}
     >
@@ -182,26 +257,26 @@ function MessageChat ({ navigation, route }) {
         style={{
           height: 60,
           backgroundColor: Colors.BACKGROUND_BG,
-          width: '100%',
-          alignItems: 'center',
-          justifyContent: 'center'
+          width: "100%",
+          alignItems: "center",
+          justifyContent: "center"
         }}
       >
         <View
           style={{
-            width: '95%',
-            flexDirection: 'row',
-            justifyContent: 'flex-start',
-            alignItems: 'center'
+            width: "95%",
+            flexDirection: "row",
+            justifyContent: "flex-start",
+            alignItems: "center"
           }}
         >
           <TouchableOpacity
             onPress={() => navigation.goBack()}
-            style={{ flexDirection: 'row', alignItems: 'center' }}
+            style={{ flexDirection: "row", alignItems: "center" }}
           >
             <Icon
-              name='arrowleft'
-              type='antdesign'
+              name="arrowleft"
+              type="antdesign"
               size={hp(2.8)}
               color={Colors.WHITE}
             />
@@ -214,38 +289,70 @@ function MessageChat ({ navigation, route }) {
               marginRight: 10,
               marginLeft: 20
             }}
-            resizeMode='cover'
-            source={userProfile}
+            resizeMode="cover"
+            source={
+              messageData?.senderId === user?.id ||
+              messageData?.senderId === user?.employee_id
+                ? messageData?.receiver?.personal_information?.profile_image ||
+                  messageData?.receiver?.profile_image
+                  ? {
+                      uri:
+                        messageData?.receiver?.personal_information
+                          ?.profile_image ||
+                        messageData?.receiver?.profile_image
+                    }
+                  : userProfile
+                : messageData?.sender?.personal_information?.profile_image ||
+                  messageData?.sender?.profile_image
+                ? {
+                    uri:
+                      messageData?.sender?.personal_information
+                        ?.profile_image || messageData?.sender?.profile_image
+                  }
+                : userProfile
+            }
           />
           <View>
             <Text style={{ color: Colors.WHITE, ...Fonts.poppinsRegular(12) }}>
-              John Doe
+              {messageData
+                ? messageData?.senderId === user?.id ||
+                  messageData?.senderId === user?.employee_id
+                  ? (messageData?.receiver?.personal_information?.first_name ||
+                      messageData?.receiver?.first_name) +
+                    " " +
+                    (messageData?.receiver?.personal_information?.last_name ||
+                      messageData?.receiver?.last_name)
+                  : messageData?.sender?.name ||
+                    messageData?.sender?.first_name +
+                      " " +
+                      messageData?.sender?.last_name
+                : ""}
             </Text>
-            <Text style={{ color: Colors.WHITE, ...Fonts.poppinsRegular(9) }}>
+            {/* <Text style={{ color: Colors.WHITE, ...Fonts.poppinsRegular(9) }}>
               Last seen 9:15 PM
-            </Text>
+            </Text> */}
           </View>
         </View>
       </View>
       <View style={styles.container}>
         <KeyboardAwareScrollView
-          keyboardShouldPersistTaps={'handled'}
+          keyboardShouldPersistTaps={"handled"}
           contentContainerStyle={{
-            justifyContent: 'flex-end',
+            justifyContent: "flex-end",
             borderTopWidth: 1,
             // borderTopColor: COLORS.borderColor1,
-            alignItems: 'center',
+            alignItems: "center",
             flex: 1
           }}
           style={{
-            width: '100%',
+            width: "100%",
             // backgroundColor: COLORS.white,
-            height: '100%'
+            height: "100%"
           }}
         >
           <FlatList
-            data={state.messages}
-            keyboardDismissMode='on-drag'
+            data={state?.messages}
+            keyboardDismissMode="on-drag"
             onContentSizeChange={(contentWidth, contentHeight) => {
               setState(prevState => ({
                 ...prevState,
@@ -259,32 +366,32 @@ function MessageChat ({ navigation, route }) {
                 scrollViewHeight: height
               }))
             }}
-            style={{ width: '90%', flex: 1 }}
+            style={{ width: "90%", flex: 1 }}
             contentContainerStyle={{
-              alignItems: 'flex-start',
-              justifyContent: 'flex-end'
+              alignItems: "flex-start",
+              justifyContent: "flex-end"
             }}
             ref={ref => {
               scrollView = ref
             }}
             showsVerticalScrollIndicator={false}
-            keyExtractor={(item, index) => index.toString()}
+            keyExtractor={(item, index) => index?.toString()}
             renderItem={({ item, index }) => {
-              if (item.senderId !== user?.id) {
+              if (item?.senderId !== user?.id) {
                 return (
                   <View
                     key={index}
                     style={{
-                      width: '100%',
+                      width: "100%",
                       marginVertical: 10
                     }}
                   >
                     <View
                       style={{
-                        width: '100%',
-                        flexDirection: 'row',
-                        justifyContent: 'flex-start',
-                        alignItems: 'flex-end',
+                        width: "100%",
+                        flexDirection: "row",
+                        justifyContent: "flex-start",
+                        alignItems: "flex-end",
                         paddingBottom: 10
                       }}
                     >
@@ -295,34 +402,57 @@ function MessageChat ({ navigation, route }) {
                           height: 40,
                           marginRight: 10
                         }}
-                        resizeMode='cover'
-                        source={userProfile}
+                        resizeMode="cover"
+                        source={
+                          messageData?.senderId === user?.id
+                            ? messageData?.receiver?.personal_information
+                                ?.profile_image
+                              ? {
+                                  uri: messageData?.receiver
+                                    ?.personal_information?.profile_image
+                                }
+                              : userProfile
+                            : messageData?.sender?.personal_information
+                                ?.profile_image
+                            ? {
+                                uri: messageData?.sender?.personal_information
+                                  ?.profile_image
+                              }
+                            : userProfile
+                        }
                       />
                       <View
                         style={{
                           backgroundColor: Colors.MESSAGEB_BOX_LIGHT,
-                          maxWidth: '80%',
+                          maxWidth: "80%",
                           borderRadius: 10,
                           padding: 15
                         }}
                       >
-                        <Text
-                          style={{
-                            color: Colors.BLACK,
-                            ...Fonts.poppinsRegular(12),
-                            lineHeight: 20
-                          }}
-                        >
-                          {/* {item?.text} */}
-                          Hello guys, we have discussed about post-corona
-                          vacation plan and our decision is to go to Bali. We
-                          will have a very big party after this corona ends!
-                          These are some images about our destination
-                        </Text>
+                        {item?.type === "image" ? (
+                          <Image
+                            source={{ uri: item?.text }}
+                            style={{
+                              width: 200,
+                              height: 200,
+                              resizeMode: "contain"
+                            }}
+                          />
+                        ) : (
+                          <Text
+                            style={{
+                              color: Colors.BLACK,
+                              ...Fonts.poppinsRegular(12),
+                              lineHeight: 20
+                            }}
+                          >
+                            {item?.text}
+                          </Text>
+                        )}
                         <View
                           style={{
-                            width: '100%',
-                            alignItems: 'flex-end',
+                            width: "100%",
+                            alignItems: "flex-end",
                             marginTop: 10
                           }}
                         >
@@ -346,46 +476,53 @@ function MessageChat ({ navigation, route }) {
                   <View
                     key={index}
                     style={{
-                      width: '100%',
+                      width: "100%",
                       marginVertical: 10,
-                      flexDirection: 'row',
-                      alignItems: 'flex-end',
-                      justifyContent: 'flex-end'
+                      flexDirection: "row",
+                      alignItems: "flex-end",
+                      justifyContent: "flex-end"
                     }}
                   >
                     <View
                       style={{
-                        width: '95%',
-                        flexDirection: 'row',
-                        justifyContent: 'flex-end',
-                        alignItems: 'flex-end',
+                        width: "95%",
+                        flexDirection: "row",
+                        justifyContent: "flex-end",
+                        alignItems: "flex-end",
                         paddingBottom: 10
                       }}
                     >
                       <View
                         style={{
                           backgroundColor: Colors.BACKGROUND_BG,
-                          maxWidth: '85%',
-                          alignItems: 'flex-end',
+                          maxWidth: "85%",
+                          alignItems: "flex-end",
                           borderRadius: 10,
                           borderBottomRightRadius: 0,
                           padding: 10
                         }}
                       >
-                        <Text
-                          style={{
-                            color: Colors.WHITE,
-                            // fontFamily: FONT1REGULAR,
-                            lineHeight: 20,
-                            ...Fonts.poppinsRegular(12)
-                          }}
-                        >
-                          {/* {item.text} */}
-                          Hello guys, we have discussed about post-corona
-                          vacation plan and our decision is to go to Bali. We
-                          will have a very big party after this corona ends!
-                          These are some images about our destination
-                        </Text>
+                        {item?.type === "image" ? (
+                          <Image
+                            source={{ uri: item?.text }}
+                            style={{
+                              width: 200,
+                              height: 200,
+                              resizeMode: "contain"
+                            }}
+                          />
+                        ) : (
+                          <Text
+                            style={{
+                              color: Colors.WHITE,
+                              // fontFamily: FONT1REGULAR,
+                              lineHeight: 20,
+                              ...Fonts.poppinsRegular(12)
+                            }}
+                          >
+                            {item?.text}
+                          </Text>
+                        )}
                         <Text
                           style={{
                             color: Colors.WHITE,
@@ -403,12 +540,19 @@ function MessageChat ({ navigation, route }) {
               }
             }}
           />
+          {state?.uploading && (
+            <View
+              style={{ width: "100%", alignItems: "center", marginBottom: 10 }}
+            >
+              <ActivityIndicator size={"small"} color={Colors.BACKGROUND_BG} />
+            </View>
+          )}
           <View
             style={{
-              width: '100%',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
+              width: "100%",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
               height: 70,
               backgroundColor: Colors.BACKGROUND_BG
             }}
@@ -417,17 +561,21 @@ function MessageChat ({ navigation, route }) {
               style={{
                 marginRight: 8
               }}
-              onPress={() => {
-                // state.messageText ? onSend() : console.log('')
-              }}
+              onPress={_uploadImage}
             >
               <SvgXml xml={insertIcon} />
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                inputRef.current?.blur()
+                handleChange("show", !show)
+              }}
+            >
               <SvgXml xml={smileIcon} />
             </TouchableOpacity>
             <Input
-              placeholderTextColor='#58595B'
+              ref={inputRef}
+              placeholderTextColor="#58595B"
               inputStyle={{
                 ...Fonts.poppinsRegular(12),
                 // color: COLORS.darkGrey,
@@ -438,12 +586,13 @@ function MessageChat ({ navigation, route }) {
                 borderBottomWidth: 0,
                 borderRadius: 50
               }}
+              onFocus={() => handleChange("show", false)}
               containerStyle={{
                 paddingLeft: 0,
                 height: 40,
                 borderRadius: 10,
                 backgroundColor: Colors.WHITE,
-                width: '65%',
+                width: "65%",
                 marginHorizontal: 10
               }}
               onChangeText={message =>
@@ -451,22 +600,44 @@ function MessageChat ({ navigation, route }) {
               }
               value={state.messageText}
               onSubmitEditing={() =>
-                state.messageText ? onSend() : console.log('')
+                state.messageText ? onSend() : console.log("")
               }
               blurOnSubmit={false}
-              returnKeyType='send'
-              placeholder={'Write a message'}
+              returnKeyType="send"
+              placeholder={"Write a message"}
             />
 
             <TouchableOpacity
               style={{}}
               onPress={() => {
-                state.messageText ? onSend() : console.log('')
+                state.messageText ? onSend() : console.log("")
               }}
             >
               <SvgXml xml={sendIcon} />
             </TouchableOpacity>
           </View>
+          {show && (
+            <EmojiPicker
+              onEmojiSelected={onClickEmoji}
+              rows={6}
+              hideClearButton
+              modalStyle={{ height: "50%" }}
+              backgroundStyle={{ backgroundColor: "#fff", height: "50%" }}
+              onPressOutside={() => handleChange("show", false)}
+              containerStyle={{ height: "100%" }}
+              localizedCategories={[
+                // Always in this order:
+                "Smileys and emotion",
+                "People and body",
+                "Animals and nature",
+                "Food and drink",
+                "Activities",
+                "Travel and places",
+                "Objects",
+                "Symbols"
+              ]}
+            />
+          )}
         </KeyboardAwareScrollView>
       </View>
     </View>
@@ -475,9 +646,9 @@ function MessageChat ({ navigation, route }) {
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
+    width: "100%",
     flex: 1,
-    alignItems: 'center'
+    alignItems: "center"
   },
   title: {
     // color: COLORS.darkBlack,

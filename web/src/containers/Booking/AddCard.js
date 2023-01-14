@@ -81,7 +81,6 @@ export default function Booking ({}) {
           card: cardElement
         })
         .then(result => {
-          console.warn('result', result?.paymentMethod?.id)
           if (result?.paymentMethod?.id) {
             _makePayment(result?.paymentMethod?.id)
           } else {

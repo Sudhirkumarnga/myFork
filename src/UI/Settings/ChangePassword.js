@@ -1,25 +1,30 @@
-import React, { Component } from "react"
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
-import { BaseScene, Button, PrimaryTextInput, Forms, Header } from "../Common"
-import { Fonts, Colors } from "../../res"
+import React, { Component } from 'react'
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { BaseScene, Button, PrimaryTextInput, Forms, Header } from '../Common'
+import { Fonts, Colors } from '../../res'
+import { _changePassword } from '../../api/auth'
+import Toast from 'react-native-simple-toast'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export default class ChangePassword extends BaseScene {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
-      password: "",
-      confirmPassword: "",
+      oldPassword: '',
+      password: '',
+      confirmPassword: '',
       isFormValid: false
     }
     this.setForms()
     this.isFormValid = this.isFormValid.bind(this)
   }
 
-  setForms(field) {
-    this.forms = Forms.fields("changePassword")
+  setForms (field) {
+    this.forms = Forms.fields('changePassword')
   }
 
-  isFormValid() {
+  isFormValid (text, key) {
+    this.handleChange(key, text)
     let error = null
     this.forms.map(i => {
       if (!this[i.key].isValid()) {
@@ -36,89 +41,111 @@ export default class ChangePassword extends BaseScene {
     return true
   }
 
-  onSubmit() {
-    let error = null
-    let params = {}
-    if (!this.password.isValid()) {
-      error = "Please enter valid password"
-    } else if (this.state.password != this.state.confirmPassword) {
-      error = "Password does not match"
-    }
-    if (error) {
-      alert(error)
-    } else {
-      params = {
+  handleChange = (key, value, isValid) => {
+    this.setState(pre => ({ ...pre, [key]: value, isFormValid: isValid }))
+  }
+
+  onSubmit = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token')
+      this.handleChange('loading', true, true)
+      const payload = {
         old_password: this.state.oldPassword,
-        new_password: this.state.password
+        new_password1: this.state.password,
+        new_password2: this.state.confirmPassword
       }
-      //   this.postForm(params)
+      await _changePassword(payload, token)
+      this.handleChange('loading', false, true)
+      this.props.navigation.goBack()
+      Toast.show(`Password has been changed`)
+    } catch (error) {
+      console.warn('error', error)
+      this.handleChange('loading', false, true)
+      const errorText = Object.values(error?.response?.data)
+      Toast.show(`Error: ${errorText[0]}`)
     }
   }
 
-  renderCancelButton() {
+  renderCancelButton () {
     return (
       <TouchableOpacity
         style={{
-          justifyContent: "center",
-          alignItems: "center",
+          justifyContent: 'center',
+          alignItems: 'center',
           paddingVertical: 20
         }}
         onPress={() => this.props.navigation.goBack()}
       >
-        <Text style={styles.cancelText}>{this.ls("cancel")}</Text>
+        <Text style={styles.cancelText}>{this.ls('cancel')}</Text>
       </TouchableOpacity>
     )
   }
 
-  renderTextInput() {
+  renderTextInput () {
     return (
       <View>
         <PrimaryTextInput
           ref={o => (this.confirmPassword = o)}
-          label="Current Password"
+          label='Current Password'
           correctPassword={this.state.passwordValidation}
           onChangeText={text => this.setState({ oldPassword: text })}
+          passwordPolicy={true}
+          regex={
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/
+          }
+          onPasswordValidationCheck={true}
         />
         {this.forms.map(item => {
           return (
             <PrimaryTextInput
               {...item}
-              onChangeText={text => this.isFormValid(text, "password")}
+              onChangeText={text => this.isFormValid(text, 'password')}
               ref={o => (this[item.key] = o)}
             />
           )
         })}
         <PrimaryTextInput
-          onChangeText={text => this.isFormValid(text, "confirmPassword")}
+          onChangeText={text => this.isFormValid(text, 'confirmPassword')}
           ref={o => (this.confirmPassword = o)}
-          label="Confirm Password"
+          passwordPolicy={true}
+          label='Confirm Password'
+          regex={
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/
+          }
           correctPassword={this.state.passwordValidation}
+          onPasswordValidationCheck={true}
         />
       </View>
     )
   }
 
-  renderFooterButton() {
+  renderFooterButton () {
     return (
       <Button
-        title={this.ls("changePassword")}
+        title={this.ls('changePassword')}
         style={styles.footerButton}
-        onPress={this.props.onPress}
+        onPress={this.onSubmit}
+        loading={this.state.loading}
+        disabled={
+          !this.state.oldPassword ||
+          !this.state.password ||
+          this.state.password !== this.state.confirmPassword
+        }
       />
     )
   }
-  renderHeader() {
+  renderHeader () {
     return (
       <Header
-        title={this.ls("changePassword")}
+        title={this.ls('changePassword')}
         leftButton
-        leftIcon={this.images("leftArrow")}
+        leftIcon={this.images('leftArrow')}
         onLeftPress={() => this.props.navigation.goBack()}
       />
     )
   }
 
-  render() {
+  render () {
     return (
       <View style={styles.container}>
         {this.renderHeader()}
@@ -140,8 +167,8 @@ const styles = StyleSheet.create({
   title: {
     ...Fonts.poppinsRegular(28),
     color: Colors.BLACK,
-    textAlign: "center",
-    marginTop: "20%"
+    textAlign: 'center',
+    marginTop: '20%'
   },
   description: {
     ...Fonts.poppinsRegular(14),
@@ -149,8 +176,8 @@ const styles = StyleSheet.create({
     marginVertical: 10
   },
   footerButton: {
-    marginTop: "15%",
-    width: "90%"
+    marginTop: '15%',
+    width: '90%'
   },
   forgotPwdText: {
     ...Fonts.poppinsRegular(14),

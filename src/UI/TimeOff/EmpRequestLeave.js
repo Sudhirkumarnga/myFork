@@ -3,27 +3,14 @@ import { View, FlatList, StyleSheet, Text } from "react-native"
 import { BaseComponent, Button } from "../Common"
 import { Fonts, Colors } from "../../res"
 import DenyModal from "./DenyModal"
-
-const data = [
-  {
-    title: "Employee name:",
-    des: "John Doe"
-  },
-  {
-    title: "Date submitted:",
-    des: "April 28, 2022"
-  },
-  {
-    title: "Description:",
-    des: "Lorem ipsum dolor sitameconsecteturadipi scing"
-  }
-]
+import moment from "moment"
 
 export default class EmpRequestLeave extends BaseComponent {
   constructor(props) {
     super(props)
     this.state = {
       denyModalVisible: false,
+      leaveItem: null,
       data: [
         {
           title: "Employee name:",
@@ -33,7 +20,28 @@ export default class EmpRequestLeave extends BaseComponent {
     }
   }
 
-  renderRequestCell() {
+  renderRequestCell(leaveItem) {
+    const data = [
+      {
+        title: "Employee name:",
+        des: leaveItem?.Employee_name
+      },
+      {
+        title: "Date submitted:",
+        des: moment.utc(leaveItem?.created_at).local().fromNow()
+      },
+      {
+        title: "Dates requested:",
+        des:
+          moment.utc(leaveItem?.from_date).local().format("YYYY-MM-DD") +
+          " - " +
+          moment.utc(leaveItem?.to_date).local().format("YYYY-MM-DD")
+      },
+      {
+        title: "Description:",
+        des: leaveItem?.description
+      }
+    ]
     return (
       <View
         style={{
@@ -50,24 +58,38 @@ export default class EmpRequestLeave extends BaseComponent {
             </View>
           )
         })}
-        {this.renderButtons()}
+        {this.renderButtons(leaveItem)}
       </View>
     )
   }
 
-  renderButtons() {
+  renderButtons(leaveItem, handleChange) {
     return (
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <Button
-          title={this.ls("approve")}
+          title={
+            leaveItem?.status === "APPROVED" ? "Approved" : this.ls("approve")
+          }
+          disabled={
+            this.props.loadingApprove ||
+            leaveItem?.status === "APPROVED" ||
+            leaveItem?.status === "DENY"
+          }
           style={styles.footerButton}
-          onPress={() => {}}
+          onPress={() => this.props.UpdateRequest(leaveItem?.id, "APPROVED")}
         />
         <Button
-          title={this.ls("deny")}
+          title={leaveItem?.status === "DENY" ? "Denied" : this.ls("deny")}
+          color={Colors.BUTTON_BG}
           style={styles.footerWhiteButton}
+          disabled={
+            this.props.loadingApprove ||
+            leaveItem?.status === "APPROVED" ||
+            leaveItem?.status === "DENY"
+          }
           onPress={() => {
-            this.setState({ denyModalVisible: true })
+            this.props.handleChange("denyModalVisible", true, true)
+            this.props.handleChange("leaveItem", leaveItem, true)
           }}
           isWhiteBg
           textStyle={{ color: Colors.BUTTON_BG }}
@@ -80,11 +102,16 @@ export default class EmpRequestLeave extends BaseComponent {
     return (
       <View style={styles.container}>
         <DenyModal
-          visible={this.state.denyModalVisible}
+          visible={this.props.denyModalVisible}
+          handleChange={this.props.handleChange}
+          UpdateRequest={this.props.UpdateRequest}
+          leaveItem={this.props.leaveItem}
+          admin_note={this.props.admin_note}
+          loadingApprove={this.props.loadingApprove}
           onRequestClose={() => this.setState({ denyModalVisible: false })}
         />
         <FlatList
-          data={[1, 2, 3]}
+          data={this.props.leaveRequest || []}
           renderItem={({ item }) => this.renderRequestCell(item)}
           showsVerticalScrollIndicator={false}
         />
@@ -106,14 +133,15 @@ const styles = StyleSheet.create({
     flex: 1
   },
   footerButton: {
-    width: "45%",
+    width: "48%",
     marginVertical: 20,
     height: 40
   },
   footerWhiteButton: {
     borderWidth: 1,
     borderColor: Colors.BUTTON_BG,
-    width: "45%",
+    width: "48%",
+
     marginVertical: 20,
     height: 40
   },

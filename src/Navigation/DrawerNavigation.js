@@ -16,6 +16,7 @@ import {
   WorksiteDetailScene,
   AddWorksiteScene,
   CreateTaskScene,
+  RequestLeaveScene,
   HomeScene,
   EmployeeListScene
 } from "../UI"
@@ -82,8 +83,8 @@ export const drawerNavigator = props => {
         }}
       />
       <Drawer.Screen
-        name={"Timer off Requests"}
-        component={HomeScene}
+        name={"Time off Requests"}
+        component={RequestLeaveScene}
         options={{
           drawerIcon: ({ focussed, color }) =>
             defaultOptions(focussed, color, "timer")
