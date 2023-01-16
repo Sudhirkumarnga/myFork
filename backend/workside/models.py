@@ -42,6 +42,7 @@ class WorkSite(TimeStampedModel):
     logo = models.FileField(_('Worksidet Logo'), upload_to=business_directory_path, null=True, blank=True)
     business = models.ForeignKey(Business, on_delete=models.CASCADE, null=True, blank=True)
     instruction_video = models.FileField(_('Profile Picture'), upload_to=business_directory_path, null=True, blank=True)
+    upload_instruction_video_link = models.URLField(max_length=200, null=True, blank=True)
     show_dtails = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 

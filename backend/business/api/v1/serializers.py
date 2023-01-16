@@ -17,6 +17,7 @@ from business.models import (
     Country,
     City,
     Region,
+    Region,
     EmergencyContact,
     Attendance,
     LeaveRequest, Feedback, FeedbackMedia
@@ -75,7 +76,13 @@ class EmployeePersonalInformationSerializer(ModelSerializer):
 class EmployeeAddressInformationSerializer(ModelSerializer):
     class Meta:
         model = Employee
-        fields = ['address_line_one', 'address_line_two', 'city']
+        fields = ['address_line_one', 'address_line_two', 'city', 'state']
+    
+    def to_representation(self, data):
+        data = super(EmployeeAddressInformationSerializer, self).to_representation(data)
+        data['city_name'] = City.objects.get(id=data['city']).name if data['city'] is not None else None
+        data['state_name'] = Region.objects.get(id=data['state']).name if data['state'] is not None else None
+        return data
 
 
 class EmployeeWorkInformationSerializer(ModelSerializer):
@@ -348,11 +355,7 @@ class EarningSerializer(serializers.ModelSerializer):
             dict['employee_id'] = attendances.first().employee.id
             dict['employee_image'] = attendances.first().employee.profile_image.url if attendance.employee.profile_image else None
             dict['employee_position'] = attendances.first().employee.position
-            print(dict)
-            print('==================================')
             employees_list.append(dict)
-            print('==================================')
-
         data['employees'] = employees_list
         data['date'] = queryset.first().updated_at.date()
         return data

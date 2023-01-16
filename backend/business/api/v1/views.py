@@ -63,6 +63,16 @@ class RegionListAPIView(ListAPIView):
     queryset = Region.objects.filter()
     http_method_names = ['get']
 
+    def paginate_queryset(self, queryset, view=None):
+        return None
+    
+    def get_queryset(self):
+        search = self.request.query_params.get('search', None)
+        if search is not None and len(search) >= 3:
+            queryset = self.queryset.filter(name__startswith=search)[:10]
+        else:
+            queryset = self.queryset[:10]
+        return queryset
 
 class EmployeeViewset(ModelViewSet):
     serializer_class = EmployeeSerializer
@@ -169,7 +179,7 @@ class EmployeeViewset(ModelViewSet):
             )
 
     def update(self, request, *args, **kwargs):
-        try:
+        # try:
             partial = kwargs.pop('partial', False)
             instance = self.get_object()
             serializer = self.get_serializer(instance, data=request.data, partial=partial)
@@ -186,16 +196,16 @@ class EmployeeViewset(ModelViewSet):
                 status=status.HTTP_200_OK,
                 headers={},
             )
-        except Exception as e:
-            return Response(
-                SmartWorkHorseResponse.get_response(
-                    success=False,
-                    message="Something went wrong in updating employee",
-                    status=SmartWorkHorseStatus.Error.value,
-                    error={str(e)},
-                ),
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        # except Exception as e:
+        #     return Response(
+        #         SmartWorkHorseResponse.get_response(
+        #             success=False,
+        #             message="Something went wrong in updating employee",
+        #             status=SmartWorkHorseStatus.Error.value,
+        #             error={str(e)},
+        #         ),
+        #         status=status.HTTP_400_BAD_REQUEST,
+        #     )
 
 
 class ProfileView(APIView):
@@ -397,41 +407,6 @@ class EarningsView(APIView):
     queryset = Attendance.objects.filter()
     permission_classes = [IsAuthenticated, IsActiveSubscription]
 
-    def put(self, request):
-        try:
-            data = request.data
-            attendance_id = self.request.query_params.get('attendance_id', None)
-            if attendance_id:
-                queryset = self.queryset.filter(id=attendance_id).first()
-            else:
-                queryset = self.queryset.filter(event__id=request.data['event']).last()
-
-            if 'feedback_media' in data:
-                data['feedback_media'] = convert_image_from_bse64_to_blob(data['feedback_media'])
-            if 'notes_media' in data:
-                data['notes_media'] = convert_image_from_bse64_to_blob(data['notes_media'])
-
-            serializer = AttendanceSerializer(
-                queryset,
-                data=request.data,
-                context={'request': request}
-            )
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        except Exception as e:
-            return Response(
-                SmartWorkHorseResponse.get_response(
-                    success=False,
-                    message="Something went wrong in updating employee",
-                    status=SmartWorkHorseStatus.Error.value,
-                    error={str(e)},
-                ),
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
     def get(self, request):
         date = self.request.query_params.get('date', None)
         month = self.request.query_params.get('month', None)
@@ -493,12 +468,6 @@ class DeleteAccountView(APIView):
     permission_classes = [IsAuthenticated, IsActiveSubscription]
 
     def delete(self, request, *args, **kwargs):
-
-        # queryset = self.queryset.filter(
-        #     user = self.request.user
-        # )
-        # Employee.objects.filter(business=queryset.first()).delete()
-        # queryset.delete()
         self.request.user.delete()
         return Response(status=status.HTTP_200_OK)
 

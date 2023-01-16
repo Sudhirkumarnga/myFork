@@ -27,7 +27,7 @@ class WorksitePersonalInformationSerializer(ModelSerializer):
         exclude = (
             'contact_person_name', 'contact_phone_number',
             'id', 'business', 'show_dtails', 'logo',
-            'instruction_video', 'is_active'
+            'instruction_video', 'is_active', 'upload_instruction_video_link',
         )
 
 
@@ -46,13 +46,14 @@ class WorksiteSerializer(ModelSerializer):
         model = WorkSite
         fields = (
             'id', 'business', 'personal_information', 'contact_person', 'is_active', 'show_dtails', 'tasks', 'location',
-            'longitude', 'latitude')
+            'longitude', 'latitude',)
 
     def to_representation(self, data):
         data = super(WorksiteSerializer, self).to_representation(data)
         worksite = WorkSite.objects.get(id=data['id'])
         data['logo'] = worksite.logo.url if worksite.logo else None
         data['instruction_video'] = worksite.instruction_video.url if worksite.instruction_video else None
+        data['upload_instruction_video_link'] = worksite.upload_instruction_video_link
         return data
 
     @staticmethod

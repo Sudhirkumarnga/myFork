@@ -22,6 +22,7 @@ def create_worksite(user, data):
         **data['worksite_information'],
         **data['contact_person'],
         show_dtails=data['show_dtails'],
+        upload_instruction_video_link=data['upload_instruction_video_link'],
         business=Business.objects.get(user=user),
     )
     if data.__contains__("logo") and data['logo'] is not None:
@@ -42,6 +43,8 @@ def update_worksite(user, data, instance):
         business=Business.objects.get(user=user)
     )
     worksite = models.WorkSite.objects.get(id=instance.id)
+    if data.__contains__("upload_instruction_video_link"):
+        worksite.upload_instruction_video_link = data['upload_instruction_video_link']
     if data.__contains__("show_dtails"):
         worksite.show_dtails = data['show_dtails']
     if data.__contains__("logo") and data['logo'] is not None:
@@ -52,6 +55,7 @@ def update_worksite(user, data, instance):
         worksite.logo = data['logo']
     if data.__contains__("instruction_video") and data['instruction_video'] is None:
         worksite.instruction_video = data['instruction_video']
+    
 
     worksite.save()
 

@@ -10,6 +10,7 @@ from business.models import (
     Business,
     Employee,
     City,
+    Region,
     EmergencyContact,
     BusinessAddress, Feedback, FeedbackMedia,
 
@@ -98,6 +99,7 @@ def create_employee(user, data, business_user):
         address_line_one=data['address_information']['address_line_one'],
         address_line_two=data['address_information']['address_line_two'],
         city=City.objects.get(id=data['address_information']['city']),
+        state=Region.objects.get(id=data['address_information']['state']),
         position=data['work_information']['position'],
         hourly_rate=data['work_information']['hourly_rate']
     )
@@ -123,8 +125,17 @@ def update_employee(employee_user, data):
             employee.address_line_one = data['address_information']['address_line_one']
         if 'address_line_two' in data['address_information']:
             employee.address_line_two = data['address_information']['address_line_two']
-        if 'city' in data['address_information']:
+        
+        if 'city' in data['address_information'] and data['address_information']['city'] is not None:
             employee.city = City.objects.get(id=data['address_information']['city'])
+        
+        if 'city' in data['address_information'] and data['address_information']['city'] is None:
+            employee.city = None
+
+        if 'state' in data['address_information'] and  data['address_information']['state'] is not None:
+            employee.state = Region.objects.get(id=data['address_information']['state'])
+        if 'state' in data['address_information'] and  data['address_information']['state'] is None:
+            employee.state = None        
 
     if 'work_information' in data:
         if 'position' in data['work_information']:
