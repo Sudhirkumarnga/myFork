@@ -60,6 +60,12 @@ class BusinessAddressSerializer(CountryFieldMixin, ModelSerializer):
         model = BusinessAddress
         exclude = ['id', 'created_at', 'updated_at', 'business']
 
+    def to_representation(self, data):
+        data = super(BusinessAddressSerializer, self).to_representation(data)
+        data['city_name'] = City.objects.get(id=data['city']).name if data['city'] is not None else None
+        data['state_name'] = Region.objects.get(id=data['state']).name if data['state'] is not None else None
+        return data
+
 
 class BusinessSerializer(ModelSerializer):
     class Meta:
