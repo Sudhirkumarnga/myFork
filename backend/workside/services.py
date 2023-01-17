@@ -11,8 +11,6 @@ from workside.tasks import event_publishing_reminder_task, event_start_notificat
 from business.models import (
     Business, Employee, Attendance
 )
-from django.db.models.fields import Field
-from deepdiff import DeepDiff
 
 def convert_file_from_bse64_to_blob(file):
     data = ContentFile(base64.b64decode(file), name='file.jpg')
