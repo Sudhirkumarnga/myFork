@@ -46,8 +46,8 @@ class CountrySerializer(ModelSerializer):
 class CitySerializer(ModelSerializer):
     class Meta:
         model = City
-        fields = ['id', 'name']
-
+        fields = ['id', 'name', 'region']
+        depth=1
 
 class RegionSerializer(ModelSerializer):
     class Meta:

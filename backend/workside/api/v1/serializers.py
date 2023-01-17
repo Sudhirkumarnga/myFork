@@ -2,6 +2,7 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from workside.models import *
 from workside.services import (
+    check_instance_has_changed,
     create_worksite,
     update_worksite,
     create_task,
@@ -192,7 +193,7 @@ class EventSerializer(ModelSerializer):
             "id", "worksite", "start_time", "end_time",
             "frequency", "description", "notes", "reminder",
             "schedule_inspection", "event_status", "employees", "frequency_end_date",
-            "publishing_reminder", "tasks", "selected_tasks", "notify"
+            "publishing_reminder", "tasks", "selected_tasks", "notify", "reminder_date"
         )
 
     def validate(self, data):
@@ -262,36 +263,47 @@ class EventSerializer(ModelSerializer):
         return event
 
     def update(self, instance, validated_data):
-        if validated_data.__contains__('employees'):
-            Event.objects.get(id=instance.id).employees.set(
-                validated_data['employees']
-            )
-            del validated_data['employees']
-
-        if validated_data.__contains__('selected_tasks'):
-            Event.objects.get(id=instance.id).selected_tasks.set(
-                validated_data['selected_tasks']
-            )
-            del validated_data['selected_tasks']
-
-        if validated_data.__contains__('notify'):
-            if validated_data['notify']:
-                send_notify_to_employees(
-                    [employee.id for employee in Event.objects.get(id=instance.id).employees.all()],
-                    Event.objects.get(id=instance.id).worksite
+        if not check_instance_has_changed(instance, validated_data):
+            employees = validated_data['employees']
+            selected_tasks = validated_data['selected_tasks']
+            parent = instance.parent
+            Event.objects.filter(parent=parent, end_time__gt=instance.end_time).delete()
+            if validated_data.__contains__('employees'):
+                Event.objects.get(id=instance.id).employees.set(
+                    validated_data['employees']
                 )
+                del validated_data['employees']
 
-        if validated_data.__contains__('event_status'):
-            if validated_data['event_status'] == "PUBLISHED":
-                send_event_reminder_to_employees(
-                    Event.objects.get(id=instance.id).start_time,
-                    [employee.id for employee in Event.objects.get(id=instance.id).employees.all()],
-                    Event.objects.get(id=instance.id).worksite.id
+            if validated_data.__contains__('selected_tasks'):
+                Event.objects.get(id=instance.id).selected_tasks.set(
+                    validated_data['selected_tasks']
                 )
+                del validated_data['selected_tasks']
 
-        Event.objects.filter(id=instance.id).update(
-            **validated_data
-        )
+            if validated_data.__contains__('notify'):
+                if validated_data['notify']:
+                    send_notify_to_employees(
+                        [employee.id for employee in Event.objects.get(id=instance.id).employees.all()],
+                        Event.objects.get(id=instance.id).worksite
+                    )
+
+            if validated_data.__contains__('event_status'):
+                if validated_data['event_status'] == "PUBLISHED":
+                    send_event_reminder_to_employees(
+                        Event.objects.get(id=instance.id).start_time,
+                        [employee.id for employee in Event.objects.get(id=instance.id).employees.all()],
+                        Event.objects.get(id=instance.id).worksite.id
+                    )
+
+            Event.objects.filter(id=instance.id).update(
+                **validated_data,
+                parent=instance
+            )
+            create_events_according_to_frequency(
+                Event.objects.get(id=instance.id), 
+                employees, 
+                selected_tasks
+            )
         return Event.objects.get(id=instance.id)
 
 

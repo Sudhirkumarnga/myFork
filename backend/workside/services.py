@@ -11,6 +11,8 @@ from workside.tasks import event_publishing_reminder_task, event_start_notificat
 from business.models import (
     Business, Employee, Attendance
 )
+from django.db.models.fields import Field
+from deepdiff import DeepDiff
 
 def convert_file_from_bse64_to_blob(file):
     data = ContentFile(base64.b64decode(file), name='file.jpg')
@@ -185,6 +187,7 @@ def create_events_according_to_frequency(event, employees, selected_tasks):
                 end_time=event.end_time.replace(year=end_date.year, month=end_date.month, day=end_date.day),
                 worksite=event.worksite,
                 frequency=event.frequency,
+                frequency_end_date=event.frequency_end_date,
                 description=event.description,
                 notes=event.notes,
                 reminder=event.reminder,
@@ -209,8 +212,8 @@ def get_dates(start_date, end_date, frequency):
             dates.append(start_date)    
     elif frequency == "WEEKLY":
         while start_date < end_date:
-            start_date += datetime.timedelta(weeks=1)
-            if not start_date.year > end_date.year:
+            start_date += relativedelta(weeks=1)
+            if start_date < end_date:
                 dates.append(start_date)
     elif frequency == "MONTHLY":
         while start_date.month < end_date.month:
@@ -222,3 +225,13 @@ def get_dates(start_date, end_date, frequency):
             dates.append(start_date)
     
     return dates
+
+
+def check_instance_has_changed(instance, validated_data):
+    orignal_state = model_to_dict(models.Event.objects.get(id=instance.id)) 
+    validated_data['worksite'] = validated_data['worksite'].id
+    del orignal_state['id']
+    del orignal_state['color']
+    del orignal_state['parent']
+    res = all((orignal_state.get(k) == v for k, v in validated_data.items()))
+    return res
