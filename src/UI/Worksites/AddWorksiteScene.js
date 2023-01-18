@@ -65,7 +65,6 @@ export default function AddWorksiteScene({ navigation, route }) {
     openStart: false,
     validNumber: false
   })
-  console.warn("worksiteData?.logo", worksiteData?.logo)
 
   const {
     loading,
@@ -120,9 +119,8 @@ export default function AddWorksiteScene({ navigation, route }) {
           monthly_rates,
           clear_frequency_by_day,
           desired_time,
-          number_of_workers_needed,
-          supplies_needed,
-          upload_instruction_video_link
+          number_of_workers_needed: number_of_workers_needed || "1",
+          supplies_needed
         },
         contact_person: {
           contact_person_name,
@@ -132,6 +130,8 @@ export default function AddWorksiteScene({ navigation, route }) {
       }
       logo && (formData.logo = logo)
       instruction_video && (formData.instruction_video = instruction_video)
+      upload_instruction_video_link &&
+        (formData.upload_instruction_video_link = upload_instruction_video_link)
       if (worksiteData) {
         await updateWorksite(worksiteData?.id, formData, token)
         Toast.show(`Worksite has been updated!`)
@@ -475,13 +475,13 @@ export default function AddWorksiteScene({ navigation, route }) {
           disabled={
             !name ||
             !location ||
-            !description ||
-            !notes ||
+            // !description ||
+            // !notes ||
             // !monthly_rates ||
             clear_frequency_by_day.length === 0 ||
             !desired_time ||
-            !number_of_workers_needed ||
-            !supplies_needed ||
+            // !number_of_workers_needed ||
+            // !supplies_needed ||
             !contact_person_name ||
             !contact_phone_number
             // ||

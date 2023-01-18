@@ -44,7 +44,7 @@ export default class SignupComplete extends BaseScene {
       const values = this.props.route?.params?.values
       const payload = {
         ...values,
-        employee_types: this.state.employee_types,
+        employee_types: this.state.employee_types || "Cleaner",
         is_read_terms: this.state.termsConditions
       }
       const res = await signupUser(payload)
@@ -90,7 +90,7 @@ export default class SignupComplete extends BaseScene {
     return (
       <Button
         onPress={this.handleSignup}
-        disabled={!this.state.employee_types || !this.state.termsConditions}
+        disabled={!this.state.termsConditions}
         loading={this.state.loading}
         title={this.ls("signUp")}
         style={styles.footerButton}

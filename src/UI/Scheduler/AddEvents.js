@@ -841,8 +841,14 @@ export default function AddEvents({ navigation, route }) {
           loading={loading}
           disabled={
             // !frequency ||
-            !description ||
-            !notes ||
+            // !description ||
+            !start_date ||
+            !start_time ||
+            !start_time_text ||
+            !end_date ||
+            !end_time ||
+            !end_time_text ||
+            !frequency ||
             !event_status ||
             employees.length === 0 ||
             selected_tasks.length === 0
