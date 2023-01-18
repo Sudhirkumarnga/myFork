@@ -57,8 +57,12 @@ class PayrollReportSerializer(ModelSerializer):
     class Meta:
         model = Attendance
         fields = ('employee', 'total_hours', 'earnings', 'updated_at',)
-        depth = 2
+        depth = 1
 
+    def to_representation(self, data):
+        data = super(PayrollReportSerializer, self).to_representation(data)
+        data['employee']['name'] = Employee.objects.get(id=data['employee']['id']).user.get_full_name()
+        return data
 
 class WorksiteSerializer(ModelSerializer):
     class Meta:

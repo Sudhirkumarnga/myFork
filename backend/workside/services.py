@@ -21,10 +21,15 @@ def create_worksite(user, data):
     worksite = models.WorkSite.objects.create(
         **data['worksite_information'],
         **data['contact_person'],
-        show_dtails=data['show_dtails'],
-        upload_instruction_video_link=data['upload_instruction_video_link'],
         business=Business.objects.get(user=user),
     )
+
+    if data.__contains__("show_dtails") and data['show_dtails'] is not None:
+        worksite.show_dtails = data['show_dtails']
+
+    if data.__contains__("upload_instruction_video_link") and data['upload_instruction_video_link'] is not None:
+        worksite.show_dtails = data['upload_instruction_video_link']
+
     if data.__contains__("logo") and data['logo'] is not None:
         worksite.logo = convert_file_from_bse64_to_blob(data['logo'])
 
