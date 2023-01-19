@@ -56,7 +56,7 @@ class ScheduleVarianceReportSerializer(ModelSerializer):
 class PayrollReportSerializer(ModelSerializer):
     class Meta:
         model = Attendance
-        fields = ('employee', 'total_hours', 'earnings', 'updated_at',)
+        fields = ('id', 'employee', 'total_hours', 'earnings', 'updated_at',)
         depth = 1
 
     def to_representation(self, data):
