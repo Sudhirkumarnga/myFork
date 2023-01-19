@@ -117,6 +117,11 @@ class TaskViewSet(ModelViewSet):
     def get_queryset(self):
         queryset = self.queryset.filter(worksite__business__user=self.request.user)
         return queryset
+    
+    def get_serializer_context(self):
+        context = super(TaskViewSet, self).get_serializer_context()
+        context.update({"request": self.request})
+        return context
 
     @action(detail=False, methods=["GET"])
     def task_by_frequency(self, request, *args, **kwargs):

@@ -35,7 +35,7 @@ def create_worksite(user, data):
 
     if data.__contains__("instruction_video") and data['instruction_video'] is not None:
         worksite.instruction_video = convert_file_from_bse64_to_blob(data['instruction_video'])
-
+    worksite.number_of_workers_needed = data['worksite_information']['number_of_workers_needed'] if 'number_of_workers_needed' in data['worksite_information'] else 1
     worksite.save()
     return worksite
 
@@ -60,23 +60,20 @@ def update_worksite(user, data, instance):
         worksite.logo = data['logo']
     if data.__contains__("instruction_video") and data['instruction_video'] is None:
         worksite.instruction_video = data['instruction_video']
-    
-
     worksite.save()
 
 
-def create_task(validated_data):
+def create_task(validated_data, request):
+    files = validated_data.pop("files", None)
     task = models.Task.objects.create(
-        worksite=validated_data['worksite'],
-        name=validated_data['name'],
-        description=validated_data['description'],
-        notes=validated_data['notes'],
-        criticality=validated_data['criticality'],
-        frequency_of_task=validated_data['frequency_of_task']
+       **validated_data
     )
-    if "files" in validated_data:
-        for key, val in validated_data['files'].items():
-            models.TaskAttachments.objects.create(task=task, file=convert_file_from_bse64_to_blob(val))
+    if files:
+        attachments = [
+            models.TaskAttachments(task=task, file=convert_file_from_bse64_to_blob(val)) 
+            for key, val in request.data['files'].items()
+        ]
+        models.TaskAttachments.objects.bulk_create(attachments)
     return task
 
 

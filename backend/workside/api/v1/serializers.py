@@ -106,7 +106,8 @@ class TaskSerializer(ModelSerializer):
         ).data
 
     def create(self, validated_data):
-        task = create_task(validated_data)
+        request = self.context['request']
+        task = create_task(validated_data, request)
         return task
 
 

@@ -100,7 +100,7 @@ class Employee(TimeStampedModel):
     city = models.ForeignKey(City, on_delete=models.CASCADE, null=True, blank=True)
     state = models.ForeignKey(Region, on_delete=models.CASCADE, null=True, blank=True)
     position = models.CharField(max_length=20, null=True, blank=True)
-    hourly_rate = models.IntegerField(default=0)
+    hourly_rate = models.IntegerField(default=0, null=True, blank=True)
     is_owner = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 

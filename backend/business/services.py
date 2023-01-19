@@ -29,7 +29,7 @@ def update_profile(user, data):
         business = Business.objects.get(user=user)
         if 'profile_image' in data['business_information']:
             business.profile_image = convert_image_from_bse64_to_blob(data['business_information']['profile_image'])
-        business.pay_frequency = data['business_information']['pay_frequency']
+        business.pay_frequency = data['business_information']['pay_frequency'] if 'pay_frequency' in data['business_information'] else "default to every two weeks"
         business.name = data['business_information']['name']
         business.save()
         BusinessAddress.objects.filter(business__user=user).update(**data['business_address'])
@@ -42,12 +42,12 @@ def create_user_for_employee(data):
     user = User(
         first_name=data['personal_information']['first_name'],
         last_name=data['personal_information']['last_name'],
-        gender=data['personal_information']['gender'],
         date_of_birth=data['personal_information']['date_of_birth'],
         email=data['contact']['email'],
-        phone=data['contact']['phone'],
         role="Employee",
         is_read_terms=True,
+        gender=data['personal_information']['gender'] if 'gender' in data['personal_information'] else None,
+        phone=data['contact']['phone'] if 'phone' in data['contact'] else None,
         username=generate_unique_username([
             data['personal_information']['first_name'],
             data['contact']['email'],
@@ -91,17 +91,18 @@ def update_user_for_employee(data, instance):
 
 
 def create_employee(user, data, business_user):
+    business=Business.objects.get(user=business_user)
     employee = Employee.objects.create(
         user=user,
-        business=Business.objects.get(user=business_user),
+        business=business,
         profile_image = convert_image_from_bse64_to_blob(data['personal_information']['profile_image']) if 'profile_image' in data['personal_information'] else None,
         mobile=data['contact']['mobile'],
         address_line_one=data['address_information']['address_line_one'],
-        address_line_two=data['address_information']['address_line_two'],
         city=City.objects.get(id=data['address_information']['city']),
         state=Region.objects.get(id=data['address_information']['state']),
-        position=data['work_information']['position'],
-        hourly_rate=data['work_information']['hourly_rate']
+        address_line_two=data['address_information']['address_line_two'] if 'address_line_two' in data['address_information'] else None,
+        position=data['work_information']['position'] if 'position' in data['work_information'] else business.employe_types,
+        hourly_rate=data['work_information']['hourly_rate'] if 'hourly_rate' in data['work_information'] else 0
     )
     EmergencyContact.objects.create(
         employee=employee

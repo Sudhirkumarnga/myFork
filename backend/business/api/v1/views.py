@@ -179,7 +179,7 @@ class EmployeeViewset(ModelViewSet):
             )
 
     def update(self, request, *args, **kwargs):
-        # try:
+        try:
             partial = kwargs.pop('partial', False)
             instance = self.get_object()
             serializer = self.get_serializer(instance, data=request.data, partial=partial)
@@ -196,28 +196,22 @@ class EmployeeViewset(ModelViewSet):
                 status=status.HTTP_200_OK,
                 headers={},
             )
-        # except Exception as e:
-        #     return Response(
-        #         SmartWorkHorseResponse.get_response(
-        #             success=False,
-        #             message="Something went wrong in updating employee",
-        #             status=SmartWorkHorseStatus.Error.value,
-        #             error={str(e)},
-        #         ),
-        #         status=status.HTTP_400_BAD_REQUEST,
-        #     )
+        except Exception as e:
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=False,
+                    message="Something went wrong in updating employee",
+                    status=SmartWorkHorseStatus.Error.value,
+                    error={str(e)},
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 class ProfileView(APIView):
     queryset = User.objects.filter()
     http_method_names = ['get', 'post']
     permission_classes = [IsAuthenticated]
-
-    # def get_permissions(self):
-    #     if self.request.method == 'POST':
-    #         return [IsAuthenticated(), IsActiveSubscription()]
-    #     else:
-    #         return [IsAuthenticated()]
 
     def get(self, request,):
         try:

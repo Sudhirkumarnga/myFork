@@ -20,7 +20,7 @@ from business.models import (
 def create_business_and_business_address(user, data):
     business = Business.objects.create(
         user=user,
-        employe_types=data['employee_types'],
+        employe_types=data['employee_types'] if 'employee_types' in data['employee_types'] else "Cleaner",
         business_code=get_random_string(7)
     )
     business_address = BusinessAddress.objects.create(
