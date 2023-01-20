@@ -319,6 +319,10 @@ class AttendanceSerializer(serializers.ModelSerializer):
                     )
                     }
                 )
+        if request.method in ["PUT", "PATCH"]:
+            if all(key in data for key in ('clock_in_time', 'clock_out_time')):
+                if data['clock_out_time'] <= data['clock_in_time']:
+                    raise serializers.ValidationError({"clock_out_time": _("Clock out time should be greater than clock in time.")})
         return data
 
     def create(self, validated_data):
