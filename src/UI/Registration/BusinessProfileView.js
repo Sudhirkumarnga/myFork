@@ -149,13 +149,13 @@ export default function BusinessProfileView ({ navigation }) {
         <View style={styles.textView}>
           <Text style={styles.job}>City:</Text>
           <Text style={styles.title}>
-            {getCityTValue(cities, adminProfile?.business_address?.city)}
+            {adminProfile?.business_address?.city_name}
           </Text>
         </View>
         <View style={styles.textView}>
           <Text style={styles.job}>State:</Text>
           <Text style={styles.title}>
-            {getCityTValue(states, adminProfile?.business_address?.state)}
+            {adminProfile?.business_address?.state_name}
           </Text>
         </View>
         <View style={styles.textView}>

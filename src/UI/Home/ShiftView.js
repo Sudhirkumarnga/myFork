@@ -219,10 +219,11 @@ export default function ShiftView() {
           <View
             style={{
               flexDirection: "row",
-              justifyContent: "space-between"
+              justifyContent: "space-between",
+              width: "100%"
             }}
           >
-            <View>
+            <View style={{ width: "85%" }}>
               <Text style={styles.title}>
                 {upcomingShiftData?.status === "CLOCK_OUT"
                   ? "Current Shift"

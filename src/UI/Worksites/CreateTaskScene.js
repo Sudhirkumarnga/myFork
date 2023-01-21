@@ -247,9 +247,9 @@ export default function CreateTaskScene({ navigation, route }) {
           onPress={handleSubmit}
           disabled={
             !name ||
-            !description ||
-            !criticality ||
-            !notes ||
+            // !description ||
+            // !criticality ||
+            // !notes ||
             !frequency_of_task 
             // ||
             // (!task && photos.length === 0)

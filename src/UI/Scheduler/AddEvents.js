@@ -255,6 +255,7 @@ export default function AddEvents({ navigation, route }) {
       handleChange("loadingMain", true)
       const token = await AsyncStorage.getItem("token")
       const res = await getEventDetails(selectedEvent?.id, token)
+      console.warn('res?.data',res?.data);
       handleChange("loadingMain", false)
       handleChange("eventDetails", res?.data)
       handleChange("worksite", res?.data?.worksite)
@@ -283,6 +284,7 @@ export default function AddEvents({ navigation, route }) {
         moment.utc(res?.data?.end_time).local().format("hh:mm A")
       )
       handleChange("frequency", res?.data?.frequency)
+      handleChange("frequency_end_date", moment.utc(res?.data?.frequency_end_date).local().format("MM/DD/YYYY"))
       handleChange("description", res?.data?.description)
       handleChange("notes", res?.data?.notes)
       handleChange("reminder", res?.data?.reminder)
@@ -841,8 +843,14 @@ export default function AddEvents({ navigation, route }) {
           loading={loading}
           disabled={
             // !frequency ||
-            !description ||
-            !notes ||
+            // !description ||
+            !start_date ||
+            !start_time ||
+            !start_time_text ||
+            !end_date ||
+            !end_time ||
+            !end_time_text ||
+            !frequency ||
             !event_status ||
             employees.length === 0 ||
             selected_tasks.length === 0

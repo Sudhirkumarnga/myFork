@@ -34,9 +34,9 @@ export default function BusinessProfileScene({ navigation, route }) {
     _getProfile,
     _getCountries,
     cities,
-    loadingCity,
     states,
     adminProfile,
+    loadingCity,
     _getCities
   } = useContext(AppContext)
   const phoneRef = useRef(null)
@@ -59,7 +59,9 @@ export default function BusinessProfileScene({ navigation, route }) {
     address_line_one: adminProfile?.business_address?.address_line_one || "",
     address_line_two: adminProfile?.business_address?.address_line_two || "",
     city: adminProfile?.business_address?.city || "",
+    city_name: adminProfile?.business_address?.city_name || "",
     selectedState: adminProfile?.business_address?.state || "",
+    state_name: adminProfile?.business_address?.state_name || "",
     country: "",
     zipcode: adminProfile?.business_address?.zipcode || "",
     profile_image: adminProfile?.business_information?.profile_image || "",
@@ -88,7 +90,9 @@ export default function BusinessProfileScene({ navigation, route }) {
     photo,
     validNumber,
     cityText,
-    openCity
+    openCity,
+    state_name,
+    city_name
   } = state
 
   const handleChange = (name, value) => {
@@ -166,7 +170,7 @@ export default function BusinessProfileScene({ navigation, route }) {
       const formData = {
         business_information: {
           name,
-          pay_frequency
+          pay_frequency: pay_frequency || "Every two weeks"
           // profile_image: photo
         },
         personal_information: {
@@ -179,8 +183,8 @@ export default function BusinessProfileScene({ navigation, route }) {
         business_address: {
           address_line_one,
           address_line_two,
-          city: getCityValue(city),
-          state: getStateValue(selectedState),
+          city: city,
+          state: selectedState,
           zipcode
         }
       }
@@ -289,6 +293,7 @@ export default function BusinessProfileScene({ navigation, route }) {
               height: 50,
               width: "90%",
               paddingTop: 0,
+              marginTop: 5,
               borderRadius: 10,
               color: Colors.TEXT_INPUT_COLOR,
               paddingHorizontal: 15,
@@ -301,8 +306,13 @@ export default function BusinessProfileScene({ navigation, route }) {
               borderColor: Colors.TEXT_INPUT_BORDER
             }}
           >
-            <Text style={{ ...Fonts.poppinsRegular(14), color: Colors.BLACK }}>
-              {getStateText(cities, city)}
+            <Text
+              style={{
+                ...Fonts.poppinsRegular(14),
+                color: city_name ? Colors.BLACK : Colors.BLUR_TEXT
+              }}
+            >
+              {city_name || "City"}
             </Text>
             <Icon
               name="down"
@@ -315,17 +325,32 @@ export default function BusinessProfileScene({ navigation, route }) {
         )
       } else if (fields.key === "state") {
         return (
-          <PrimaryTextInput
-            text={getStateText(states, selectedState)}
-            dropdown={true}
-            items={getDropdownItem(states)}
-            label={"State"}
-            key="state"
-            // placeholder='City'
-            onChangeText={(text, isValid) =>
-              handleChange("selectedState", text)
-            }
-          />
+          <View
+            style={{
+              height: 50,
+              width: "90%",
+              paddingTop: 0,
+              borderRadius: 10,
+              marginTop: 10,
+              paddingHorizontal: 15,
+              borderWidth: 1,
+              marginLeft: "5%",
+              backgroundColor: Colors.TEXT_INPUT_BG,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              borderColor: Colors.TEXT_INPUT_BORDER
+            }}
+          >
+            <Text
+              style={{
+                ...Fonts.poppinsRegular(14),
+                color: state_name ? Colors.BLACK : Colors.BLUR_TEXT
+              }}
+            >
+              {state_name || "State"}
+            </Text>
+          </View>
         )
       } else {
         return (
@@ -346,13 +371,13 @@ export default function BusinessProfileScene({ navigation, route }) {
         title={Strings.submit}
         disabled={
           !name ||
-          !pay_frequency ||
+          // !pay_frequency ||
           !first_name ||
           !last_name ||
           !phone ||
           !date_of_birth ||
           !address_line_one ||
-          !address_line_two ||
+          // !address_line_two ||
           !city ||
           !selectedState ||
           !zipcode ||
@@ -460,6 +485,9 @@ export default function BusinessProfileScene({ navigation, route }) {
                       handleChange("openCity", false)
                       handleChange("cityText", "")
                       handleChange("city", item?.id)
+                      handleChange("city_name", item?.name)
+                      handleChange("state_name", item?.region?.name)
+                      handleChange("selectedState", item?.region?.id)
                     }}
                     key={index}
                     style={{

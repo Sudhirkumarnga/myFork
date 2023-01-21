@@ -17,6 +17,7 @@ import AppContext from "../../Utils/Context"
 import { signupUser } from "../../api/auth"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 import BouncyCheckbox from "react-native-bouncy-checkbox"
+import { Icon } from "react-native-elements"
 
 const screenWidth = Dimensions.get("window").width
 
@@ -43,7 +44,7 @@ export default class SignupComplete extends BaseScene {
       const values = this.props.route?.params?.values
       const payload = {
         ...values,
-        employee_types: this.state.employee_types,
+        employee_types: this.state.employee_types || "Cleaner",
         is_read_terms: this.state.termsConditions
       }
       const res = await signupUser(payload)
@@ -89,7 +90,7 @@ export default class SignupComplete extends BaseScene {
     return (
       <Button
         onPress={this.handleSignup}
-        disabled={!this.state.employee_types || !this.state.termsConditions}
+        disabled={!this.state.termsConditions}
         loading={this.state.loading}
         title={this.ls("signUp")}
         style={styles.footerButton}
@@ -181,6 +182,18 @@ export default class SignupComplete extends BaseScene {
         style={{ flex: 1 }}
       >
         <View style={styles.container}>
+          <View
+            style={{
+              width: "90%",
+              marginLeft: "5%",
+              marginTop: -25,
+              alignItems: "flex-start"
+            }}
+          >
+            <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
+              <Icon name="left" type="antdesign" color={Colors.WHITE} />
+            </TouchableOpacity>
+          </View>
           <Image
             source={this.images("appLogo").source}
             style={{ height: 30, alignSelf: "center" }}
