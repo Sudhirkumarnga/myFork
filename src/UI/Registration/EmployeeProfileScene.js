@@ -130,6 +130,7 @@ export default function EmployeeProfileScene({ navigation, route }) {
           phone: phone1
         }
       }
+      photo && (formData.personal_information.profile_image = photo)
       await createAdminProfile(formData, token)
       _getProfile(token)
       handleChange("loading", false)
@@ -216,8 +217,9 @@ export default function EmployeeProfileScene({ navigation, route }) {
           !first_name ||
           !last_name ||
           // !phone ||
-          !date_of_birth ||
-          !profile_image
+          !date_of_birth
+          //  ||
+          // !profile_image
         }
         loading={loading}
         style={styles.footerButton}

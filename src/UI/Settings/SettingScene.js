@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react"
 import {
   View,
   Text,
@@ -6,19 +6,21 @@ import {
   FlatList,
   Image,
   TouchableOpacity
-} from 'react-native'
-import { BaseScene, Header } from '../Common'
-import { Fonts, Colors } from '../../res'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import AppContext from '../../Utils/Context'
-import LogoutModal from './LogoutModal'
-import DeleteModal from './DeleteModal'
-import { deleteAccount } from '../../api/auth'
-import Toast from 'react-native-simple-toast'
+} from "react-native"
+import { BaseScene, Header } from "../Common"
+import { Fonts, Colors } from "../../res"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import AppContext from "../../Utils/Context"
+import LogoutModal from "./LogoutModal"
+import DeleteModal from "./DeleteModal"
+import { deleteAccount } from "../../api/auth"
+import Toast from "react-native-simple-toast"
+import { Linking } from "react-native"
+import { Alert } from "react-native"
 
 export default class SettingScene extends BaseScene {
   static contextType = AppContext
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       visible: false,
@@ -26,9 +28,9 @@ export default class SettingScene extends BaseScene {
       loadingDelete: false,
       data: [
         {
-          icon: 'lock',
-          screen: 'changePassword',
-          title: 'Change Password'
+          icon: "lock",
+          screen: "changePassword",
+          title: "Change Password"
         },
         // {
         //   icon: 'lock',
@@ -36,29 +38,31 @@ export default class SettingScene extends BaseScene {
         //   title: 'Payments'
         // },
         {
-          icon: 'terms',
-          screen: 'termsPrivacy',
-          title: 'Terms & Conditions'
+          icon: "terms",
+          screen: "termsPrivacy",
+          // link: "https://cleanr.pro/privacy-policy",
+          title: "Terms & Conditions"
         },
         {
-          icon: 'privacy',
-          screen: 'privacyPolicy',
-          title: 'Privacy Policy'
+          icon: "privacy",
+          link: "https://cleanr.pro/privacy-policy",
+          screen: "privacyPolicy",
+          title: "Privacy Policy"
         },
         {
-          icon: 'chat',
-          screen: 'feedbackScene',
-          title: 'Support/Send Feedback'
+          icon: "chat",
+          screen: "feedbackScene",
+          title: "Support/Send Feedback"
         },
         {
-          icon: 'logout',
-          screen: 'SettingScene',
-          title: 'Logout'
+          icon: "logout",
+          screen: "SettingScene",
+          title: "Logout"
         },
         {
-          icon: 'delete',
-          screen: 'SettingScene',
-          title: 'Delete account'
+          icon: "delete",
+          screen: "SettingScene",
+          title: "Delete account"
         }
       ]
     }
@@ -69,15 +73,15 @@ export default class SettingScene extends BaseScene {
     const navigation = this.props.navigation
     setUser(null)
     setAdminProfile(null)
-    await AsyncStorage.removeItem('token')
-    await AsyncStorage.removeItem('user')
-    navigation.navigate('AuthLoading')
+    await AsyncStorage.removeItem("token")
+    await AsyncStorage.removeItem("user")
+    navigation.navigate("AuthLoading")
   }
 
   _deleteAccount = async () => {
     try {
       this.setState({ loadingDelete: true })
-      const token = await AsyncStorage.getItem('token')
+      const token = await AsyncStorage.getItem("token")
       await deleteAccount(token)
       this.logout()
       this.setState({ loadingDelete: false })
@@ -88,7 +92,16 @@ export default class SettingScene extends BaseScene {
     }
   }
 
-  renderContent () {
+  openLink = async link => {
+    const supported = await Linking.canOpenURL(link)
+    if (supported) {
+      await Linking.openURL(link)
+    } else {
+      Alert.alert(`Don't know how to open this URL: ${link}`)
+    }
+  }
+
+  renderContent() {
     return (
       <FlatList
         data={this.state.data}
@@ -96,22 +109,24 @@ export default class SettingScene extends BaseScene {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={{
-              flexDirection: 'row',
-              alignItems: 'center',
+              flexDirection: "row",
+              alignItems: "center",
               padding: 10,
               marginVertical: 5
             }}
             onPress={() =>
-              item.title === 'Logout'
+              item.link
+                ? this.openLink(item?.link)
+                : item.title === "Logout"
                 ? this.setState({ visible: true })
-                : item.title === 'Delete account'
+                : item.title === "Delete account"
                 ? this.setState({ visible1: true })
                 : this.props.navigation.navigate(item.screen)
             }
           >
             <Image
               {...this.images(item.icon)}
-              style={{ height: 20, width: 20, resizeMode: 'contain' }}
+              style={{ height: 20, width: 20, resizeMode: "contain" }}
             />
             <Text style={styles.text}>{item.title}</Text>
           </TouchableOpacity>
@@ -120,11 +135,11 @@ export default class SettingScene extends BaseScene {
     )
   }
 
-  render () {
+  render() {
     return (
       <View style={styles.container}>
         <Header
-          title={this.ls('settings')}
+          title={this.ls("settings")}
           leftButton
           onLeftPress={() => this.props.navigation.goBack()}
         />
@@ -160,12 +175,12 @@ const styles = StyleSheet.create({
     padding: 20
   },
   footerButton: {
-    marginTop: '15%'
+    marginTop: "15%"
   },
   description: {
     ...Fonts.poppinsRegular(14),
     color: Colors.TEXT_COLOR,
-    textAlign: 'left',
+    textAlign: "left",
     marginTop: 20,
     lineHeight: 24
   }

@@ -15,6 +15,7 @@ import { resetEmail, verifyEmail } from "../../api/auth"
 import OTPInputView from "@twotalltotems/react-native-otp-input"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import AsyncHelper from "../../Utils/AsyncHelper"
+import { Icon } from "react-native-elements"
 
 export default class TokenScene extends BaseScene {
   constructor(props) {
@@ -134,6 +135,18 @@ export default class TokenScene extends BaseScene {
         style={{ flex: 1 }}
       >
         <KeyboardAwareScrollView style={styles.container}>
+          <View
+            style={{
+              width: "90%",
+              marginLeft: "5%",
+              marginTop: 15,
+              alignItems: "flex-start"
+            }}
+          >
+            <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
+              <Icon name="left" type="antdesign" color={Colors.WHITE} />
+            </TouchableOpacity>
+          </View>
           <Image
             source={this.images("appLogo").source}
             style={{ height: 30, alignSelf: "center" }}
@@ -155,7 +168,7 @@ export default class TokenScene extends BaseScene {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 60
+    paddingTop: 20
   },
   title: {
     ...Fonts.poppinsRegular(28),
@@ -177,7 +190,7 @@ const styles = StyleSheet.create({
   },
   childContainer: {
     // flex: 1,
-    borderWidth: 2,
+    // borderWidth: 2,
     alignItems: "center",
     backgroundColor: Colors.WHITE,
     borderTopRightRadius: 20,

@@ -29,7 +29,7 @@ import { Icon } from "react-native-elements"
 
 export default function AddEmployeeScene({ navigation, route }) {
   const item = route?.params?.item
-  const { _getCountries, cities, loadingCity, _getCities } =
+  const { _getCountries, states, cities, loadingCity, _getCities } =
     useContext(AppContext)
   const phoneRef = useRef(null)
   const mobileRef = useRef(null)
@@ -46,6 +46,9 @@ export default function AddEmployeeScene({ navigation, route }) {
     address_line_one: item?.address_information?.address_line_one || "",
     address_line_two: item?.address_information?.address_line_two || "",
     city: item?.address_information?.city || "",
+    city_name: item?.address_information?.city_name || "",
+    selectedState: item?.address_information?.state || "",
+    state_name: item?.address_information?.state_name || "",
     country: "",
     zipcode: "",
     photo: "",
@@ -73,6 +76,7 @@ export default function AddEmployeeScene({ navigation, route }) {
     date_of_birth,
     address_line_one,
     address_line_two,
+    selectedState,
     city,
     profile_image,
     photo,
@@ -83,7 +87,9 @@ export default function AddEmployeeScene({ navigation, route }) {
     validNumber,
     validNumber1,
     cityText,
-    openCity
+    openCity,
+    city_name,
+    state_name
   } = state
 
   const handleChange = (name, value) => {
@@ -163,23 +169,25 @@ export default function AddEmployeeScene({ navigation, route }) {
         address_information: {
           address_line_one,
           address_line_two,
-          city: getCityTValue(city)
+          city: city,
+          state: selectedState
         },
         work_information: {
-          position,
-          hourly_rate: Number(price)
+          position: position || "Cleaner",
+          hourly_rate: price ? Number(price) : 0
         }
       }
       photo && (formData.personal_information.profile_image = photo)
+      console.warn("formData", formData)
       if (item) {
-        console.warn("formData", formData)
         await updateEmployee(item?.id, formData, token)
+        Toast.show(`Employee has been updated!`)
       } else {
         await createEmployee(formData, token)
+        Toast.show(`Employee has been added!`)
       }
       handleChange("loading", false)
       navigation.navigate("home")
-      Toast.show(`Employee has been added!`)
     } catch (error) {
       handleChange("loading", false)
       console.warn("err", error?.response?.data)
@@ -188,7 +196,7 @@ export default function AddEmployeeScene({ navigation, route }) {
         Object.values(error.response?.data?.error)
       if (error?.response?.data?.subscription) {
         Toast.show(`Error: ${error?.response?.data?.subscription}`)
-      } else if (showWError.length > 0) {
+      } else if (showWError?.length > 0) {
         Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
       } else {
         Toast.show(`Error: ${JSON.stringify(error)}`)
@@ -199,6 +207,11 @@ export default function AddEmployeeScene({ navigation, route }) {
   const getCityTValue = value => {
     const filtered = cities?.filter(e => e.name === value)
     return filtered.length > 0 ? filtered[0].id : ""
+  }
+
+  const getStateValue = value => {
+    const filtered = states?.filter(e => e.name === value || e.id === value)
+    return filtered?.length > 0 ? filtered[0].id : ""
   }
 
   const renderPersonalInfoInput = () => {
@@ -316,8 +329,13 @@ export default function AddEmployeeScene({ navigation, route }) {
               borderColor: Colors.TEXT_INPUT_BORDER
             }}
           >
-            <Text style={{ ...Fonts.poppinsRegular(14), color: Colors.BLACK }}>
-              {getStateText(cities, city)}
+            <Text
+              style={{
+                ...Fonts.poppinsRegular(14),
+                color: city_name ? Colors.BLACK : Colors.BLUR_TEXT
+              }}
+            >
+              {city_name || "City"}
             </Text>
             <Icon
               name="down"
@@ -327,6 +345,35 @@ export default function AddEmployeeScene({ navigation, route }) {
               type="antdesign"
             />
           </TouchableOpacity>
+        )
+      } else if (fields.key === "state") {
+        return (
+          <View
+            style={{
+              height: 50,
+              width: "90%",
+              paddingTop: 0,
+              borderRadius: 10,
+              marginTop: 10,
+              paddingHorizontal: 15,
+              borderWidth: 1,
+              marginLeft: "5%",
+              backgroundColor: Colors.TEXT_INPUT_BG,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              borderColor: Colors.TEXT_INPUT_BORDER
+            }}
+          >
+            <Text
+              style={{
+                ...Fonts.poppinsRegular(14),
+                color: state_name ? Colors.BLACK : Colors.BLUR_TEXT
+              }}
+            >
+              {state_name || "State"}
+            </Text>
+          </View>
         )
       } else {
         return (
@@ -352,15 +399,17 @@ export default function AddEmployeeScene({ navigation, route }) {
           !first_name ||
           !last_name ||
           !date_of_birth ||
-          !gender ||
+          // !gender ||
           !email ||
           !mobile ||
-          !phone ||
+          // !phone ||
           !address_line_one ||
-          !address_line_two ||
+          // !address_line_two ||
           !city ||
-          !position ||
-          !price
+          !selectedState
+          // ||
+          // !position ||
+          // !price
         }
         loading={loading}
         onPress={handleSubmit}
@@ -389,7 +438,7 @@ export default function AddEmployeeScene({ navigation, route }) {
           {renderPersonalInfoInput()}
           <Text style={styles.title}>{Strings.contact}</Text>
           {renderEmployeeContactInput()}
-          <Text style={styles.title}>{"Address"}</Text>
+          <Text style={styles.title}>{"Employee Address"}</Text>
           {renderAddressInfo()}
           <Text style={styles.title}>{Strings.workInfo}</Text>
           {renderWorkInfo()}
@@ -448,6 +497,9 @@ export default function AddEmployeeScene({ navigation, route }) {
                       handleChange("openCity", false)
                       handleChange("cityText", "")
                       handleChange("city", item?.id)
+                      handleChange("city_name", item?.name)
+                      handleChange("selectedState", item?.region?.id)
+                      handleChange("state_name", item?.region?.name)
                     }}
                     key={index}
                     style={{
