@@ -20,6 +20,7 @@ from business.api.v1.serializers import (
     EmployeeSerializer,
     CountrySerializer,
     CitySerializer,
+    LightEmployeeSerializer,
     RegionSerializer,
     LeaveRequestSerializer,
     AttendanceSerializer,
@@ -94,6 +95,18 @@ class EmployeeViewset(ModelViewSet):
         context = super(EmployeeViewset, self).get_serializer_context()
         context.update({"request": self.request})
         return context
+
+    def get_serializer_class(self):
+        pagination = self.request.query_params.get("pagination", None)
+        if pagination == "False":
+            return LightEmployeeSerializer
+        return EmployeeSerializer
+
+    def paginate_queryset(self, queryset, view=None):
+        pagination = self.request.query_params.get("pagination", None)
+        if pagination == "False":
+            return None
+        return self.paginator.paginate_queryset(queryset, self.request, view=self)
 
     def retrieve(self, request, *args, **kwargs):
         try:
@@ -405,6 +418,9 @@ class EarningsView(APIView):
         date = self.request.query_params.get('date', None)
         month = self.request.query_params.get('month', None)
         year = self.request.query_params.get('year', None)
+        from_date = self.request.query_params.get('from', None)
+        to_date = self.request.query_params.get('to', None)
+        employees = self.request.query_params.getlist('employee', None)
 
         if request.user.role == "Organization Admin":
 
@@ -412,6 +428,8 @@ class EarningsView(APIView):
                 employee__business__user=request.user.id,
                 status="CLOCK_OUT"
             )
+            if employees:                
+                queryset = queryset.filter(employee_id__in=employees)
 
             if date:
                 queryset = queryset.filter(updated_at__day=date)
@@ -419,6 +437,11 @@ class EarningsView(APIView):
                 queryset = queryset.filter(updated_at__month=month)
             if year:
                 queryset = queryset.filter(updated_at__year=year)
+
+            if from_date:
+                queryset = queryset.filter(updated_at__date__gte=from_date)
+            if to_date:
+                queryset = queryset.filter(updated_at__date__lte=to_date)
 
             serializer = EarningSerializer(
                 queryset.first(),
@@ -445,6 +468,11 @@ class EarningsView(APIView):
                 queryset = queryset.filter(updated_at__month=month)
             if year:
                 queryset = queryset.filter(updated_at__year=year)
+
+            if from_date:
+                queryset = queryset.filter(updated_at__date__gte=from_date)
+            if to_date:
+                queryset = queryset.filter(updated_at__date__lte=to_date)
 
             data = EmployeeEarningSerializer(
                 queryset.first(),

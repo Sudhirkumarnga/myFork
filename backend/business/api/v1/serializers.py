@@ -103,6 +103,17 @@ class EmployeeContactSerializer(CountryFieldMixin, ModelSerializer):
         fields = ['email', 'phone']
 
 
+class LightEmployeeSerializer(ModelSerializer):
+    class Meta:
+        model = Employee
+        fields = ['id', 'user']
+
+    def to_representation(self, data):
+        data = super(LightEmployeeSerializer, self).to_representation(data)
+        data['name'] = User.objects.get(id=data['user']).get_full_name()
+        del data['user']
+        return data
+
 class EmployeeSerializer(ModelSerializer):
     personal_information = serializers.SerializerMethodField()
     contact = serializers.SerializerMethodField()
@@ -360,7 +371,7 @@ class EarningSerializer(serializers.ModelSerializer):
                 dict['employee_hours'] += attendance.total_hours
                 dict['employee_earnings'] += attendance.earnings
             dict['employee_hourly_rate'] = attendances.first().employee.hourly_rate
-            dict['created_at'] = attendances.first().created_at.date()
+            dict['created_at'] = attendances.first().created_at
             dict['employee_name'] = attendances.first().employee.user.get_full_name()
             dict['employee_id'] = attendances.first().employee.id
             dict['employee_image'] = attendances.first().employee.profile_image.url if attendance.employee.profile_image else None
