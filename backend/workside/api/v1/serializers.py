@@ -85,7 +85,7 @@ class WorksiteSerializer(ModelSerializer):
 
     def update(self, instance, validated_data):
         request = self.context['request']
-        worksite = update_worksite(request.user, request.data, instance)
+        update_worksite(request.user, request.data, instance)
         return WorkSite.objects.get(id=instance.id)
 
 
