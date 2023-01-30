@@ -2,7 +2,7 @@ from django.core.mail import send_mail
 from allauth.utils import email_address_exists, generate_unique_username
 from allauth.account.models import EmailAddress
 from push_notification.services import create_notification
-from smart_workhorse_33965.settings import EMAIL_HOST_USER
+from smart_workhorse_33965.settings import DEFAULT_FROM_EMAIL
 from users.models import User
 import base64
 from django.core.files.base import ContentFile
@@ -152,7 +152,7 @@ def send_email_to_employee(user, password):
     send_mail(
         "Smart WorkHorse Login Credentials",
         f"Your Login credentials are:\nEmail: {user.email}\nPassword: {password}",
-        EMAIL_HOST_USER,
+        DEFAULT_FROM_EMAIL,
         [user.email],
         fail_silently=False,
     )

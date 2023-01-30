@@ -5,7 +5,7 @@ from push_notification.services import create_notification
 from users.models import User_OTP
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
-from smart_workhorse_33965.settings import EMAIL_HOST_USER
+from smart_workhorse_33965.settings import DEFAULT_FROM_EMAIL
 from django.contrib.sites.models import Site
 
 
@@ -86,7 +86,7 @@ def send_account_confirmation_email(user, otp):
     send_mail(
         'Account Confirmation Email',
         msg_plain,
-        EMAIL_HOST_USER,
+        DEFAULT_FROM_EMAIL,
         [user.email],
         html_message=msg_html,
     )
@@ -102,7 +102,7 @@ def sent_password_reset_email(user, otp):
     send_mail(
         'Password Reset Email',
         msg_plain,
-        EMAIL_HOST_USER,
+        DEFAULT_FROM_EMAIL,
         [user.email],
         html_message=msg_html,
     )
@@ -116,7 +116,7 @@ def send_new_otp(user, otp):
     send_mail(
         'Password Reset Email',
         msg_plain,
-        EMAIL_HOST_USER,
+        DEFAULT_FROM_EMAIL,
         [user.email],
         html_message=msg_html,
     )

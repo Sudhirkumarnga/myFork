@@ -2,7 +2,7 @@ from push_notification.services import create_notification
 from smart_workhorse_33965.celery import app
 from workside import models
 from django.core.mail import send_mail
-from smart_workhorse_33965.settings import EMAIL_HOST_USER
+from smart_workhorse_33965.settings import DEFAULT_FROM_EMAIL
 from workside.models import *
 
 
@@ -22,7 +22,7 @@ def event_publishing_reminder_task(event_id, reminder_date):
             send_mail(
                 'Event Publish Reminder',
                 f'your worksite {event.worksite.name} event is schedule to published on this date:{event.start_time}',
-                EMAIL_HOST_USER,
+                DEFAULT_FROM_EMAIL,
                 [event.worksite.business.user.email],
                 fail_silently=False,
             )
