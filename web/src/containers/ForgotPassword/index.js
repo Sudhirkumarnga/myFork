@@ -46,7 +46,8 @@ export default function ForgotPassword({}) {
           horizontal: "right"
         }
       })
-      navigate(`/forgot-password/otp?email=${email}`)
+      localStorage.setItem("email", email)
+      navigate(`/forgot-password/otp`)
     } catch (error) {
       handleChange("loading", false)
       const errorText = Object.values(error?.response?.data)

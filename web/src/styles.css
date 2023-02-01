@@ -196,6 +196,12 @@ section {
     height: 40px;
 }
 
+.columnCenter {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
 .activeTab {
     font-weight: bold;
     width: 50%;

@@ -1,26 +1,40 @@
 // @ts-nocheck
 /* eslint-disable no-empty-pattern */
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { AppButton, AppInput } from "../../components"
 import { Grid } from "@mui/material"
-import { useNavigate, useParams, useSearchParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import eyeIcon from "../../assets/svg/eye.svg"
 import { setPassword } from "../../api/auth"
 import { COLORS } from "../../constants"
 import { useSnackbar } from "notistack"
+import eyeCLose from "../../assets/images/closeEYE.jpg"
 
 export default function Reset({}) {
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
-  const [searchParams] = useSearchParams()
-  const email = searchParams.get("email")
+  const email = localStorage.getItem("email")
   const [state, setState] = useState({
     new_password1: "",
     new_password2: "",
-    loading: false
+    loading: false,
+    loadingResend: false,
+    isShow: false,
+    isShow1: false
   })
 
-  const { new_password1, new_password2, loading } = state
+  const {
+    new_password1,
+    new_password2,
+    loading,
+    loadingResend,
+    isShow,
+    isShow1
+  } = state
+
+  // useEffect(() => {
+  //   return () => localStorage.removeItem("email")
+  // }, [])
 
   const handleChange = (key, value) => {
     setState(pre => ({
@@ -47,6 +61,7 @@ export default function Reset({}) {
         }
       })
       navigate("/login")
+      localStorage.removeItem("email")
     } catch (error) {
       handleChange("loading", false)
       const errorText = Object.values(error?.response?.data)
@@ -80,18 +95,34 @@ export default function Reset({}) {
             className="mb-4 mt-3"
             value={new_password1}
             name={"new_password1"}
-            type={"password"}
+            type={isShow ? "text" : "password"}
             onChange={handleChange}
-            postfix={<img src={eyeIcon} width={20} className={"c-pointer"} />}
+            postfix={
+              <img
+                src={isShow ? eyeIcon : eyeCLose}
+                style={{ objectFit: "contain" }}
+                onClick={() => handleChange("isShow", !isShow)}
+                width={20}
+                className={"c-pointer"}
+              />
+            }
             placeholder={"********"}
           />
           <AppInput
             className="mb-4 mt-3"
             value={new_password2}
             name={"new_password2"}
-            type={"password"}
+            type={isShow1 ? "text" : "password"}
             onChange={handleChange}
-            postfix={<img src={eyeIcon} width={20} className={"c-pointer"} />}
+            postfix={
+              <img
+                src={isShow1 ? eyeIcon : eyeCLose}
+                style={{ objectFit: "contain" }}
+                onClick={() => handleChange("isShow1", !isShow1)}
+                width={20}
+                className={"c-pointer"}
+              />
+            }
             placeholder={"********"}
           />
           <AppButton
@@ -106,7 +137,7 @@ export default function Reset({}) {
           <AppButton
             title={"Cancel"}
             loading={loadingResend}
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/login")}
             backgroundColor={COLORS.white}
             color={COLORS.primary}
           />

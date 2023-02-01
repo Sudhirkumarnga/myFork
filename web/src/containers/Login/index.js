@@ -2,7 +2,7 @@
 /* eslint-disable no-empty-pattern */
 import React, { useEffect, useState } from "react"
 import { AppButton, AppInput } from "../../components"
-import { Grid } from "@mui/material"
+import { Grid, Checkbox } from "@mui/material"
 import eyeIcon from "../../assets/svg/eye.svg"
 import { useNavigate } from "react-router-dom"
 import { loginUser, signupUser } from "../../api/auth"
@@ -10,10 +10,12 @@ import AppContext from "../../Context"
 import { useContext } from "react"
 import { COLORS } from "../../constants"
 import { useSnackbar } from "notistack"
+import eyeCLose from "../../assets/images/closeEYE.jpg"
 
 export default function Login({}) {
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
+  const UserType = localStorage.getItem("UserType")
   const { user, setUser, _getProfile } = useContext(AppContext)
   const path = window.location.pathname
   const [state, setState] = useState({
@@ -28,7 +30,8 @@ export default function Login({}) {
     employee_types: "",
     first_name: "",
     last_name: "",
-    phone: ""
+    phone: "",
+    isShow: false
   })
 
   useEffect(() => {
@@ -48,7 +51,9 @@ export default function Login({}) {
     activeTab,
     first_name,
     last_name,
-    phone
+    phone,
+    is_read_terms,
+    isShow
   } = state
 
   const handleChange = (key, value) => {
@@ -59,8 +64,6 @@ export default function Login({}) {
   }
 
   const onSubmit = () => {
-    const UserType = localStorage.getItem("UserType")
-
     const payload = {
       name: first_name + " " + last_name,
       email,
@@ -125,17 +128,30 @@ export default function Login({}) {
 
   const handleLogin = async () => {
     try {
-      handleChange("  ", true)
+      handleChange("loading", true)
       const payload = {
         email,
         password
       }
       const res = await loginUser(payload)
+      handleChange("loading", false)
+      if (
+        UserType === "admin" &&
+        res?.data?.user?.role !== "Organization Admin"
+      ) {
+        alert("Please use business user")
+        return
+      }
+      if (
+        UserType === "employee" &&
+        res?.data?.user?.role === "Organization Admin"
+      ) {
+        alert("Please use employee user")
+        return
+      }
       localStorage.setItem("token", res?.data?.key)
       localStorage.setItem("user", JSON.stringify(res?.data?.user))
-      handleChange("loading", false)
-      // _getProfile()
-      // setUser(res?.data?.user)
+      setUser(res?.data?.user)
       enqueueSnackbar(`Login Successful`, {
         variant: "success",
         anchorOrigin: {
@@ -238,11 +254,17 @@ export default function Login({}) {
               <AppInput
                 className="mb-4 mt-3"
                 value={password}
-                type={"password"}
+                type={isShow ? "text" : "password"}
                 name={"password"}
                 onChange={handleChange}
                 postfix={
-                  <img src={eyeIcon} width={20} className={"c-pointer"} />
+                  <img
+                    src={isShow ? eyeIcon : eyeCLose}
+                    style={{ objectFit: "contain" }}
+                    onClick={() => handleChange("isShow", !isShow)}
+                    width={20}
+                    className={"c-pointer"}
+                  />
                 }
                 placeholder={"********"}
               />
@@ -255,6 +277,31 @@ export default function Login({}) {
                 onClick={() => navigate("/forgot-password")}
               >
                 <p className="text_primary">Forgot Password?</p>
+              </div>
+            </div>
+          )}
+          {((activeTab === 1 && UserType === "employee") ||
+            (activeTab === 2 && UserType === "admin")) && (
+            <div className="mb-2 d-flex align-items-center">
+              <Checkbox
+                checked={is_read_terms}
+                onClick={() => handleChange("is_read_terms", !is_read_terms)}
+              />
+              <div className="font-12">
+                I have read{" "}
+                <span
+                  onClick={() => navigate("/terms-conditions")}
+                  className="text_primary c-pointer"
+                >
+                  Terms and Conditions
+                </span>{" "}
+                and{" "}
+                <span
+                  onClick={() => navigate("/privacy-policy")}
+                  className="text_primary c-pointer"
+                >
+                  Privacy Policy
+                </span>
               </div>
             </div>
           )}
@@ -272,9 +319,14 @@ export default function Login({}) {
             loading={loading}
             disabled={
               activeTab === 2
-                ? false
+                ? !is_read_terms
                 : activeTab === 1
-                ? !email || !first_name || !last_name || !password || !phone
+                ? (UserType === "employee" && !is_read_terms) ||
+                  !email ||
+                  !first_name ||
+                  !last_name ||
+                  !password ||
+                  !phone
                 : !email || !password
             }
             backgroundColor={COLORS.primary}

@@ -18,7 +18,8 @@ import {
   Subscription,
   Checkout,
   MainHome,
-  ForgotPasswordOtp
+  ForgotPasswordOtp,
+  Reset
 } from "./containers"
 import AppContext from "./Context"
 import "./styles.css"
@@ -39,12 +40,12 @@ function App() {
   let token = localStorage.getItem("token")
   const isProtected = token
 
-  useEffect(() => {
-    if (token) {
-      _getProfile()
-      navigate("/subscription")
-    }
-  }, [userData])
+  // useEffect(() => {
+  //   if (token) {
+  //     _getProfile()
+  //     navigate("/subscription")
+  //   }
+  // }, [userData])
 
   const _getProfile = async () => {
     try {
@@ -87,6 +88,10 @@ function App() {
               <Route
                 path={ROUTES.FORGOTPASSWORDOTP}
                 element={<ForgotPasswordOtp />}
+              />
+              <Route
+                path={ROUTES.RESET}
+                element={<Reset />}
               />
               <Route
                 path={ROUTES.TERMSCONDITIONS}

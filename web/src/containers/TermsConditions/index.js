@@ -1,19 +1,20 @@
 // @ts-nocheck
 /* eslint-disable no-empty-pattern */
-import React from 'react'
-import { MainFooter, HomeHeader } from '../../components'
-import { Grid } from '@mui/material'
+import React from "react"
+import { MainFooter, HomeHeader } from "../../components"
+import { Divider, Grid } from "@mui/material"
 
-export default function TermsConditions ({}) {
+export default function TermsConditions({}) {
   return (
     <div>
       <HomeHeader />
-      <section className='mt-5 bg-white mb-5'>
-        <div className='container mt-4'>
-          <p className={'text_primary font-30 font-bold'}>Terms & Conditions</p>
+      <section className="mt-5 bg-white mb-5">
+        <div className="container mt-4">
+          <p className={"font-30 font-bold"}>Terms & Conditions</p>
+          <Divider className="mt-4 mb-4" />
           <Grid container>
             <Grid xs={12} item>
-              <div className='text_primary text-justify'>
+              <div className="">
                 <br />
                 Welcome to the QoreID website “the Website”, an online resource
                 owned and controlled by QoreID and/or its affiliated and related
@@ -140,7 +141,7 @@ export default function TermsConditions ({}) {
           </Grid>
         </div>
       </section>
-      <MainFooter />
+      {/* <MainFooter /> */}
     </div>
   )
 }

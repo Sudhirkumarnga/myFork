@@ -14,8 +14,7 @@ import OtpInput from "react-otp-input"
 export default function ForgotPasswordOtp({}) {
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
-  const [searchParams] = useSearchParams()
-  const email = searchParams.get("email")
+  const email = localStorage.getItem("email")
   const [state, setState] = useState({
     otp: "",
     loading: false,
@@ -66,7 +65,7 @@ export default function ForgotPasswordOtp({}) {
         email,
         otp
       }
-      const res = await verifyEmail(payload)
+      await verifyEmail(payload)
       handleChange("loading", false)
       enqueueSnackbar(`OTP has been verified`, {
         variant: "success",
@@ -75,7 +74,7 @@ export default function ForgotPasswordOtp({}) {
           horizontal: "right"
         }
       })
-      navigate(`/forgot-password/reset?email=${email}`)
+      navigate(`/forgot-password/reset`)
     } catch (error) {
       handleChange("loading", false)
       const errorText = Object.values(error?.response?.data)
@@ -107,10 +106,9 @@ export default function ForgotPasswordOtp({}) {
         <div className="text_grey mt-3 text-center width80 letter-spacing text_transform_none font-14">
           {"Please enter 4 digit code sent to your email address"}
         </div>
-        <div className="width80 mt-4">
+        <div className="width80 columnCenter mt-4">
           <OtpInput
             value={otp}
-            containerStyle={{ marginLeft: '13%' }}
             inputStyle={{
               width: 50,
               marginRight: 20,

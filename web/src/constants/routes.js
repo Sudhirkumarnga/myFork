@@ -10,6 +10,7 @@ export const SUBSCRIPTION = "/subscription"
 export const CHECKOUT = "/checkout/:id"
 export const FORGOTPASSWORD = "/forgot-password"
 export const FORGOTPASSWORDOTP = "/forgot-password/otp"
+export const RESET = "/forgot-password/reset"
 
 export const SIDEBAR = (
   <React.Fragment>
