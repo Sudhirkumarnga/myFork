@@ -1,27 +1,13 @@
 // @ts-nocheck
 /* eslint-disable no-empty-pattern */
-import React, { useContext, useEffect, useState } from 'react'
-import {
-  HomeFooter,
-  AppInput,
-  HomeHeader,
-  AppButton,
-  MainFooter
-} from '../../components'
-import { Element } from 'react-scroll'
-import { Divider, Grid, Paper, TextField } from '@mui/material'
-import ReactStars from 'react-stars'
-import Bus1 from '../../assets/images/Bus1.png'
-import stars from '../../assets/svg/stars.svg'
-import bus from '../../assets/svg/bus.svg'
-import { ReactComponent as Logo } from '../../assets/svg/logo.svg'
-import people from '../../assets/svg/people.svg'
-import headphone from '../../assets/svg/headphone.svg'
-import { useNavigate } from 'react-router-dom'
-import AppContext from '../../Context'
-import { COLORS } from '../../constants'
+import React, { useContext, useEffect, useState } from "react"
+import { AppButton } from "../../components"
+import { Grid } from "@mui/material"
+import { ReactComponent as Logo } from "../../assets/svg/logo.svg"
+import { useNavigate } from "react-router-dom"
+import AppContext from "../../Context"
 
-export default function MainHome ({}) {
+export default function MainHome({}) {
   const navigate = useNavigate()
   const { listRVS } = useContext(AppContext)
   const [state, setState] = useState({
@@ -31,7 +17,7 @@ export default function MainHome ({}) {
   const { splash } = state
   useEffect(() => {
     setTimeout(() => {
-      handleChange('splash', false)
+      handleChange("splash", false)
     }, 3000)
   }, [])
 
@@ -39,32 +25,27 @@ export default function MainHome ({}) {
     setState(pre => ({ ...pre, [key]: value }))
   }
 
-  const types = [
-    { image: stars, title: 'More 5-star ratings' },
-    { image: people, title: 'Real people here help 24/7' },
-    { image: headphone, title: '24/7 assistance & insurance' }
-  ]
-
-  const handleSearch = () => {
-    navigate('/recommandation')
+  const handleSearch = (route, type) => {
+    localStorage.setItem("UserType", type)
+    navigate(route)
   }
 
   return (
-    <div className='home'>
+    <div className="home">
       <Logo />
       {!splash && (
-        <Grid container direction='column' alignItems={'center'} className=''>
-          <div className='text-white text-center font-16 mt-5 mb-5'>I am a</div>
+        <Grid container direction="column" alignItems={"center"} className="">
+          <div className="text-white text-center font-16 mt-5 mb-5">I am a</div>
           <AppButton
-            title={'Business Admin'}
-            className={'mb-3'}
-            onClick={() => navigate('/login')}
+            title={"Business Admin"}
+            className={"mb-3"}
+            onClick={() => handleSearch("/login", "admin")}
             width={300}
           />
           <AppButton
-            title={'Employee'}
+            title={"Employee"}
             width={300}
-            onClick={() => navigate('/login')}
+            onClick={() => handleSearch("/login", "employee")}
           />
         </Grid>
       )}

@@ -14,7 +14,7 @@ import {
 } from '@mui/material'
 import eyeIcon from '../../assets/svg/eye.svg'
 import { Link, useNavigate } from 'react-router-dom'
-import { getPlans, signupUser } from '../../api/auth'
+import { getPlans } from '../../api/subscription'
 import AppContext from '../../Context'
 import { useContext } from 'react'
 import { COLORS } from '../../constants'
