@@ -29,6 +29,7 @@
     "react-google-autocomplete": "^2.7.0",
     "react-google-maps": "^9.4.5",
     "react-google-places-autocomplete": "^3.3.4",
+    "react-otp-input": "^2.4.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
     "react-scroll": "^1.8.7",
