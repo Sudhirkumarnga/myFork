@@ -7,7 +7,7 @@ from business.api.v1.views import (
     ProfileView,
     RegionListAPIView,
     LeaveRequestView,
-    AttendanceView,
+    AttendanceView, AttendanceViewV2,
     EarningsView, FeedbackView,
     AttendanceFeedbackView, DeleteAccountView
 )
@@ -26,6 +26,7 @@ urlpatterns = [
     path('state/', RegionListAPIView.as_view(), name='state_list'),
     path('profile/', ProfileView.as_view(), name='profile'),
     path('attendance/', AttendanceView.as_view(), name='attendance'),
+    path('attendance_v2/', AttendanceViewV2.as_view(), name='attendance_v2'),
     path('attendance_feedback/', AttendanceFeedbackView.as_view(), name='attendance_feedback'),
     path('earnings/', EarningsView.as_view(), name='earnings'),
     path('delete_account/', DeleteAccountView.as_view(), name='delete_account'),

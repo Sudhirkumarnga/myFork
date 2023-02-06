@@ -377,6 +377,61 @@ class AttendanceView(APIView):
             )
 
 
+class AttendanceViewV2(APIView):
+    permission_classes = [IsAuthenticated, IsActiveSubscription]
+    queryset = Attendance.objects.filter()
+
+    def post(self, request, *args, **kwargs):
+        serializer = AttendanceSerializer(
+            data=request.data, many=False,
+            context={"request": request}
+        )
+        if serializer.is_valid():
+            serializer.save()
+            send_clock_in_notification_to_business_owner(request)
+            send_clock_in_notification_to_employee(request)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request):
+        try:
+            data = request.data
+            attendance_id = self.request.query_params.get('attendance_id', None)
+            if attendance_id:
+                queryset = self.queryset.filter(id=attendance_id).first()
+            else:
+                queryset = self.queryset.filter(event__id=request.data['event']).last()
+
+            if 'feedback_media' in data:
+                data['feedback_media'] = convert_image_from_bse64_to_blob(data['feedback_media'])
+            if 'notes_media' in data:
+                data['notes_media'] = convert_image_from_bse64_to_blob(data['notes_media'])
+
+            serializer = AttendanceSerializer(
+                queryset,
+                data=request.data,
+                context={'request': request}
+            )
+            if serializer.is_valid():
+                serializer.save()
+                send_clock_out_notification_to_business_owner(request)
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=False,
+                    message="Something went wrong.",
+                    status=SmartWorkHorseStatus.Error.value,
+                    error={str(e)},
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
+
+
 class AttendanceFeedbackView(APIView):
     permission_classes = [IsAuthenticated, IsActiveSubscription]
     queryset = Attendance.objects.filter()

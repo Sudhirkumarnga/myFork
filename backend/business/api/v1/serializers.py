@@ -318,18 +318,18 @@ class AttendanceSerializer(serializers.ModelSerializer):
                 if not event.exists():
                     raise serializers.ValidationError(_("Event Time not started or you're not allowed to clockin."))
 
-        if request.method == "POST":
-            attendance = Attendance.objects.filter(
-                event=data['event'],
-                employee__user=request.user
-            )
-            if attendance.exists():
-                raise serializers.ValidationError(
-                    {"event": _(
-                        "You already attend this event."
-                    )
-                    }
-                )
+        # if request.method == "POST":
+        #     attendance = Attendance.objects.filter(
+        #         event=data['event'],
+        #         employee__user=request.user
+        #     )
+        #     if attendance.exists():
+        #         raise serializers.ValidationError(
+        #             {"event": _(
+        #                 "You already attend this event."
+        #             )
+        #             }
+        #         )
         if request.method in ["PUT", "PATCH"]:
             if all(key in data for key in ('clock_in_time', 'clock_out_time')):
                 if data['clock_out_time'] <= data['clock_in_time']:

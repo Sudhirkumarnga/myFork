@@ -13,6 +13,7 @@ from rest_framework.decorators import action
 from django.db.models import Q
 from workside.models import *
 from workside.api.v1.serializers import (
+    AttendaceTimesSerializer,
     WorksiteSerializer,
     TaskSerializer,
     TaskAttachmentSerializer,
@@ -512,3 +513,80 @@ class UpcomingShiftView(APIView):
         ).data
         serializer_data['total_hours'] = get_total_hours(request)
         return Response(serializer_data)
+
+
+
+class UpcomingShiftViewV2(APIView):
+    queryset = Event.objects.filter()
+    permission_classes = [IsAuthenticated, IsActiveSubscription]
+
+    def get(self, request):
+        employee = Employee.objects.filter(user=self.request.user)
+        queryset = self.queryset.filter(
+            ~Q(event_status='DRAFT'),
+            end_time__gte=datetime.now(),
+            employees__in=employee,
+        ).order_by('start_time')
+        if queryset.exists():
+            attendance = Attendance.objects.filter(
+                event=queryset.first(),
+                employee__user=request.user,
+                is_shift_completed=True
+            )
+            if not attendance.exists():
+                serializer_data = AttendanceEventSerializer(
+                    queryset.first(),
+                    many=False,
+                    context={'request': request}
+                ).data
+            else:
+                serializer_data = {}
+        else:
+            serializer_data = {}
+        return Response(serializer_data)
+
+    def finalize_response(self, request, response, *args, **kwargs):
+        response.data['active_employees'] = EmployeeSerializer(
+        Employee.objects.filter(
+            business=Employee.objects.get(
+                user=request.user
+            ).business
+        ),
+            many=True
+        ).data
+        response.data['total_hours'] = get_total_hours(request)
+        return super().finalize_response(request, response, *args, **kwargs)
+
+
+class GetAttendaceTimes(APIView):
+    permission_classes = [IsAuthenticated, IsActiveSubscription]
+
+    def get(self, request):
+        queryset = Attendance.objects.filter(
+            employee__user=request.user,
+            event__id=request.query_params.get("event", None)
+        )
+        serializer = AttendaceTimesSerializer(
+            queryset,
+            many=True
+        )
+        return Response(serializer.data)
+    
+    def put(self, request):
+        for shift in request.data.get('shifts'):
+            Attendance.objects.filter(
+                id=shift.get('id'),
+                event__id=request.data.get("event")
+            ).update(
+                clock_in_time=shift['clock_in_time'],
+                clock_out_time=shift['clock_out_time']
+            )
+
+        serializer = AttendaceTimesSerializer(
+            Attendance.objects.filter(
+                employee__user=request.user,
+                event__id=request.data.get('event')
+            ),
+            many=True
+        )
+        return Response(serializer.data)

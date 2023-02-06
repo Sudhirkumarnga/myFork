@@ -407,8 +407,6 @@ class AttendanceActiveEmployeeSerializer(serializers.ModelSerializer):
 
 class AttendanceEventSerializer(serializers.ModelSerializer):
     worksite = serializers.SerializerMethodField()
-    # active_employees = serializers.SerializerMethodField()
-    # total_hours = serializers.SerializerMethodField()
     assigned_employees = serializers.SerializerMethodField()
 
     class Meta:
@@ -450,32 +448,8 @@ class AttendanceEventSerializer(serializers.ModelSerializer):
             many=True
         ).data
 
-    # def get_active_employees(self, obj):
-    #     request = self.context['request']
-    #     employees = Employee.objects.filter(business__user=request.user, is_owner=False)
-    #     data = EmployeeSerializer(
-    #         employees,
-    #         many=True
-    #     ).data
-    #     return data
 
-    # attendance = Attendance.objects.filter(event=obj)
-    # if attendance.exists():
-    #     employees = AttendanceActiveEmployeeSerializer(
-    #         attendance.first(),
-    #         many=False
-    #     ).data['employee']
-    #     for employee in employees:
-    #         employee['worksite'] = obj.worksite.name
-    #     return employees
-    # else:
-    #     return []
-
-    # def get_total_hours(self, obj):
-    #     request = self.context['request']
-    #     all_attendance = Attendance.objects.filter(employee__user=request.user, status="CLOCK_OUT")
-    #     attendance_hours = 0
-    #     if all_attendance.exists():
-    #         for attendance in all_attendance:
-    #             attendance_hours += attendance.total_hours
-    #     return attendance_hours
+class AttendaceTimesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attendance
+        fields = ('id', 'event', 'clock_in_time', 'clock_out_time')
