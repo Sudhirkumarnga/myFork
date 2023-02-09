@@ -91,7 +91,11 @@ export default function ShiftDetails({ navigation }) {
           .catch(error => console.warn(error))
       },
       error => console.log("Error", JSON.stringify(error)),
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+      Platform.OS !== "android" && {
+        enableHighAccuracy: true,
+        timeout: 20000,
+        maximumAge: 1000
+      }
     )
     Geolocation.watchPosition(
       position => {
@@ -107,13 +111,16 @@ export default function ShiftDetails({ navigation }) {
         Geocoder.from(lat, long)
           .then(json => {
             var addressComponent = json.results[0].address_components[0]
-            console.log(addressComponent)
             handleChange("currentLocationName", addressComponent.short_name)
           })
           .catch(error => console.warn(error))
       },
       error => console.log("Error", JSON.stringify(error)),
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+      Platform.OS !== "android" && {
+        enableHighAccuracy: true,
+        timeout: 20000,
+        maximumAge: 1000
+      }
     )
   }
 

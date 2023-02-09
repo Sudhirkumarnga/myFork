@@ -13,6 +13,7 @@ const buildRequest = request => {
     'Content-Type': contentType
   }
 
+  console.warn('headers',headers);
   const apiUrl = API_URL()
 
   const requestConfig = {
