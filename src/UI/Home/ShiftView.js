@@ -267,9 +267,10 @@ export default function ShiftView() {
           upcomingShiftTimesData?.length > 0 &&
           upcomingShiftTimesData[upcomingShiftTimesData?.length - 1]
             ?.clock_out_time === null
-            ? handleShift()
+            ? _updateUpcomingShiftTimes()
             : navigation.navigate("ShiftDetails", { upcomingShiftData })
         }}
+        loading={loadingSubmit}
         title={
           upcomingShiftTimesData?.length > 0 &&
           upcomingShiftTimesData[upcomingShiftTimesData?.length - 1]
@@ -559,12 +560,25 @@ export default function ShiftView() {
                 <Text style={[styles.title, { marginTop: 20 }]}>Edit time</Text>
                 {upcomingShiftTimesData?.length > 0
                   ? upcomingShiftTimesData?.map((shift, index) => (
-                      <ClockINOUT
-                        shift={shift}
-                        key={index}
-                        upcomingShiftTimesData={upcomingShiftTimesData}
-                        handleChange={handleChange}
-                      />
+                      <>
+                        <ClockINOUT
+                          shift={shift}
+                          key={index}
+                          upcomingShiftTimesData={upcomingShiftTimesData}
+                          handleChange={handleChange}
+                        />
+                        {index !== upcomingShiftTimesData?.length - 1 && (
+                          <View
+                            style={{
+                              width: "100%",
+                              marginTop: 10,
+                              marginBottom: 5,
+                              height: 1,
+                              backgroundColor: Colors.BLUR_TEXT
+                            }}
+                          />
+                        )}
+                      </>
                     ))
                   : null}
                 <Button
