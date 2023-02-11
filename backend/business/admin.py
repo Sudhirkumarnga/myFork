@@ -18,7 +18,6 @@ class AttendanceAdmin(admin.ModelAdmin):
     search_fields = [
         "employee__user__email",
         "worksite_name",
-        "event"
     ]
     list_display = [
         "employee", 
