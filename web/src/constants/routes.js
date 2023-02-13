@@ -3,6 +3,7 @@ import ListItemButton from "@mui/material/ListItemButton"
 import ListItemText from "@mui/material/ListItemText"
 
 export const HOME = "/"
+export const DASHBOARD = "/dashboard"
 export const TERMSCONDITIONS = "/terms-conditions"
 export const PRIVACYPOLICY = "/privacy-policy"
 export const LOGIN = "/login"

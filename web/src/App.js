@@ -19,7 +19,8 @@ import {
   Checkout,
   MainHome,
   ForgotPasswordOtp,
-  Reset
+  Reset,
+  Dashboard
 } from "./containers"
 import AppContext from "./Context"
 import "./styles.css"
@@ -70,6 +71,7 @@ function App() {
         <Elements stripe={stripePromise}>
           <ThemeProvider theme={theme}>
             <Routes>
+              <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
               <Route path={ROUTES.HOME} element={<MainHome />} />
               <Route path={ROUTES.LOGIN} element={<Login />} />
               <Route
@@ -89,10 +91,7 @@ function App() {
                 path={ROUTES.FORGOTPASSWORDOTP}
                 element={<ForgotPasswordOtp />}
               />
-              <Route
-                path={ROUTES.RESET}
-                element={<Reset />}
-              />
+              <Route path={ROUTES.RESET} element={<Reset />} />
               <Route
                 path={ROUTES.TERMSCONDITIONS}
                 element={<TermsConditions />}

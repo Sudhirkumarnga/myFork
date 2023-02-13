@@ -39,7 +39,7 @@ export default function Login({}) {
     //   handleChange("activeTab", path === "/signup" ? 0 : 1)
     // }
     if (user) {
-      navigate("/")
+      navigate("/dashboard")
     }
   }, [path, user])
 
@@ -159,7 +159,7 @@ export default function Login({}) {
           horizontal: "right"
         }
       })
-      navigate("/subscription")
+      navigate("/dashboard")
     } catch (error) {
       handleChange("loading", false)
       const errorText = Object.values(error?.response?.data)
