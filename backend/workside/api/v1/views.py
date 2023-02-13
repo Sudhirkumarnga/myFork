@@ -574,13 +574,15 @@ class GetAttendaceTimes(APIView):
     
     def put(self, request):
         for shift in request.data.get('shifts'):
-            Attendance.objects.filter(
+            attendance = Attendance.objects.filter(
                 id=shift.get('id'),
                 event__id=request.data.get("event")
-            ).update(
-                clock_in_time=shift['clock_in_time'],
-                clock_out_time=shift['clock_out_time']
             )
+            if attendance.exists():
+                attendance = attendance.first()
+                attendance.clock_in_time=datetime.strptime(shift['clock_in_time'], '%Y-%m-%d %H:%M:%S')
+                attendance.clock_out_time=datetime.strptime(shift['clock_out_time'], '%Y-%m-%d %H:%M:%S')
+                attendance.save()
 
         serializer = AttendaceTimesSerializer(
             Attendance.objects.filter(
