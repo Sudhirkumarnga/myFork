@@ -34,6 +34,7 @@ class EmployeeAdmin(admin.ModelAdmin):
     search_fields = [
         "user__email",
         "business__user__email",
+        "business__business_code"
     ]
     list_display = [
         "user", 
