@@ -142,7 +142,7 @@ export default function ShiftView() {
       })
   }
 
-  const _updateUpcomingShiftTimes = async () => {
+  const _updateUpcomingShiftTimes = async noUpdate => {
     try {
       handleChange("loadingSubmit", true)
       const token = await AsyncStorage.getItem("token")
@@ -164,6 +164,14 @@ export default function ShiftView() {
         shifts: list
       }
       await updateUpcomingShiftTimes(payload, token)
+      if (!noUpdate) {
+        const payload1 = {
+          event: upcomingShiftData?.id,
+          status: "CLOCK_OUT",
+          is_shift_completed: false
+        }
+        await createAttendance(payload1, token)
+      }
       handleChange("loadingSubmit", false)
       handleChange("notes", "")
       handleChange("feedback", "")
@@ -229,7 +237,7 @@ export default function ShiftView() {
           .format("YYYY-MM-DD HH:mm:ss")
       }
       await createAttendance(payload, token)
-      _updateUpcomingShiftTimes()
+      _updateUpcomingShiftTimes(true)
       // handleChange("loadingSubmit", false)
       // handleChange("notes", "")
       // handleChange("feedback", "")
@@ -267,7 +275,7 @@ export default function ShiftView() {
           upcomingShiftTimesData?.length > 0 &&
           upcomingShiftTimesData[upcomingShiftTimesData?.length - 1]
             ?.clock_out_time === null
-            ? _updateUpcomingShiftTimes()
+            ? _updateUpcomingShiftTimes(false)
             : navigation.navigate("ShiftDetails", { upcomingShiftData })
         }}
         loading={loadingSubmit}
@@ -298,6 +306,7 @@ export default function ShiftView() {
       />
     )
   }
+  console.warn('upcomingShiftData',upcomingShiftData);
   const renderClockEndButton = () => {
     return (
       <Button
@@ -584,7 +593,7 @@ export default function ShiftView() {
                 <Button
                   onPress={() => {
                     if (!is_shift_completed) {
-                      _updateUpcomingShiftTimes()
+                      _updateUpcomingShiftTimes(false)
                     } else {
                       handleChange("visible", false)
                       setTimeout(() => {
