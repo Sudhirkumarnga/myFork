@@ -51,9 +51,16 @@ function LayoutContent({ children }) {
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
   const location = useLocation()
-  const { setUser } = useContext(AppContext)
+  const { setUser, _getUpcomingShift, _getProfile, _getEarnings } =
+    useContext(AppContext)
   const [open, setOpen] = React.useState(true)
   const [open1, setOpen1] = React.useState(false)
+
+  React.useEffect(() => {
+    _getUpcomingShift()
+    _getProfile()
+    _getEarnings("")
+  }, [])
 
   const handleListItemClick = (route, index) => {
     navigate(route)

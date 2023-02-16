@@ -1,7 +1,7 @@
 // @ts-nocheck
 /* eslint-disable no-empty-pattern */
 import React, { useEffect, useState } from "react"
-import { AppButton, AppInput } from "../../components"
+import { AppButton, AppInput, AuthLeft } from "../../components"
 import { Grid, Checkbox } from "@mui/material"
 import eyeIcon from "../../assets/svg/eye.svg"
 import { useNavigate } from "react-router-dom"
@@ -14,6 +14,7 @@ import eyeCLose from "../../assets/images/closeEYE.jpg"
 
 export default function Login({}) {
   const navigate = useNavigate()
+
   const { enqueueSnackbar } = useSnackbar()
   const UserType = localStorage.getItem("UserType")
   const { user, setUser, _getProfile } = useContext(AppContext)
@@ -173,7 +174,7 @@ export default function Login({}) {
 
   return (
     <Grid container className="authSection">
-      <Grid item xs={12} md={8} className="LoginBG" />
+      <AuthLeft />
       <Grid item xs={12} md={4} className="divCenter loginRight">
         <div className=" text-center font-30 font-bold">
           {activeTab === 2

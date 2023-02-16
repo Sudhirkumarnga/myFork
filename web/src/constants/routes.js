@@ -4,6 +4,8 @@ import ListItemText from "@mui/material/ListItemText"
 
 export const HOME = "/"
 export const DASHBOARD = "/dashboard"
+export const PAYROLL = "/payroll"
+export const EMPLOYEELIST = "/employee-list"
 export const TERMSCONDITIONS = "/terms-conditions"
 export const PRIVACYPOLICY = "/privacy-policy"
 export const LOGIN = "/login"

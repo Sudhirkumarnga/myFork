@@ -21,7 +21,7 @@ export default function DashboardHeader() {
     visible: false,
     dropdownOpen: false
   })
-  const { user, setUser } = useContext(AppContext)
+  const { user, setUser, adminProfile } = useContext(AppContext)
   const [anchorEl, setAnchorEl] = useState(null)
   const { dropdownOpen, visible } = state
   const showDrawer = () => {
@@ -94,8 +94,40 @@ export default function DashboardHeader() {
                   <AppButton
                     width={120}
                     className={"text-left"}
-                    title={"Logout"}
-                    onClick={onlogout}
+                    title={"My Profile"}
+                    // onClick={onlogout}
+                    backgroundColor={"#fff"}
+                    color={"#000"}
+                  />
+                  <AppButton
+                    width={120}
+                    className={"text-left"}
+                    title={"Employee List"}
+                    onClick={() => navigate("/employee-list")}
+                    backgroundColor={"#fff"}
+                    color={"#000"}
+                  />
+                  <AppButton
+                    width={120}
+                    className={"text-left"}
+                    title={"Worksites"}
+                    // onClick={onlogout}
+                    backgroundColor={"#fff"}
+                    color={"#000"}
+                  />
+                  <AppButton
+                    width={120}
+                    className={"text-left"}
+                    title={"Scheduler"}
+                    // onClick={onlogout}
+                    backgroundColor={"#fff"}
+                    color={"#000"}
+                  />
+                  <AppButton
+                    width={120}
+                    className={"text-left"}
+                    title={"Settings"}
+                    // onClick={onlogout}
                     backgroundColor={"#fff"}
                     color={"#000"}
                   />
@@ -103,12 +135,17 @@ export default function DashboardHeader() {
               </Popover>
               <img
                 style={{ borderRadius: 10 }}
-                src={user?.picture || userProfile}
+                src={
+                  adminProfile?.business_information?.profile_image ||
+                  userProfile
+                }
                 className={"mr-3"}
                 width={40}
               />
               <span className="font-bold font-16">
-                {user?.first_name || "Jack Doe"}
+                {adminProfile?.personal_information?.first_name +
+                  " " +
+                  adminProfile?.personal_information?.last_name || "Jack Doe"}
               </span>
               <img
                 onClick={handleClick}
