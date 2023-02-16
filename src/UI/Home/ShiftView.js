@@ -1,4 +1,4 @@
-import React, { useContext, useState, useCallback } from "react"
+import React, { useContext, useState, useCallback, useEffect } from "react"
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import {
 import { Button } from "../Common"
 import { Fonts, Colors, Images, Strings } from "../../res"
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { createAttendance } from "../../api/employee"
+import { createAttendance, updateUpcomingShiftTimes } from "../../api/employee"
 import Toast from "react-native-simple-toast"
 import { useFocusEffect, useNavigation } from "@react-navigation/native"
 import AppContext from "../../Utils/Context"
@@ -29,10 +29,16 @@ import BouncyCheckbox from "react-native-bouncy-checkbox"
 import PrimaryTextInput from "../Common/PrimaryTextInput"
 import moment from "moment-timezone"
 import { SvgXml } from "react-native-svg"
+import ClockINOUT from "./ClockINOUT"
 
 export default function ShiftView() {
   const navigation = useNavigation()
-  const { _getUpcomingShift, upcomingShiftData, user } = useContext(AppContext)
+  const {
+    _getUpcomingShift,
+    upcomingShiftTimesDataList,
+    upcomingShiftData,
+    user
+  } = useContext(AppContext)
   const [state, setState] = useState({
     loading: false,
     visible: false,
@@ -50,6 +56,7 @@ export default function ShiftView() {
     notes_media: "",
     feedback_media: "",
     openStart: false,
+    upcomingShiftTimesData: upcomingShiftTimesDataList || [],
     clock_in_time: moment
       .utc(upcomingShiftData?.clock_in_time)
       .local()
@@ -58,7 +65,8 @@ export default function ShiftView() {
       new Date(moment(upcomingShiftData?.clock_in_time)) || new Date(),
     openEnd: false,
     clock_out_time: moment().format("hh:mm A"),
-    clock_out_timeDate: new Date()
+    clock_out_timeDate: new Date(),
+    is_shift_completed: false
   })
 
   const {
@@ -69,6 +77,8 @@ export default function ShiftView() {
     clock_in_time,
     is_clock_out_time,
     clock_out_time,
+    openStart,
+    openEnd,
     urgent,
     feedback,
     notes,
@@ -76,11 +86,12 @@ export default function ShiftView() {
     selectedFeeling,
     notes_media,
     feedback_media,
-    openStart,
     clock_in_timeDate,
-    openEnd,
-    clock_out_timeDate
+    clock_out_timeDate,
+    is_shift_completed,
+    upcomingShiftTimesData
   } = state
+  console.warn("upcomingShiftData", upcomingShiftTimesData)
 
   const handleChange = (name, value) => {
     setState(pre => ({ ...pre, [name]: value }))
@@ -91,6 +102,12 @@ export default function ShiftView() {
       _getUpcomingShift()
     }, [])
   )
+
+  useEffect(() => {
+    if (upcomingShiftTimesDataList?.length > 0) {
+      handleChange("upcomingShiftTimesData", upcomingShiftTimesDataList)
+    }
+  }, [upcomingShiftTimesDataList])
 
   const hideModal = () => {
     handleChange("selectedEvent", null)
@@ -125,27 +142,36 @@ export default function ShiftView() {
       })
   }
 
-  const _createAttendance = async () => {
+  const _updateUpcomingShiftTimes = async noUpdate => {
     try {
       handleChange("loadingSubmit", true)
       const token = await AsyncStorage.getItem("token")
+      const list = []
+      upcomingShiftTimesData?.forEach(element => {
+        if (element?.clock_out_time === null) {
+          list.push({
+            ...element,
+            clock_out_time: moment
+              .utc(moment(new Date()))
+              .format("YYYY-MM-DD HH:mm:ss")
+          })
+        } else {
+          list.push(element)
+        }
+      })
       const payload = {
         event: upcomingShiftData?.id,
-        status: "CLOCK_OUT",
-        completed_tasks,
-        notes,
-        feedback,
-        notes_media,
-        feedback_media,
-        urgent,
-        clock_in_time: moment
-          .utc(moment(clock_in_timeDate))
-          .format("YYYY-MM-DD HH:mm:ss"),
-        clock_out_time: moment
-          .utc(moment(clock_out_timeDate))
-          .format("YYYY-MM-DD HH:mm:ss")
+        shifts: list
       }
-      await createAttendance(payload, token)
+      await updateUpcomingShiftTimes(payload, token)
+      if (!noUpdate) {
+        const payload1 = {
+          event: upcomingShiftData?.id,
+          status: "CLOCK_OUT",
+          is_shift_completed: false
+        }
+        await createAttendance(payload1, token)
+      }
       handleChange("loadingSubmit", false)
       handleChange("notes", "")
       handleChange("feedback", "")
@@ -171,21 +197,99 @@ export default function ShiftView() {
     }
   }
 
+  const _createAttendance = async () => {
+    try {
+      handleChange("loadingSubmit", true)
+      const token = await AsyncStorage.getItem("token")
+      const payload = {
+        event: upcomingShiftData?.id,
+        status: "CLOCK_OUT",
+        completed_tasks,
+        notes,
+        feedback,
+        notes_media,
+        feedback_media,
+        urgent,
+        is_shift_completed,
+        clock_in_time: moment
+          .utc(
+            moment(
+              new Date(
+                moment(
+                  upcomingShiftTimesData[upcomingShiftTimesData?.length - 1]
+                    ?.clock_in_time || new Date()
+                )
+              )
+            )
+          )
+          .format("YYYY-MM-DD HH:mm:ss"),
+        clock_out_time: moment
+          .utc(
+            moment(
+              new Date(
+                moment(
+                  upcomingShiftTimesData[upcomingShiftTimesData?.length - 1]
+                    ?.clock_out_time || new Date()
+                )
+              )
+            )
+          )
+          .format("YYYY-MM-DD HH:mm:ss")
+      }
+      await createAttendance(payload, token)
+      _updateUpcomingShiftTimes(true)
+      // handleChange("loadingSubmit", false)
+      // handleChange("notes", "")
+      // handleChange("feedback", "")
+      // handleChange("clock_in_time", "")
+      // handleChange("clock_out_time", "")
+      // handleChange("notes_media", "")
+      // handleChange("feedback_media", "")
+      // handleChange("urgent", false)
+      // handleChange("completed_tasks", [])
+      // handleChange("visible", false)
+      // handleChange("visible1", false)
+      // _getUpcomingShift()
+    } catch (error) {
+      handleChange("loadingSubmit", false)
+      const showWError = Object.values(
+        error.response?.data || error.response?.data?.error
+      )
+      if (showWError.length > 0) {
+        Toast.show(`Error: ${JSON.stringify(showWError[0])}`)
+      } else {
+        Toast.show(`Error: ${JSON.stringify(error)}`)
+      }
+    }
+  }
+
+  const handleShift = () => {
+    handleChange("visible", true)
+    handleChange("is_shift_completed", false)
+  }
+
   const renderClockButton = () => {
     return (
       <Button
-        onPress={() =>
-          upcomingShiftData?.status === "CLOCK_IN"
-            ? navigation.navigate("ShiftDetails", { upcomingShiftData })
-            : handleChange("visible", true)
-        }
+        onPress={() => {
+          upcomingShiftTimesData?.length > 0 &&
+          upcomingShiftTimesData[upcomingShiftTimesData?.length - 1]
+            ?.clock_out_time === null
+            ? _updateUpcomingShiftTimes(false)
+            : navigation.navigate("ShiftDetails", { upcomingShiftData })
+        }}
+        loading={loadingSubmit}
         title={
-          upcomingShiftData?.status === "CLOCK_OUT"
+          upcomingShiftTimesData?.length > 0 &&
+          upcomingShiftTimesData[upcomingShiftTimesData?.length - 1]
+            ?.clock_out_time === null
             ? "Clock Out"
             : Strings.clockIn
         }
         backgroundColor={
-          upcomingShiftData?.status === "CLOCK_OUT"
+          upcomingShiftTimesData?.length > 0 &&
+          upcomingShiftTimesData[upcomingShiftTimesData?.length - 1]
+            ?.clock_out_time === null
             ? Colors.RED_COLOR
             : Colors.BACKGROUND_BG
         }
@@ -198,6 +302,29 @@ export default function ShiftView() {
         }
         style={{
           marginTop: 30
+        }}
+      />
+    )
+  }
+  console.warn('upcomingShiftData',upcomingShiftData);
+  const renderClockEndButton = () => {
+    return (
+      <Button
+        onPress={() => {
+          handleChange("visible", true)
+          handleChange("is_shift_completed", true)
+        }}
+        title={"Clock Out and End Journey"}
+        backgroundColor={Colors.RED_COLOR}
+        disabled={
+          !upcomingShiftData?.status ||
+          !moment
+            .utc(upcomingShiftData?.schedule_shift_start_time)
+            .local()
+            .isBefore(new Date())
+        }
+        style={{
+          marginTop: 10
         }}
       />
     )
@@ -259,28 +386,44 @@ export default function ShiftView() {
                     .format("hh:mm A")}
                 </Text>
               )}
-              {upcomingShiftData?.status === "CLOCK_OUT" && (
-                <Text
-                  style={[
-                    styles.description,
-                    { fontSize: 14, color: Colors.HOME_DES }
-                  ]}
-                >
-                  Clock in time:{" "}
+              {upcomingShiftTimesData?.length > 0 &&
+                upcomingShiftTimesData[upcomingShiftTimesData?.length - 1]
+                  ?.clock_out_time === null && (
                   <Text
-                    style={{ ...Fonts.poppinsMedium(18), color: Colors.BLACK }}
+                    style={[
+                      styles.description,
+                      { fontSize: 14, color: Colors.HOME_DES }
+                    ]}
                   >
-                    {moment
-                      .utc(upcomingShiftData?.schedule_shift_start_time)
-                      .local()
-                      .format("hh:mm A")}{" "}
+                    Clock in time:{" "}
+                    <Text
+                      style={{
+                        ...Fonts.poppinsMedium(18),
+                        color: Colors.BLACK
+                      }}
+                    >
+                      {moment
+                        .utc(
+                          upcomingShiftTimesData?.length > 0
+                            ? upcomingShiftTimesData[
+                                upcomingShiftTimesData?.length - 1
+                              ]?.clock_in_time
+                            : upcomingShiftData?.schedule_shift_start_time
+                        )
+                        .local()
+                        .format("hh:mm A")}{" "}
+                    </Text>
                   </Text>
-                </Text>
-              )}
+                )}
             </View>
             <Image {...Images.calendar} style={styles.image} />
           </View>
           {user?.role !== "Organization Admin" && renderClockButton()}
+          {user?.role !== "Organization Admin" &&
+            upcomingShiftTimesData?.length > 0 &&
+            upcomingShiftTimesData[upcomingShiftTimesData?.length - 1]
+              ?.clock_out_time === null &&
+            renderClockEndButton()}
           <Modal
             visible={visible}
             transparent
@@ -424,179 +567,39 @@ export default function ShiftView() {
                   <Text style={[styles.inputText]}>Urgent</Text>
                 </View>
                 <Text style={[styles.title, { marginTop: 20 }]}>Edit time</Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    width: "100%",
-                    justifyContent: "space-between",
-                    marginVertical: 10,
-                    alignItems: "center"
-                  }}
-                >
-                  {is_clock_in_time ? (
-                    <View style={{ width: "60%" }}>
-                      <TouchableOpacity
-                        style={styles.inputStyle}
-                        onPress={() => handleChange("openStart", true)}
-                      >
-                        <Text
-                          style={[
-                            styles.inputText,
-                            {
-                              color: clock_in_time
-                                ? Colors.TEXT_COLOR
-                                : Colors.BLUR_TEXT
-                            }
-                          ]}
-                        >
-                          {clock_in_time || "Clock In Time"}
-                        </Text>
-                        <Icon
-                          name={"time-outline"}
-                          type={"ionicon"}
-                          color={Colors.BLUR_TEXT}
+                {upcomingShiftTimesData?.length > 0
+                  ? upcomingShiftTimesData?.map((shift, index) => (
+                      <>
+                        <ClockINOUT
+                          shift={shift}
+                          key={index}
+                          upcomingShiftTimesData={upcomingShiftTimesData}
+                          handleChange={handleChange}
                         />
-                      </TouchableOpacity>
-                      <DatePicker
-                        modal
-                        open={openStart}
-                        mode={"time"}
-                        date={clock_in_timeDate}
-                        onConfirm={date => {
-                          handleChange("openStart", false)
-                          handleChange("clock_in_timeDate", date)
-                          handleChange(
-                            "clock_in_time",
-                            moment(date).format("hh:mm A")
-                          )
-                        }}
-                        onCancel={() => {
-                          handleChange("openStart", false)
-                        }}
-                      />
-                    </View>
-                  ) : (
-                    // <PrimaryTextInput
-                    //   style={{ width: "60%", marginTop: 20 }}
-                    //   text={clock_in_time}
-                    //   label={"Clock In Time"}
-                    //   key="clock_in_time"
-                    //   placeholder="Clock In Time"
-                    //   onChangeText={(text, isValid) =>
-                    //     handleChange("clock_in_time", text)
-                    //   }
-                    // />
-                    <Text style={[styles.inputText, { marginTop: 10 }]}>
-                      Clock in time: {clock_in_time}
-                    </Text>
-                  )}
-                  <Button
-                    onPress={() =>
-                      handleChange("is_clock_in_time", !is_clock_in_time)
-                    }
-                    title={is_clock_in_time ? "Save" : "Edit"}
-                    icon={is_clock_in_time ? "" : "edit"}
-                    iconStyle={{ width: 15, height: 15, color: "#fff" }}
-                    backgroundColor={
-                      is_clock_in_time
-                        ? Colors.BACKGROUND_BG
-                        : Colors.BUTTON_BG1
-                    }
-                    style={{
-                      width: "30%"
-                    }}
-                  />
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    width: "100%",
-                    justifyContent: "space-between",
-                    marginBottom: 10,
-                    alignItems: "center",
-                    paddingBottom: 8
-                  }}
-                >
-                  {is_clock_out_time ? (
-                    <View style={{ width: "60%" }}>
-                      <TouchableOpacity
-                        style={styles.inputStyle}
-                        onPress={() => handleChange("openEnd", true)}
-                      >
-                        <Text
-                          style={[
-                            styles.inputText,
-                            {
-                              color: clock_out_time
-                                ? Colors.TEXT_COLOR
-                                : Colors.BLUR_TEXT
-                            }
-                          ]}
-                        >
-                          {clock_out_time || "Clock Out Time"}
-                        </Text>
-                        <Icon
-                          name={"time-outline"}
-                          type={"ionicon"}
-                          color={Colors.BLUR_TEXT}
-                        />
-                      </TouchableOpacity>
-                      <DatePicker
-                        modal
-                        open={openEnd}
-                        mode={"time"}
-                        date={clock_out_timeDate}
-                        onConfirm={date => {
-                          handleChange("openEnd", false)
-                          handleChange("clock_out_timeDate", date)
-                          handleChange(
-                            "clock_out_time",
-                            moment(date).format("hh:mm A")
-                          )
-                        }}
-                        onCancel={() => {
-                          handleChange("openEnd", false)
-                        }}
-                      />
-                    </View>
-                  ) : (
-                    // <PrimaryTextInput
-                    //   style={{ width: "60%", marginTop: 20 }}
-                    //   text={clock_out_time}
-                    //   label={"Clock In Time"}
-                    //   key="clock_out_time"
-                    //   placeholder="Clock In Time"
-                    //   onChangeText={(text, isValid) =>
-                    //     handleChange("clock_out_time", text)
-                    //   }
-                    // />
-                    <Text style={[styles.inputText, { marginTop: 10 }]}>
-                      Clock out time: {clock_out_time}
-                    </Text>
-                  )}
-                  <Button
-                    onPress={() =>
-                      handleChange("is_clock_out_time", !is_clock_out_time)
-                    }
-                    title={is_clock_out_time ? "Save" : "Edit"}
-                    icon={is_clock_out_time ? "" : "edit"}
-                    iconStyle={{ width: 15, height: 15, color: "#fff" }}
-                    backgroundColor={
-                      is_clock_out_time
-                        ? Colors.BACKGROUND_BG
-                        : Colors.BUTTON_BG1
-                    }
-                    style={{
-                      width: "30%"
-                    }}
-                  />
-                </View>
+                        {index !== upcomingShiftTimesData?.length - 1 && (
+                          <View
+                            style={{
+                              width: "100%",
+                              marginTop: 10,
+                              marginBottom: 5,
+                              height: 1,
+                              backgroundColor: Colors.BLUR_TEXT
+                            }}
+                          />
+                        )}
+                      </>
+                    ))
+                  : null}
                 <Button
                   onPress={() => {
-                    handleChange("visible", false)
-                    setTimeout(() => {
-                      handleChange("visible1", true)
-                    }, 300)
+                    if (!is_shift_completed) {
+                      _updateUpcomingShiftTimes(false)
+                    } else {
+                      handleChange("visible", false)
+                      setTimeout(() => {
+                        handleChange("visible1", true)
+                      }, 300)
+                    }
                   }}
                   disabled={
                     !notes ||
@@ -607,6 +610,7 @@ export default function ShiftView() {
                     // !clock_out_time ||
                     completed_tasks.length === 0
                   }
+                  loading={loadingSubmit}
                   title={"Submit"}
                   style={{
                     width: "100%"

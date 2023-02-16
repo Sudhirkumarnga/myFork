@@ -17,7 +17,13 @@
 .listButtonActive {
   color: #fff !important;
   height: 50px;
-  background-color: #313131 !important
+  background-color: #0d3313 !important
+}
+
+
+.iconDashboardActive {
+  margin-right: 15px;
+  filter: brightness(0) invert(1) !important;
 }
 
 .doughnut {
@@ -257,7 +263,7 @@
 }
 
 .drawerClass {
-  background-color: #212121 !important;
+  background-color: #06726A !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: space-between !important;

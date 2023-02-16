@@ -425,23 +425,29 @@ export default function ReportsView({ navigation, route }) {
                       }
                     </View>
                     {title === "Inspection" && (
-                      <PieChart
-                        widthAndHeight={90}
-                        doughnut={true}
-                        coverRadius={0.7}
-                        series={[
-                          item?.stats?.NEEDS_ATTENTION
-                            ? Number(item?.stats?.NEEDS_ATTENTION)
-                            : 1,
-                          item?.stats?.SATISFACTORY
-                            ? Number(item?.stats?.SATISFACTORY)
-                            : 1,
-                          item?.stats?.UNSATISFACTORY
-                            ? Number(item?.stats?.UNSATISFACTORY)
-                            : 1
-                        ]}
-                        sliceColor={sliceColor}
-                      />
+                      <>
+                        {(Number(item?.stats?.SATISFACTORY) > 0 ||
+                          Number(item?.stats?.NEEDS_ATTENTION) > 0 ||
+                          Number(item?.stats?.UNSATISFACTORY) > 0) && (
+                          <PieChart
+                            widthAndHeight={90}
+                            doughnut={true}
+                            coverRadius={0.7}
+                            series={[
+                              item?.stats?.SATISFACTORY
+                                ? Number(item?.stats?.SATISFACTORY)
+                                : 0,
+                              item?.stats?.NEEDS_ATTENTION
+                                ? Number(item?.stats?.NEEDS_ATTENTION)
+                                : 0,
+                              item?.stats?.UNSATISFACTORY
+                                ? Number(item?.stats?.UNSATISFACTORY)
+                                : 0
+                            ]}
+                            sliceColor={sliceColor}
+                          />
+                        )}
+                      </>
                     )}
                   </View>
                 </View>

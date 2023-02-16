@@ -196,6 +196,8 @@ section {
     height: 40px;
 }
 
+
+
 .columnCenter {
     display: flex;
     align-items: center;
@@ -271,9 +273,22 @@ section {
     margin-top: 30px;
 }
 
+.dateText {
+    color: #8F8F8C;
+    font-size: 14px;
+    line-height: 21px;
+    margin-top: 10px;
+}
+
 .rowBetween {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.headingrowBetween {
+    display: flex;
     justify-content: space-between;
     width: 100%;
 }
@@ -466,10 +481,46 @@ section {
     width: 60%;
 }
 
+.upcomingBox {
+    background-color: #DEDEDE;
+    width: 100%;
+    cursor: pointer;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.activeEmployeeModal {
+    height: 400px;
+    overflow-y: scroll;
+}
+
+.width95 {
+    width: 95%;
+}
+
+.upcomingBoxRight {
+    width: 100%;
+    margin-left: 20px;
+}
+
+.locationText {
+    color: #818080;
+    font-size: 14px;
+    margin-bottom: 40px;
+}
+
 .headingGrey {
     color: rgba(51, 51, 51, 1);
     font-size: 34px;
     font-weight: bold;
+}
+
+.heading {
+    color: rgba(51, 51, 51, 1);
+    font-size: 24px;
+    font-weight: 500;
 }
 
 .home {
@@ -506,11 +557,31 @@ section {
 
 .LoginBG {
     height: 100vh;
-    background: url(./assets/svg/loginBG.svg);
-    width: 60%;
+    /* background: url(./assets/svg/loginBG.svg); */
+    /* width: 60% !important; */
     background-size: cover;
     background-repeat: no-repeat;
     background-position: left;
+}
+
+.sliderImage {
+    height: 100vh;
+    width: 100%;
+    object-fit: cover;
+}
+
+.loginText {
+    color: #fff;
+    margin-top: 50px;
+    width: 80%;
+}
+
+.fixedContent {
+    position: absolute;
+    z-index: 999;
+    width: 60%;
+    top: 100px;
+    left: 50px
 }
 
 .teirBox {
@@ -941,6 +1012,32 @@ small {
 .CheckboxText {
     margin-top: 2px !important;
     color: #9D9799;
+}
+
+.listContainer {
+    background-color: #F9F9F9;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.title {
+    font-weight: 500;
+}
+
+.job {
+    color: #818080
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
+
+.hourlyRate {
+    font-size: 12px;
+    color: #818080;
+    text-transform: uppercase;
 }
 
 .rowEnd {
@@ -3087,6 +3184,14 @@ input[type=number] {
         margin-bottom: 60px;
         text-align: center;
         background-size: cover;
+    }
+
+    .fixedContent {
+        position: relative;
+    }
+
+    .sliderImage {
+        height: 100%;
     }
 
     .maxWidthMobile {
