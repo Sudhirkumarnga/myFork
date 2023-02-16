@@ -6,8 +6,7 @@ from business.models import Business, Employee, BusinessAddress, Attendance, Lea
 admin.site.register(BusinessAddress)
 admin.site.register(LeaveRequest)
 admin.site.register(EmergencyContact)
-admin.site.register(Feedback)
-admin.site.register(FeedbackMedia)
+
 
 
 @admin.register(Business)
@@ -66,3 +65,25 @@ class AttendanceAdmin(admin.ModelAdmin):
         "earnings", 
         "is_shift_completed"
     ]
+
+class FeedbackMediaAdmin(admin.TabularInline):
+    model = FeedbackMedia 
+    extra = 0
+
+
+@admin.register(Feedback)
+class FeedbackAdmin(admin.ModelAdmin):
+    inlines = [FeedbackMediaAdmin]
+    search_fields = [
+        "user__email",
+        "email",
+    ]
+    list_display = [
+        "title", 
+        "message", 
+        "reply", 
+        "email",
+        "user",
+        "is_read"
+    ]
+    list_filter = ["created_at"]

@@ -13,8 +13,9 @@ class UserAdmin(auth_admin.UserAdmin):
     add_form = UserCreationForm
     fieldsets = (("User",
                   {"fields": ("date_of_birth", "gender", "role", "is_read_terms")}),) + auth_admin.UserAdmin.fieldsets
-    list_display = ["username", "first_name", "last_name", "is_superuser", "email"]
+    list_display = ["first_name", "last_name", "email", "role", "is_superuser", "is_active"]
     search_fields = ["email"]
+    list_filter = ["is_active", "role", "is_superuser", "is_staff"]
 
 
 @admin.register(User_OTP)

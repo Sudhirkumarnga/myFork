@@ -214,18 +214,20 @@ class LeaveRequest(TimeStampedModel):
 
 
 class Feedback(models.Model):
-    name = models.CharField(max_length=30, null=True, blank=True)
-    email = models.EmailField(max_length=255)
+    title = models.CharField(max_length=30, null=True, blank=True)
     message = models.TextField()
-    is_visible = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+    reply = models.TextField(null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    email = models.EmailField(max_length=255)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = "Feedback"
         verbose_name_plural = "Feedbacks"
 
+    def __str__(self):
+        return f'{self.title}'
 
 class FeedbackMedia(models.Model):
     feedback = models.ForeignKey(Feedback, on_delete=models.CASCADE, null=True, blank=True)
