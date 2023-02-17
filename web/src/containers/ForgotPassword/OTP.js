@@ -1,7 +1,7 @@
 // @ts-nocheck
 /* eslint-disable no-empty-pattern */
 import React, { useState } from "react"
-import { AppButton, AppInput } from "../../components"
+import { AppButton, AppInput, AuthLeft } from "../../components"
 import { Grid } from "@mui/material"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { forgotpassword, resetEmail, verifyEmail } from "../../api/auth"
@@ -100,7 +100,7 @@ export default function ForgotPasswordOtp({}) {
 
   return (
     <Grid container className="authSection">
-      <Grid item xs={12} md={8} className="LoginBG" />
+      <AuthLeft />
       <Grid item xs={12} md={4} className="divCenter loginRight">
         <div className=" text-center font-30 font-bold">{"Token input"}</div>
         <div className="text_grey mt-3 text-center width80 letter-spacing text_transform_none font-14">

@@ -21,7 +21,7 @@ import {
   getStates,
   readDevice
 } from "./src/api/auth"
-import { getUpcomingShift } from "./src/api/employee"
+import { getUpcomingShift, getUpcomingShiftTimes } from "./src/api/employee"
 import { SafeAreaView, View } from "react-native"
 import Colors from "./src/res/Theme/Colors"
 import PushNotification from "react-native-push-notification"
@@ -39,6 +39,9 @@ const App = () => {
   const [leaveRequest, setLeaveRequest] = useState([])
   const [loadingCity, setLoadingCity] = useState(false)
   const [upcomingShiftData, setUpcomingShiftData] = useState(null)
+  const [upcomingShiftTimesDataList, setupcomingShiftTimesDataList] = useState(
+    []
+  )
   useEffect(() => {
     setTimeout(() => {
       SplashScreen.hide()
@@ -179,6 +182,14 @@ const App = () => {
       const token = await AsyncStorage.getItem("token")
       const res = await getUpcomingShift(token)
       setUpcomingShiftData(res?.data)
+      console.warn("res?.data?.id", res?.data?.id)
+      if (res?.data?.id) {
+        const res1 = await getUpcomingShiftTimes(
+          `?event=${res?.data?.id}`,
+          token
+        )
+        setupcomingShiftTimesDataList(res1?.data)
+      }
     } catch (error) {
       const showWError = error.response?.data?.error
         ? Object.values(error.response?.data?.error)
@@ -256,7 +267,8 @@ const App = () => {
         _getNotification,
         earningLoading,
         _getCities,
-        loadingCity
+        loadingCity,
+        upcomingShiftTimesDataList
       }}
     >
       <MenuProvider>

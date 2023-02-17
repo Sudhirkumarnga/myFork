@@ -76,6 +76,7 @@ export default function InspectionDetails({ navigation, route }) {
     }
   }
 
+  console.warn('item?.stats',item?.stats);
   return (
     <View style={styles.container}>
       <Header
@@ -103,23 +104,27 @@ export default function InspectionDetails({ navigation, route }) {
               <Text style={[styles.title]}>{"Worksite name:"}</Text>
               <Text style={styles.description}>{item?.worksite?.name}</Text>
             </View>
-            <PieChart
-              widthAndHeight={60}
-              doughnut={true}
-              coverRadius={0.83}
-              series={[
-                item?.stats?.NEEDS_ATTENTION
-                  ? Number(item?.stats?.NEEDS_ATTENTION)
-                  : 1,
-                item?.stats?.SATISFACTORY
-                  ? Number(item?.stats?.SATISFACTORY)
-                  : 1,
-                item?.stats?.UNSATISFACTORY
-                  ? Number(item?.stats?.UNSATISFACTORY)
-                  : 1
-              ]}
-              sliceColor={sliceColor}
-            />
+            {(Number(item?.stats?.SATISFACTORY) > 0 ||
+              Number(item?.stats?.NEEDS_ATTENTION) > 0 ||
+              Number(item?.stats?.UNSATISFACTORY) > 0) && (
+              <PieChart
+                widthAndHeight={60}
+                doughnut={true}
+                coverRadius={0.83}
+                series={[
+                  item?.stats?.SATISFACTORY
+                    ? Number(item?.stats?.SATISFACTORY)
+                    : 0,
+                  item?.stats?.NEEDS_ATTENTION
+                    ? Number(item?.stats?.NEEDS_ATTENTION)
+                    : 0,
+                  item?.stats?.UNSATISFACTORY
+                    ? Number(item?.stats?.UNSATISFACTORY)
+                    : 0
+                ]}
+                sliceColor={sliceColor}
+              />
+            )}
           </View>
           <Text style={styles.title}>Tasks:</Text>
           <FlatList

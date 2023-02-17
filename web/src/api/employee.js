@@ -12,6 +12,14 @@ export const getAllWorksitesEmp = token => {
   return API.get(`api/v1/worksites/`, token)
 }
 
+export const getUpcomingShiftTimes = (payload, token) => {
+  return API.get(`api/v1/event_shift_times/${payload}`, token)
+}
+
+export const updateUpcomingShiftTimes = (payload, token) => {
+  return API.put(`api/v1/event_shift_times/`, payload, token)
+}
+
 export const leaveRequest = (payload, token) => {
   return API.post(`api/v1/leave_request/`, payload, token)
 }
