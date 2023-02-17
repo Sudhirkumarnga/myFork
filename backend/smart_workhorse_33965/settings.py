@@ -75,7 +75,8 @@ LOCAL_APPS = [
     "reports",
     'business',
     'subscriptions',
-    'push_notification'
+    'push_notification',
+    'admin_panel'
 ]
 THIRD_PARTY_APPS = [
     'rest_framework',

@@ -215,10 +215,10 @@ class LeaveRequest(TimeStampedModel):
 
 class Feedback(models.Model):
     title = models.CharField(max_length=30, null=True, blank=True)
-    message = models.TextField()
+    message = models.TextField(null=True, blank=True)
     reply = models.TextField(null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    email = models.EmailField(max_length=255)
+    email = models.EmailField(max_length=255, null=True, blank=True)
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
