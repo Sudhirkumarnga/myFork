@@ -46,9 +46,13 @@ export default function ShiftDetails({ navigation }) {
     setState(pre => ({ ...pre, [name]: value }))
   }
 
-  useEffect(() => {
-    requestGeolocationPermission()
-  }, [])
+  useFocusEffect(
+    useCallback(() => {
+      requestGeolocationPermission()
+    }, [])
+  )
+
+ 
 
   async function requestGeolocationPermission() {
     try {
@@ -91,11 +95,11 @@ export default function ShiftDetails({ navigation }) {
           .catch(error => console.warn(error))
       },
       error => console.log("Error", JSON.stringify(error)),
-      Platform.OS !== "android" && {
-        enableHighAccuracy: true,
-        timeout: 20000,
-        maximumAge: 1000
-      }
+      // Platform.OS !== "android" && {
+      //   enableHighAccuracy: true,
+      //   timeout: 20000,
+      //   maximumAge: 1000
+      // }
     )
     Geolocation.watchPosition(
       position => {

@@ -66,7 +66,8 @@ export default function ShiftView() {
     openEnd: false,
     clock_out_time: moment().format("hh:mm A"),
     clock_out_timeDate: new Date(),
-    is_shift_completed: false
+    is_shift_completed: false,
+    shiftNeedClose: null
   })
 
   const {
@@ -89,9 +90,10 @@ export default function ShiftView() {
     clock_in_timeDate,
     clock_out_timeDate,
     is_shift_completed,
-    upcomingShiftTimesData
+    upcomingShiftTimesData,
+    shiftNeedClose
   } = state
-  console.warn("upcomingShiftData", upcomingShiftTimesData)
+  console.warn("upcomingShiftData", upcomingShiftData?.status)
 
   const handleChange = (name, value) => {
     setState(pre => ({ ...pre, [name]: value }))
@@ -108,6 +110,16 @@ export default function ShiftView() {
       handleChange("upcomingShiftTimesData", upcomingShiftTimesDataList)
     }
   }, [upcomingShiftTimesDataList])
+  useEffect(() => {
+    if (upcomingShiftTimesData?.length > 0) {
+      upcomingShiftTimesData?.forEach(element => {
+        if (element?.clock_out_time === null) {
+          handleChange('shiftNeedClose', element)
+          return
+        }
+      });
+    }
+  }, [upcomingShiftTimesData])
 
   const hideModal = () => {
     handleChange("selectedEvent", null)
@@ -121,8 +133,8 @@ export default function ShiftView() {
       type == "camera"
         ? ImagePicker.openCamera
         : type == ""
-        ? ImagePicker.openPicker
-        : ImagePicker.openPicker
+          ? ImagePicker.openPicker
+          : ImagePicker.openPicker
     OpenImagePicker({
       cropping: true,
       includeBase64: true
@@ -172,6 +184,7 @@ export default function ShiftView() {
         }
         await createAttendance(payload1, token)
       }
+      handleChange("shiftNeedClose", null)
       handleChange("loadingSubmit", false)
       handleChange("notes", "")
       handleChange("feedback", "")
@@ -264,32 +277,26 @@ export default function ShiftView() {
   }
 
   const handleShift = () => {
-    handleChange("visible", true)
-    handleChange("is_shift_completed", false)
+
   }
 
+  console.warn('upcomingShiftTimesData', upcomingShiftTimesData);
   const renderClockButton = () => {
     return (
       <Button
         onPress={() => {
-          upcomingShiftTimesData?.length > 0 &&
-          upcomingShiftTimesData[upcomingShiftTimesData?.length - 1]
-            ?.clock_out_time === null
+          shiftNeedClose?.clock_out_time === null
             ? _updateUpcomingShiftTimes(false)
             : navigation.navigate("ShiftDetails", { upcomingShiftData })
         }}
         loading={loadingSubmit}
         title={
-          upcomingShiftTimesData?.length > 0 &&
-          upcomingShiftTimesData[upcomingShiftTimesData?.length - 1]
-            ?.clock_out_time === null
+          shiftNeedClose?.clock_out_time === null
             ? "Clock Out"
             : Strings.clockIn
         }
         backgroundColor={
-          upcomingShiftTimesData?.length > 0 &&
-          upcomingShiftTimesData[upcomingShiftTimesData?.length - 1]
-            ?.clock_out_time === null
+          shiftNeedClose?.clock_out_time === null
             ? Colors.RED_COLOR
             : Colors.BACKGROUND_BG
         }
@@ -306,7 +313,6 @@ export default function ShiftView() {
       />
     )
   }
-  console.warn('upcomingShiftData',upcomingShiftData);
   const renderClockEndButton = () => {
     return (
       <Button
@@ -406,8 +412,8 @@ export default function ShiftView() {
                         .utc(
                           upcomingShiftTimesData?.length > 0
                             ? upcomingShiftTimesData[
-                                upcomingShiftTimesData?.length - 1
-                              ]?.clock_in_time
+                              upcomingShiftTimesData?.length - 1
+                            ]?.clock_in_time
                             : upcomingShiftData?.schedule_shift_start_time
                         )
                         .local()
@@ -420,9 +426,7 @@ export default function ShiftView() {
           </View>
           {user?.role !== "Organization Admin" && renderClockButton()}
           {user?.role !== "Organization Admin" &&
-            upcomingShiftTimesData?.length > 0 &&
-            upcomingShiftTimesData[upcomingShiftTimesData?.length - 1]
-              ?.clock_out_time === null &&
+            shiftNeedClose?.clock_out_time === null &&
             renderClockEndButton()}
           <Modal
             visible={visible}
@@ -569,26 +573,26 @@ export default function ShiftView() {
                 <Text style={[styles.title, { marginTop: 20 }]}>Edit time</Text>
                 {upcomingShiftTimesData?.length > 0
                   ? upcomingShiftTimesData?.map((shift, index) => (
-                      <>
-                        <ClockINOUT
-                          shift={shift}
-                          key={index}
-                          upcomingShiftTimesData={upcomingShiftTimesData}
-                          handleChange={handleChange}
+                    <>
+                      <ClockINOUT
+                        shift={shift}
+                        key={index}
+                        upcomingShiftTimesData={upcomingShiftTimesData}
+                        handleChange={handleChange}
+                      />
+                      {index !== upcomingShiftTimesData?.length - 1 && (
+                        <View
+                          style={{
+                            width: "100%",
+                            marginTop: 10,
+                            marginBottom: 5,
+                            height: 1,
+                            backgroundColor: Colors.BLUR_TEXT
+                          }}
                         />
-                        {index !== upcomingShiftTimesData?.length - 1 && (
-                          <View
-                            style={{
-                              width: "100%",
-                              marginTop: 10,
-                              marginBottom: 5,
-                              height: 1,
-                              backgroundColor: Colors.BLUR_TEXT
-                            }}
-                          />
-                        )}
-                      </>
-                    ))
+                      )}
+                    </>
+                  ))
                   : null}
                 <Button
                   onPress={() => {
