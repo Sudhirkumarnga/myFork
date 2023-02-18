@@ -280,7 +280,8 @@ export default function ShiftView() {
 
   }
 
-  console.warn('upcomingShiftTimesData', upcomingShiftTimesData);
+  console.warn('upcomingShiftData',upcomingShiftData?.status);
+
   const renderClockButton = () => {
     return (
       <Button
@@ -392,9 +393,7 @@ export default function ShiftView() {
                     .format("hh:mm A")}
                 </Text>
               )}
-              {upcomingShiftTimesData?.length > 0 &&
-                upcomingShiftTimesData[upcomingShiftTimesData?.length - 1]
-                  ?.clock_out_time === null && (
+              {shiftNeedClose?.clock_out_time === null && (
                   <Text
                     style={[
                       styles.description,
