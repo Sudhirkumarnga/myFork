@@ -3,6 +3,12 @@ from rest_framework.serializers import ModelSerializer
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from users.models import User
+from djstripe.models import Plan, Product, Price
+import stripe
+from smart_workhorse_33965.settings import STRIPE_LIVE_MODE, STRIPE_TEST_SECRET_KEY, STRIPE_LIVE_SECRET_KEY
+import time
+
+stripe.api_key = STRIPE_LIVE_SECRET_KEY if STRIPE_LIVE_MODE else STRIPE_TEST_SECRET_KEY
 
 
 class UserSerializer(ModelSerializer):
@@ -27,3 +33,53 @@ class FeedbackSerializer(ModelSerializer):
         fields = '__all__'
 
 
+class DjStripeProductPriceSerializer(ModelSerializer):
+    class Meta:
+        model = Price
+        fields = '__all__'
+    
+
+
+class DjStripeProductSerializer(ModelSerializer):
+    class Meta:
+        model = Product
+        fields = '__all__'
+        extra_kwargs = {
+            "id": {"required": False},
+            "type": {"required": False}
+        }
+
+    def to_representation(self, data):
+        data = super(DjStripeProductSerializer, self).to_representation(data)
+        data['price'] = DjStripeProductPriceSerializer(
+            Price.objects.filter(product__id=data['id']),
+            many=True
+        ).data
+        return data
+    
+    def create(self, validated_data):
+        request = self.context['request']
+        product = stripe.Product.create(
+            name = validated_data['name'],
+            description = validated_data['description'],
+            type=validated_data['type'],
+            active=validated_data['active'],
+            metadata=validated_data['metadata']
+        )
+        stripe.Price.create(
+            product=product.id,
+            unit_amount=request.data.get("price")*100,
+            active=validated_data['active'],
+            currency="usd",
+            recurring={"interval": "month"},
+        )
+        time.sleep(1)
+        return Product.objects.get(id=product.id)
+
+    def update(self, instance, validated_data):
+        request = self.context['request']
+        stripe.Product.modify(
+           instance.id,
+           **validated_data 
+        )
+        return Product.objects.get(id=instance.id)

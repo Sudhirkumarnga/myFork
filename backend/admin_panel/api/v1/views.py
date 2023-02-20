@@ -10,7 +10,9 @@ from smart_workhorse_33965.response import SmartWorkHorseResponse, SmartWorkHors
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import status
 from users.models import User
-from  admin_panel.api.v1.serializers import UserSerializer, FeedbackSerializer
+from  admin_panel.api.v1.serializers import DjStripeProductSerializer, UserSerializer, FeedbackSerializer
+from djstripe.models import Plan, Product
+import stripe
 
 
 
@@ -38,3 +40,22 @@ class FeedbackViewset(ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = ["is_read", "created_at"]
     search_fields = ["title", "email", "title"]
+
+
+class SubscriptionPlanViewset(ModelViewSet):
+    serializer_class = DjStripeProductSerializer
+    queryset = Product.objects.all()
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+    permission_classes = [
+        IsAuthenticated,
+        IsSuperUser
+    ]
+
+    def get_serializer_context(self):
+        context = super(SubscriptionPlanViewset, self).get_serializer_context()
+        context.update({"request": self.request})
+        return context
+    
+    def perform_destroy(self, instance):
+        stripe.Product.delete(instance.id)
+        instance.delete()
