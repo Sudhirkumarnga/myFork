@@ -445,14 +445,15 @@ class SchedularView(APIView):
 
 
 class WorksiteListView(APIView):
-    queryset = Event.objects.filter()
+    queryset = WorkSite.objects.filter()
     permission_classes = [IsAuthenticated, IsActiveSubscription]
     http_method_names = ['get']
 
     def get(self, request):
         try:
             employee = Employee.objects.filter(user=self.request.user)
-            queryset = self.queryset.filter(employees__in=employee).distinct("worksite")
+            queryset = self.queryset.filter(business=employee.first().business)
+            # queryset = self.queryset.filter(employees__in=employee).distinct("worksite")
             serializer = WorksiteListSerializer(queryset, many=True)
             return Response(
                 SmartWorkHorseResponse.get_response(

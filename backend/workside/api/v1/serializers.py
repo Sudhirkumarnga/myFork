@@ -325,19 +325,30 @@ class SchedularSerializer(ModelSerializer):
         return data
 
 
+# class WorksiteListSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Event
+#         fields = ('id',)
+
+#     def to_representation(self, data):
+#         data = super(WorksiteListSerializer, self).to_representation(data)
+#         event = Event.objects.get(id=data['id'])
+#         data['worksite_name'] = event.worksite.name if event.worksite.name else None
+#         data['location'] = event.worksite.location if event.worksite.location else None
+#         data['logo'] = event.worksite.business.profile_image.url if event.worksite.business.profile_image else None
+#         return data
+
+
 class WorksiteListSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Event
-        fields = ('id',)
+        model = WorkSite
+        fields = ('id',"name","location")
 
     def to_representation(self, data):
         data = super(WorksiteListSerializer, self).to_representation(data)
-        event = Event.objects.get(id=data['id'])
-        data['worksite_name'] = event.worksite.name if event.worksite.name else None
-        data['location'] = event.worksite.location if event.worksite.location else None
-        data['logo'] = event.worksite.business.profile_image.url if event.worksite.business.profile_image else None
+        data['worksite_name'] = data['name']
+        data['logo'] = WorkSite.objects.get(id=data['id']).business.profile_image.url if WorkSite.objects.get(id=data['id']).business.profile_image else None
         return data
-
 
 class EventAssignedEmployeeSerializer(serializers.ModelSerializer):
     employee = serializers.SerializerMethodField()
