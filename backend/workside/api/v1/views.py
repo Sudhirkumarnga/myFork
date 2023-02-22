@@ -452,7 +452,7 @@ class WorksiteListView(APIView):
     def get(self, request):
         try:
             employee = Employee.objects.filter(user=self.request.user)
-            queryset = self.queryset.filter(employees__in=employee)
+            queryset = self.queryset.filter(employees__in=employee).distinct("worksite")
             serializer = WorksiteListSerializer(queryset, many=True)
             return Response(
                 SmartWorkHorseResponse.get_response(
