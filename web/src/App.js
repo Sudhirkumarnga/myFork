@@ -24,7 +24,8 @@ import {
   Payroll,
   AdminLogin,
   Users,
-  Feedback
+  Feedback,
+  Subscriptions
 } from "./containers"
 import AppContext from "./Context"
 import "./styles.css"
@@ -35,7 +36,7 @@ import { SnackbarProvider } from "notistack"
 import { getUpcomingShift, getUpcomingShiftTimes } from "./api/employee"
 import { getEarnings } from "./api/business"
 import EmployeeList from "./containers/Dashboard/EmployeeList"
-import { getAdminUsers, getFeedbacks } from "./api/admin"
+import { getAdminUsers, getFeedbacks, getSubscriptions } from "./api/admin"
 import { getSimplifiedError } from "./utils/error"
 const stripePromise = loadStripe(
   "pk_test_51LHszpICUZwLvblBOHgQGNgtQLWZVoQUelbi5JiK5e8rV4noTDSZ3DRCFPCoYyunryIL4OlDhwUFNAeJqKb0Lvlj00Hk8mUFpw"
@@ -48,6 +49,7 @@ function App() {
   const [businessUsers, setBusinessUsers] = useState([])
   const [employeeUsers, setEmployeeUsers] = useState([])
   const [feedbacks, setFeedbacks] = useState([])
+  const [subscriptions, setSubscriptions] = useState([])
 
   // User Side
   const [user, setUser] = useState(null)
@@ -69,9 +71,11 @@ function App() {
       const Organization = await getAdminUsers("?role=Organization Admin")
       const Employee = await getAdminUsers("?role=Employee")
       const Feedback = await getFeedbacks()
+      const Subscription = await getSubscriptions()
       setBusinessUsers(Organization?.data?.results)
       setEmployeeUsers(Employee?.data?.results)
       setFeedbacks(Feedback?.data?.results)
+      setSubscriptions(Subscription?.data?.results)
     } catch (error) {
       alert(getSimplifiedError(error))
     }
@@ -135,7 +139,8 @@ function App() {
         businessUsers,
         employeeUsers,
         _getAdminData,
-        feedbacks
+        feedbacks,
+        subscriptions
       }}
     >
       <SnackbarProvider>
@@ -185,6 +190,14 @@ function App() {
                 element={
                   <AdminPrivateRoute>
                     <Feedback />
+                  </AdminPrivateRoute>
+                }
+              />
+              <Route
+                path={ROUTES.ADMINSUBSCRIPTIONS}
+                element={
+                  <AdminPrivateRoute>
+                    <Subscriptions />
                   </AdminPrivateRoute>
                 }
               />
