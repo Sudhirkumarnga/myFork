@@ -76,7 +76,7 @@ export default function InspectionDetails({ navigation, route }) {
     }
   }
 
-  console.warn('item?.stats',item?.stats);
+  console.warn("item?.stats", item?.tasks)
   return (
     <View style={styles.container}>
       <Header
@@ -130,7 +130,7 @@ export default function InspectionDetails({ navigation, route }) {
           <FlatList
             data={item?.tasks}
             renderItem={({ item: task, index }) => (
-              <View style={{ width: "100%", marginVertical: 20 }}>
+              <View key={index} style={{ width: "100%", marginVertical: 20 }}>
                 <View style={{ width: "100%" }}>
                   <View
                     style={{
@@ -139,9 +139,7 @@ export default function InspectionDetails({ navigation, route }) {
                       justifyContent: "space-between"
                     }}
                   >
-                    <Text style={styles.description}>
-                      Task Number {index + 1}
-                    </Text>
+                    <Text style={styles.description}>{task?.tasks}</Text>
                     {task?.feedback ? (
                       <View
                         style={{
@@ -158,7 +156,7 @@ export default function InspectionDetails({ navigation, route }) {
                         onPress={() => {
                           handleChange("visible", true)
                           handleChange("task", task?.id)
-                          handleChange("taskIndex", index + 1)
+                          handleChange("taskIndex", task?.tasks)
                         }}
                       >
                         <Text
@@ -213,7 +211,7 @@ export default function InspectionDetails({ navigation, route }) {
               </TouchableOpacity>
             </View>
             <Text style={[styles.description, { ...Fonts.poppinsRegular(18) }]}>
-              Task Number {taskIndex}
+              {taskIndex}
             </Text>
             {feedback?.map(feed => (
               <View

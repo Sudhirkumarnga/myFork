@@ -18,6 +18,7 @@ export const RESET = "/forgot-password/reset"
 export const ADMINLOGIN = "/admin-login"
 export const ADMINUSERS = "/admin-users"
 export const FEEDBACK = "/admin-feedback"
+export const ADMINSUBSCRIPTIONS = "/admin-subscriptions"
 
 export const SIDEBAR = (
   <React.Fragment>

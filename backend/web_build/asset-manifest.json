@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.47717734.css",
-    "main.js": "/static/js/main.51b3ebf1.js",
+    "main.css": "/static/css/main.2d9f157a.css",
+    "main.js": "/static/js/main.f0a30d8e.js",
     "static/js/787.fea5cc7c.chunk.js": "/static/js/787.fea5cc7c.chunk.js",
     "static/media/loginBG2.jpg": "/static/media/loginBG2.c3457d99cf9fac585f1b.jpg",
     "static/media/loginBG3.jpg": "/static/media/loginBG3.21bdcb3d9fd03b2a50fc.jpg",
@@ -35,12 +35,12 @@
     "static/media/facebook.svg": "/static/media/facebook.c5ed8bf04242be9192021f00d15e66e9.svg",
     "static/media/chevronRight.svg": "/static/media/chevronRight.51bf1bf61fc9affbd0ed98f8b8e027e3.svg",
     "static/media/chevronDown.svg": "/static/media/chevronDown.0e2a552047b5874c5c34254eb74ba316.svg",
-    "main.47717734.css.map": "/static/css/main.47717734.css.map",
-    "main.51b3ebf1.js.map": "/static/js/main.51b3ebf1.js.map",
+    "main.2d9f157a.css.map": "/static/css/main.2d9f157a.css.map",
+    "main.f0a30d8e.js.map": "/static/js/main.f0a30d8e.js.map",
     "787.fea5cc7c.chunk.js.map": "/static/js/787.fea5cc7c.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.47717734.css",
-    "static/js/main.51b3ebf1.js"
+    "static/css/main.2d9f157a.css",
+    "static/js/main.f0a30d8e.js"
   ]
 }

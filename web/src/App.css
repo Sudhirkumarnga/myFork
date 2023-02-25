@@ -20,6 +20,13 @@
   background-color: #0d3313 !important
 }
 
+.textBreak {
+  word-wrap: break-word;
+  word-break: break-word;
+  white-space: initial;
+}
+
+
 
 .iconDashboardActive {
   margin-right: 15px;
