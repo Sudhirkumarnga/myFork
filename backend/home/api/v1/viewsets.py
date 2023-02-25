@@ -126,6 +126,8 @@ class LoginViewSet(LoginView):
 
         serializer_data = serializer.data
         serializer_data['user'] = UserSerializer(self.request.user, many=False).data
+        if not serializer_data['user']['role']:
+            serializer_data['user']['role']= "Super Admin"
         try:
             serializer_data['user']['employee_id'] = Employee.objects.get(user=self.request.user).id
         except Exception as e:

@@ -1,4 +1,4 @@
-from business.models import Feedback
+from business.models import Business, Employee, Feedback
 from rest_framework.serializers import ModelSerializer
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
@@ -26,12 +26,31 @@ class UserSerializer(ModelSerializer):
             "is_superuser"
         ]
 
+    def to_representation(self, data):
+        data = super(UserSerializer, self).to_representation(data)
+        if data["role"] == "Employee":
+            employee = Employee.objects.get(user__id=data['id'])
+            data['profile_image'] = employee.profile_image.url if employee.profile_image else None
+        if data["role"] == "Organization Admin":
+            business = Business.objects.get(user__id=data['id'])
+            data['profile_image'] = business.profile_image.url if business.profile_image else None
+        return data
 
 class FeedbackSerializer(ModelSerializer):
     class Meta:
         model = Feedback
         fields = '__all__'
 
+    def to_representation(self, data):
+        data = super(FeedbackSerializer, self).to_representation(data)
+        queryset=User.objects.get(id=data['user'])
+        serializer = UserSerializer(
+            queryset,
+            many=False
+        )
+        data["username"] = queryset.username
+        data['profile_image'] = serializer.data['profile_image']
+        return data
 
 class DjStripeProductPriceSerializer(ModelSerializer):
     class Meta:
