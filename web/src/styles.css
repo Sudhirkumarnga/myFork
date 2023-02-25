@@ -1030,6 +1030,17 @@ small {
     color: #818080
 }
 
+.dob {
+    margin-top: 5px;
+    color: #818080;
+    font-size: 12px;
+}
+
+.noUser {
+    margin-top: 20px;
+    text-align: center;
+}
+
 .uppercase {
     text-transform: uppercase;
 }
