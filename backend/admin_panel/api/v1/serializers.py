@@ -31,10 +31,10 @@ class UserSerializer(ModelSerializer):
         print(data['id'])
         if data["role"] == "Employee":
             employee = Employee.objects.filter(user__id=data['id'])
-            data['profile_image'] = employee.profile_image.url if employee and employee.profile_image else None
+            data['profile_image'] = employee.first().profile_image.url if employee and employee.first().profile_image else None
         if data["role"] == "Organization Admin":
             business = Business.objects.filter(user__id=data['id'])
-            data['profile_image'] = business.profile_image.url if business and business.profile_image else None
+            data['profile_image'] = business.first().profile_image.url if business and business.first().profile_image else None
         return data
 
 class FeedbackSerializer(ModelSerializer):
