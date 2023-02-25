@@ -10,7 +10,6 @@ import { useLocation, useNavigate } from "react-router-dom"
 import AppContext from "../../Context"
 import { useContext } from "react"
 import AdminHeader from "../Header/AdminHeader"
-import MainFooter from "../Footer"
 import { useSnackbar } from "notistack"
 import { ReactComponent as LogoText } from "../../assets/svg/LogoText.svg"
 
@@ -88,10 +87,10 @@ function AdminLayoutContent({ children }) {
                 style={{ marginLeft: 15, marginTop: 10, marginBottom: 50 }}
               />
               <ListItemButton
-                selected={location.pathname.includes("/admin/users")}
-                onClick={() => handleListItemClick("/admin/users", 1)}
+                selected={location.pathname.includes("/admin-users")}
+                onClick={() => handleListItemClick("/admin-users", 1)}
                 className={
-                  location.pathname.includes("/admin/users")
+                  location.pathname.includes("/admin-users")
                     ? "listButtonActive"
                     : "listButton"
                 }
@@ -99,10 +98,10 @@ function AdminLayoutContent({ children }) {
                 <ListItemText primary="Users" />
               </ListItemButton>
               <ListItemButton
-                selected={location.pathname === "/admin/subscriptions"}
-                onClick={() => handleListItemClick("/admin/subscriptions", 2)}
+                selected={location.pathname === "/admin-subscriptions"}
+                onClick={() => handleListItemClick("/admin-subscriptions", 2)}
                 className={
-                  location.pathname === "/admin/subscriptions"
+                  location.pathname === "/admin-subscriptions"
                     ? "listButtonActive"
                     : "listButton"
                 }
@@ -110,10 +109,10 @@ function AdminLayoutContent({ children }) {
                 <ListItemText primary="Subscriptions" />
               </ListItemButton>
               <ListItemButton
-                selected={location.pathname === "/admin/feedback"}
-                onClick={() => handleListItemClick("/admin/feedback", 2)}
+                selected={location.pathname === "/admin-feedback"}
+                onClick={() => handleListItemClick("/admin-feedback", 2)}
                 className={
-                  location.pathname === "/admin/feedback"
+                  location.pathname === "/admin-feedback"
                     ? "listButtonActive"
                     : "listButton"
                 }
@@ -121,10 +120,10 @@ function AdminLayoutContent({ children }) {
                 <ListItemText primary="Feedback" />
               </ListItemButton>
               <ListItemButton
-                selected={location.pathname === "/admin/analytics"}
-                onClick={() => handleListItemClick("/admin/analytics", 3)}
+                selected={location.pathname === "/admin-analytics"}
+                onClick={() => handleListItemClick("/admin-analytics", 3)}
                 className={
-                  location.pathname === "/admin/analytics"
+                  location.pathname === "/admin-analytics"
                     ? "listButtonActive"
                     : "listButton"
                 }

@@ -7,7 +7,7 @@ const AdminPrivateRoute = ({ isLoading, children }) => {
   if (isLoading) {
     return <div>Loading...</div>
   }
-  if (!isProtected) return <Navigate to="/admin/login" replace />
+  if (!isProtected) return <Navigate to="/admin-login" replace />
 
   return children
 }

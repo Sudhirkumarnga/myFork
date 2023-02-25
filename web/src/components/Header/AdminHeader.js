@@ -25,7 +25,7 @@ export default function AdminHeader() {
         horizontal: "right"
       }
     })
-    navigate("/admin/login")
+    navigate("/admin-login")
   }
 
   const handleClick = event => {
