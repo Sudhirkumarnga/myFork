@@ -28,12 +28,13 @@ class UserSerializer(ModelSerializer):
 
     def to_representation(self, data):
         data = super(UserSerializer, self).to_representation(data)
+        print(data['id'])
         if data["role"] == "Employee":
-            employee = Employee.objects.get(user__id=data['id'])
-            data['profile_image'] = employee.profile_image.url if employee.profile_image else None
+            employee = Employee.objects.filter(user__id=data['id'])
+            data['profile_image'] = employee.profile_image.url if employee and employee.profile_image else None
         if data["role"] == "Organization Admin":
-            business = Business.objects.get(user__id=data['id'])
-            data['profile_image'] = business.profile_image.url if business.profile_image else None
+            business = Business.objects.filter(user__id=data['id'])
+            data['profile_image'] = business.profile_image.url if business and business.profile_image else None
         return data
 
 class FeedbackSerializer(ModelSerializer):
