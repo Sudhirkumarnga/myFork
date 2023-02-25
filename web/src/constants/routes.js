@@ -14,6 +14,10 @@ export const CHECKOUT = "/checkout/:id"
 export const FORGOTPASSWORD = "/forgot-password"
 export const FORGOTPASSWORDOTP = "/forgot-password/otp"
 export const RESET = "/forgot-password/reset"
+// Admin
+export const ADMINLOGIN = "/admin/login"
+export const ADMINUSERS = "/admin/users"
+export const FEEDBACK = "/admin/feedback"
 
 export const SIDEBAR = (
   <React.Fragment>
