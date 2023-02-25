@@ -1,7 +1,7 @@
 import "./App.css"
 import React, { useEffect, useState } from "react"
 import { Route, Routes, useNavigate } from "react-router-dom"
-import { PrivateRoute } from "./components"
+import { PrivateRoute, AdminPrivateRoute } from "./components"
 import { loadStripe } from "@stripe/stripe-js"
 import { createTheme, ThemeProvider } from "@mui/material/styles"
 import { Elements } from "@stripe/react-stripe-js"
@@ -21,7 +21,11 @@ import {
   ForgotPasswordOtp,
   Reset,
   Dashboard,
-  Payroll
+  Payroll,
+  AdminLogin,
+  Users,
+  Feedback,
+  Subscriptions
 } from "./containers"
 import AppContext from "./Context"
 import "./styles.css"
@@ -32,12 +36,22 @@ import { SnackbarProvider } from "notistack"
 import { getUpcomingShift, getUpcomingShiftTimes } from "./api/employee"
 import { getEarnings } from "./api/business"
 import EmployeeList from "./containers/Dashboard/EmployeeList"
+import { getAdminUsers, getFeedbacks, getSubscriptions } from "./api/admin"
+import { getSimplifiedError } from "./utils/error"
 const stripePromise = loadStripe(
   "pk_test_51LHszpICUZwLvblBOHgQGNgtQLWZVoQUelbi5JiK5e8rV4noTDSZ3DRCFPCoYyunryIL4OlDhwUFNAeJqKb0Lvlj00Hk8mUFpw"
 )
 
 const theme = createTheme()
 function App() {
+  // Admin Side
+  const [adminUser, setAdminUser] = useState(null)
+  const [businessUsers, setBusinessUsers] = useState([])
+  const [employeeUsers, setEmployeeUsers] = useState([])
+  const [feedbacks, setFeedbacks] = useState([])
+  const [subscriptions, setSubscriptions] = useState([])
+
+  // User Side
   const [user, setUser] = useState(null)
   const [listRVS, setListRVS] = useState([])
   const [adminProfile, setAdminProfile] = useState(null)
@@ -52,6 +66,21 @@ function App() {
   let token = localStorage.getItem("token")
   const isProtected = token
 
+  const _getAdminData = async () => {
+    try {
+      const Organization = await getAdminUsers("?role=Organization Admin")
+      const Employee = await getAdminUsers("?role=Employee")
+      const Feedback = await getFeedbacks()
+      const Subscription = await getSubscriptions()
+      setBusinessUsers(Organization?.data?.results)
+      setEmployeeUsers(Employee?.data?.results)
+      setFeedbacks(Feedback?.data?.results)
+      setSubscriptions(Subscription?.data?.results)
+    } catch (error) {
+      alert(getSimplifiedError(error))
+    }
+  }
+
   const _getUpcomingShift = async () => {
     try {
       const res = await getUpcomingShift(token)
@@ -64,16 +93,7 @@ function App() {
         setupcomingShiftTimesDataList(res1?.data)
       }
     } catch (error) {
-      const showWError = error.response?.data?.error
-        ? Object.values(error.response?.data?.error)
-        : error.response?.data
-        ? Object.values(error.response?.data)
-        : ""
-      if (showWError.length > 0) {
-        alert(`Error: ${JSON.stringify(showWError[0])}`)
-      } else {
-        alert(`Error: ${JSON.stringify(error)}`)
-      }
+      alert(getSimplifiedError(error))
     }
   }
 
@@ -96,16 +116,7 @@ function App() {
       setEarningLoading(false)
     } catch (error) {
       setEarningLoading(false)
-      const showWError = error.response?.data?.error
-        ? Object.values(error.response?.data?.error)
-        : error.response?.data
-        ? Object.values(error.response?.data)
-        : ""
-      if (showWError.length > 0) {
-        alert(`Error: ${JSON.stringify(showWError[0])}`)
-      } else {
-        alert(`Error: ${JSON.stringify(error)}`)
-      }
+      alert(getSimplifiedError(error))
     }
   }
 
@@ -122,7 +133,14 @@ function App() {
         upcomingShiftTimesDataList,
         earnings,
         earningLoading,
-        _getEarnings
+        _getEarnings,
+        setAdminUser,
+        adminUser,
+        businessUsers,
+        employeeUsers,
+        _getAdminData,
+        feedbacks,
+        subscriptions
       }}
     >
       <SnackbarProvider>
@@ -157,6 +175,32 @@ function App() {
                 element={<TermsConditions />}
               />
               <Route path={ROUTES.PRIVACYPOLICY} element={<PrivacyPolicy />} />
+              {/* Admin Routes */}
+              <Route path={ROUTES.ADMINLOGIN} element={<AdminLogin />} />
+              <Route
+                path={ROUTES.ADMINUSERS}
+                element={
+                  <AdminPrivateRoute>
+                    <Users />
+                  </AdminPrivateRoute>
+                }
+              />
+              <Route
+                path={ROUTES.FEEDBACK}
+                element={
+                  <AdminPrivateRoute>
+                    <Feedback />
+                  </AdminPrivateRoute>
+                }
+              />
+              <Route
+                path={ROUTES.ADMINSUBSCRIPTIONS}
+                element={
+                  <AdminPrivateRoute>
+                    <Subscriptions />
+                  </AdminPrivateRoute>
+                }
+              />
             </Routes>
           </ThemeProvider>
         </Elements>
