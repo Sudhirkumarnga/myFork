@@ -30,7 +30,7 @@ export default function AdminLogin({}) {
 
   useEffect(() => {
     if (adminUser) {
-      navigate("/admin/users")
+      navigate("/admin-users")
     }
   }, [adminUser])
 
@@ -64,7 +64,7 @@ export default function AdminLogin({}) {
           horizontal: "right"
         }
       })
-      navigate("/admin/users")
+      navigate("/admin-users")
     } catch (error) {
       handleChange("loading", false)
       const errorText = Object.values(error?.response?.data)
