@@ -50,7 +50,7 @@ export default function AdminLogin({}) {
       }
       const res = await loginUser(payload)
       handleChange("loading", false)
-      if (res?.data?.user?.role !== null) {
+      if (res?.data?.user?.role !== "Super Admin") {
         alert("Please use super admin user")
         return
       }
