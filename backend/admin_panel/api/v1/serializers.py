@@ -52,6 +52,9 @@ class FeedbackSerializer(ModelSerializer):
             )
             data["username"] = queryset.username
             data['profile_image'] = serializer.data['profile_image']
+        else:
+            data["username"] = None
+            data['profile_image'] = None
         return data
 
 class DjStripeProductPriceSerializer(ModelSerializer):
