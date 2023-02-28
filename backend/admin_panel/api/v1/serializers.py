@@ -97,7 +97,7 @@ class DjStripeProductSerializer(ModelSerializer):
             currency="usd",
             recurring={"interval": "month"},
         )
-        time.sleep(1)
+        time.sleep(3)
         return Product.objects.get(id=product.id)
 
     def update(self, instance, validated_data):
