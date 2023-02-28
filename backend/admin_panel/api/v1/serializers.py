@@ -44,13 +44,14 @@ class FeedbackSerializer(ModelSerializer):
 
     def to_representation(self, data):
         data = super(FeedbackSerializer, self).to_representation(data)
-        queryset=User.objects.get(id=data['user'])
-        serializer = UserSerializer(
-            queryset,
-            many=False
-        )
-        data["username"] = queryset.username
-        data['profile_image'] = serializer.data['profile_image']
+        if data['user']:
+            queryset=User.objects.get(id=data['user'])
+            serializer = UserSerializer(
+                queryset,
+                many=False
+            )
+            data["username"] = queryset.username
+            data['profile_image'] = serializer.data['profile_image']
         return data
 
 class DjStripeProductPriceSerializer(ModelSerializer):
