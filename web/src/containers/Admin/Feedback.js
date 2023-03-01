@@ -12,12 +12,38 @@ import { useContext } from "react"
 import AppContext from "../../Context"
 import { useState } from "react"
 import { replyFeedback } from "../../api/admin"
+import userProfile from "../../assets/images/sample.png"
 import { useEffect } from "react"
 import { DataGrid } from "@mui/x-data-grid"
 import searchIcon from "../../assets/svg/search.svg"
 
 function FeedbackContent() {
   const headCells1 = [
+    {
+      field: "user_details.name",
+      numeric: false,
+      width: 200,
+      disablePadding: false,
+      disableColumnMenu: true,
+      headerName: "USER NAME",
+      renderCell: row => {
+        return (
+          <div className="d-flex align-items-center">
+            <img
+              src={row?.row?.profile_image || userProfile}
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: 8,
+                marginRight: 10,
+                resizeMode: "cover"
+              }}
+            />
+            <div>{row?.row?.username}</div>
+          </div>
+        )
+      }
+    },
     {
       field: "email",
       numeric: false,
@@ -62,21 +88,6 @@ function FeedbackContent() {
         return (
           <div className="d-flex align-items-center">
             <div>{row?.row?.is_read ? "Yes" : "No"}</div>
-          </div>
-        )
-      }
-    },
-    {
-      field: "user_details.name",
-      numeric: false,
-      width: 200,
-      disablePadding: false,
-      disableColumnMenu: true,
-      headerName: "USER NAME",
-      renderCell: row => {
-        return (
-          <div className="d-flex align-items-center">
-            <div>{row?.row?.user_detail?.name}</div>
           </div>
         )
       }
