@@ -23,3 +23,7 @@ export const createSubscription = payload => {
 export const updateSubscription = (id, payload) => {
   return API.put(`api/v1/admin/plans/${id}/`, payload)
 }
+
+export const updateUserProfile = async (payload, user_id, token) => {
+  return API.put(`api/v1/admin/users/${user_id}/`, payload, token)
+}

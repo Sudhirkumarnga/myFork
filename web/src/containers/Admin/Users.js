@@ -2,7 +2,7 @@
 /* eslint-disable no-empty-pattern */
 import React, { useEffect, useState } from "react"
 import { AppButton, AdminLayout, AppInput } from "../../components"
-import { Grid, Divider, Button, CircularProgress } from "@mui/material"
+import { Grid, Divider } from "@mui/material"
 import { useLocation, useNavigate } from "react-router-dom"
 import AppContext from "../../Context"
 import { useContext } from "react"
@@ -12,10 +12,12 @@ import userProfile from "../../assets/images/sample.png"
 import searchIcon from "../../assets/svg/search.svg"
 import moment from "moment"
 import { COLORS } from "../../constants"
+import { getSimplifiedError } from "../../utils/error"
+import { updateUserProfile } from "../../api/admin"
 
 export default function Users({}) {
   const navigate = useNavigate()
-  const { businessUsers, employeeUsers } = useContext(AppContext)
+  const { businessUsers, employeeUsers, _getAdminData } = useContext(AppContext)
   const { enqueueSnackbar } = useSnackbar()
   const location = useLocation()
   const [state, setState] = useState({
@@ -24,7 +26,8 @@ export default function Users({}) {
     searchText: "",
     searchText1: "",
     filteredList: [],
-    filteredList1: []
+    filteredList1: [],
+    loading: false
   })
 
   const {
@@ -33,7 +36,8 @@ export default function Users({}) {
     searchText,
     searchText1,
     filteredList,
-    filteredList1
+    filteredList1,
+    loading
   } = state
 
   const handleChange = (key, value) => {
@@ -67,11 +71,32 @@ export default function Users({}) {
     }
   }
 
-  const handleSubmit = async () => {
+  const _updateProfile = async (is_active, id) => {
     try {
       handleChange("loading", true)
+      const token = localStorage.getItem("token")
+      const payload = {
+        is_active
+      }
+      await updateUserProfile(payload, id, token)
+      handleChange("loading", false)
+      _getAdminData()
+      enqueueSnackbar(`User has been ${is_active ? "Flagged" : "unflagged"}`, {
+        variant: "success",
+        anchorOrigin: {
+          vertical: "bottom",
+          horizontal: "right"
+        }
+      })
     } catch (error) {
       handleChange("loading", false)
+      enqueueSnackbar(getSimplifiedError(error), {
+        variant: "error",
+        anchorOrigin: {
+          vertical: "bottom",
+          horizontal: "right"
+        }
+      })
     }
   }
 
@@ -125,7 +150,9 @@ export default function Users({}) {
               </div>
               {isActive && (
                 <div className="activeEmployeeModal">
-                  {filteredList?.length === 0 && <div className="noUser">No User</div>}
+                  {filteredList?.length === 0 && (
+                    <div className="noUser">No User</div>
+                  )}
                   {isActive &&
                     filteredList?.length > 0 &&
                     filteredList?.map((item, index) => (
@@ -178,6 +205,10 @@ export default function Users({}) {
                           backgroundColor={COLORS.primary}
                           color={COLORS.white}
                           width={100}
+                          disabled={loading}
+                          onClick={() =>
+                            _updateProfile(!item?.is_active, item?.id)
+                          }
                           className={"mt-2"}
                           height={30}
                           title={item?.is_active ? "Flag" : "Unflagged"}
@@ -201,7 +232,9 @@ export default function Users({}) {
               </div>
               {isActive1 && (
                 <div className="activeEmployeeModal">
-                  {filteredList1?.length === 0 && <div className="noUser">No User</div>}
+                  {filteredList1?.length === 0 && (
+                    <div className="noUser">No User</div>
+                  )}
                   {isActive1 &&
                     filteredList1?.length > 0 &&
                     filteredList1?.map((item, index) => (
@@ -256,6 +289,10 @@ export default function Users({}) {
                           width={100}
                           className={"mt-2"}
                           height={30}
+                          disabled={loading}
+                          onClick={() =>
+                            _updateProfile(!item?.is_active, item?.id)
+                          }
                           title={item?.is_active ? "Flag" : "Unflagged"}
                         />
                       </div>
