@@ -46,12 +46,12 @@ class FeedbackSerializer(ModelSerializer):
         if data['user']:
             user=User.objects.get(id=data['user'])
             if user.role == "Employee":
-                employee = Employee.objects.filter(user=user)
-                data['profile_image'] = employee.first().profile_image.url if employee and employee.first().profile_image else None
+                employee = Employee.objects.get(user=user)
+                data['profile_image'] = employee.profile_image.url if employee.profile_image else None
                 data['username'] = user.username
             if user.role == "Organization Admin":
-                business = Business.objects.filter(user=user)
-                data['profile_image'] = business.first().profile_image.url if business and business.first().profile_image else None
+                business = Business.objects.get(user=user)
+                data['profile_image'] = business.profile_image.url if business.profile_image else None
                 data['username'] = user.username
         return data
 
