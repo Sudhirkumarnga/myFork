@@ -24,6 +24,9 @@ def convert_image_from_bse64_to_blob(image):
 
 
 def update_profile(user, data):
+    profile_image = data['personal_information'].pop("in_stock", None)
+    if profile_image:
+        Employee.objects.filter(user=user).update(profile_image=convert_image_from_bse64_to_blob(profile_image))
     User.objects.filter(id=user.id).update(**data['personal_information'])
     if user.role == 'Organization Admin':
         business = Business.objects.get(user=user)
