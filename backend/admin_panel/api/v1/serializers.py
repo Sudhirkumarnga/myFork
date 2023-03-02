@@ -44,16 +44,15 @@ class FeedbackSerializer(ModelSerializer):
     def to_representation(self, data):
         data = super(FeedbackSerializer, self).to_representation(data)
         if data['user']:
-            queryset=User.objects.get(id=data['user'])
-            serializer = UserSerializer(
-                queryset,
-                many=False
-            )
-            data["username"] = queryset.username
-            data['profile_image'] = serializer.data['profile_image']
-        else:
-            data["username"] = None
-            data['profile_image'] = None
+            user=User.objects.get(id=data['user'])
+            if data["role"] == "Employee":
+                employee = Employee.objects.filter(user=user).first()
+                data['profile_image'] = employee.profile_image.url if employee.profile_image else None
+                data['user_name'] = user.get_full_name()
+            if data["role"] == "Organization Admin":
+                business = Business.objects.filter(user=user).first()
+                data['profile_image'] = business.profile_image.url if business.profile_image else None
+                data['user_name'] = user.get_full_name()
         return data
 
 class DjStripeProductPriceSerializer(ModelSerializer):
