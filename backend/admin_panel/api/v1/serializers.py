@@ -45,11 +45,11 @@ class FeedbackSerializer(ModelSerializer):
         data = super(FeedbackSerializer, self).to_representation(data)
         if data['user']:
             user=User.objects.get(id=data['user'])
-            if data["role"] == "Employee":
+            if user.role == "Employee":
                 employee = Employee.objects.filter(user=user)
                 data['profile_image'] = employee.first().profile_image.url if employee and employee.first().profile_image else None
                 data['username'] = user.username
-            if data["role"] == "Organization Admin":
+            if user.role == "Organization Admin":
                 business = Business.objects.filter(user=user)
                 data['profile_image'] = business.first().profile_image.url if business and business.first().profile_image else None
                 data['username'] = user.username
