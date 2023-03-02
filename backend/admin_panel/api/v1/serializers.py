@@ -29,11 +29,11 @@ class UserSerializer(ModelSerializer):
     def to_representation(self, data):
         data = super(UserSerializer, self).to_representation(data)
         if data["role"] == "Employee":
-            employee = Employee.objects.filter(user__id=data['id']).first()
-            data['profile_image'] = employee.profile_image.url if employee.profile_image else None
+            employee = Employee.objects.filter(user__id=data['id'])
+            data['profile_image'] = employee.first().profile_image.url if employee and employee.first().profile_image else None
         if data["role"] == "Organization Admin":
-            business = Business.objects.filter(user__id=data['id']).first()
-            data['profile_image'] = business.profile_image.url if business.profile_image else None
+            business = Business.objects.filter(user__id=data['id'])
+            data['profile_image'] = business.first().profile_image.url if business and business.first().profile_image else None
         return data
 
 class FeedbackSerializer(ModelSerializer):
@@ -46,13 +46,13 @@ class FeedbackSerializer(ModelSerializer):
         if data['user']:
             user=User.objects.get(id=data['user'])
             if data["role"] == "Employee":
-                employee = Employee.objects.filter(user=user).first()
-                data['profile_image'] = employee.profile_image.url if employee.profile_image else None
-                data['user_name'] = user.get_full_name()
+                employee = Employee.objects.filter(user=user)
+                data['profile_image'] = employee.first().profile_image.url if employee and employee.first().profile_image else None
+                data['username'] = user.username
             if data["role"] == "Organization Admin":
-                business = Business.objects.filter(user=user).first()
-                data['profile_image'] = business.profile_image.url if business.profile_image else None
-                data['user_name'] = user.get_full_name()
+                business = Business.objects.filter(user=user)
+                data['profile_image'] = business.first().profile_image.url if business and business.first().profile_image else None
+                data['username'] = user.username
         return data
 
 class DjStripeProductPriceSerializer(ModelSerializer):
