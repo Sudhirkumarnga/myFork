@@ -63,7 +63,7 @@ def create_user_for_employee(data):
         email=data['contact']['email'],
         user=user,
         primary=True,
-        verified=True
+        verified=True if user.role == "Employee" else False
     )
     return user, password
 
