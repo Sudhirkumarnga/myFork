@@ -27,6 +27,7 @@ class UserViewset(ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = ["role", "is_active", "is_superuser"]
     search_fields = ["email", "first_name", "last_name", "email", "phone"]
+    pagination_class = None
 
 
 class FeedbackViewset(ModelViewSet):
@@ -40,6 +41,7 @@ class FeedbackViewset(ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = ["is_read", "created_at"]
     search_fields = ["title", "email", "title"]
+    pagination_class = None
 
 
 class SubscriptionPlanViewset(ModelViewSet):
@@ -50,6 +52,7 @@ class SubscriptionPlanViewset(ModelViewSet):
         IsAuthenticated,
         IsSuperUser
     ]
+    pagination_class = None
 
     def get_serializer_context(self):
         context = super(SubscriptionPlanViewset, self).get_serializer_context()
