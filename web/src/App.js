@@ -72,10 +72,10 @@ function App() {
       const Employee = await getAdminUsers("?role=Employee")
       const Feedback = await getFeedbacks()
       const Subscription = await getSubscriptions()
-      setBusinessUsers(Organization?.data?.results)
-      setEmployeeUsers(Employee?.data?.results)
-      setFeedbacks(Feedback?.data?.results)
-      setSubscriptions(Subscription?.data?.results)
+      setBusinessUsers(Organization?.data)
+      setEmployeeUsers(Employee?.data)
+      setFeedbacks(Feedback?.data)
+      setSubscriptions(Subscription?.data)
     } catch (error) {
       alert(getSimplifiedError(error))
     }

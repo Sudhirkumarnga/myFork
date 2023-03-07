@@ -121,7 +121,7 @@ function AdminLayoutContent({ children }) {
               </ListItemButton>
               <ListItemButton
                 selected={location.pathname === "/admin-analytics"}
-                onClick={() => handleListItemClick("/admin-analytics", 3)}
+                onClick={() => window.open("https://console.firebase.google.com/u/0/project/cleanr-1e54f/overview")}
                 className={
                   location.pathname === "/admin-analytics"
                     ? "listButtonActive"
