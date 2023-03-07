@@ -1441,14 +1441,6 @@
             ],
             "index": "pypi",
             "version": "==5.3.0"
-        },
-        "drf-api-tracking": {
-            "hashes": [
-                "sha256:170b59d4f1db00de46a32a3dc67d8611ecd980a05aa6116eb5ea63b3140a1180",
-                "sha256:197bb53adb9d0805bd8e8793c12684ca77b7fd2869ad483f44fbc9bef8ee5982"
-            ],
-            "index": "pypi",
-            "version": "==1.8.0"
         }
     },
     "develop": {}
