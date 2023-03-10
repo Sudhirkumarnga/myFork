@@ -81,7 +81,7 @@ export default function Users({}) {
       await updateUserProfile(payload, id, token)
       handleChange("loading", false)
       _getAdminData()
-      enqueueSnackbar(`User has been ${is_active ? "Flagged" : "unflagged"}`, {
+      enqueueSnackbar(`User has been ${!is_active ? "flagged" : "un-flagged"}`, {
         variant: "success",
         anchorOrigin: {
           vertical: "bottom",
@@ -211,7 +211,7 @@ export default function Users({}) {
                           }
                           className={"mt-2"}
                           height={30}
-                          title={item?.is_active ? "Flag" : "Unflagged"}
+                          title={item?.is_active ? "Flag" : "Unflag"}
                         />
                       </div>
                     ))}
