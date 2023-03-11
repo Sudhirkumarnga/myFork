@@ -5,6 +5,11 @@ import "rsuite/dist/rsuite.min.css"
 import { useSnackbar } from "notistack"
 import userProfile from "../../assets/images/userProfile.png"
 import searchIcon from "../../assets/svg/search.svg"
+import { ReactComponent as Myprofile } from "../../assets/svg/myprofile.svg"
+import { ReactComponent as Settings } from "../../assets/svg/Settingsicon.svg"
+import { ReactComponent as Employeelist } from "../../assets/svg/employeelist.svg"
+import { ReactComponent as Worksites } from "../../assets/svg/worksites.svg"
+import { ReactComponent as Schedular } from "../../assets/svg/schedular.svg"
 import menuIcon from "../../assets/svg/menu.svg"
 import AppButton from "../AppButton"
 import { Popover } from "@mui/material"
@@ -63,6 +68,13 @@ export default function DashboardHeader() {
   const id = open ? "simple-popover" : undefined
   let userData = localStorage.getItem("userData")
   userData = JSON.parse(userData)
+  const list = [
+    { title: "My Profile", route: "", icon: <Myprofile /> },
+    { title: "Employee List", route: "/employee-list", icon: <Employeelist /> },
+    { title: "Worksites", route: "/worksites", icon: <Worksites /> },
+    { title: "Scheduler", route: "", icon: <Schedular /> },
+    { title: "Settings", route: "", icon: <Settings /> }
+  ]
   return (
     <div>
       <header className="dashboardHeader">
@@ -82,55 +94,26 @@ export default function DashboardHeader() {
               <Popover
                 id={id}
                 open={open}
+                classes={{ paper: "dropdownPaper" }}
                 anchorEl={anchorEl}
                 onClose={handleClose}
-                sx={{ width: 200 }}
+                sx={{ width: 300 }}
                 anchorOrigin={{
                   vertical: "bottom",
                   horizontal: "left"
                 }}
               >
-                <div>
-                  <AppButton
-                    width={120}
-                    className={"text-left"}
-                    title={"My Profile"}
-                    // onClick={onlogout}
-                    backgroundColor={"#fff"}
-                    color={"#000"}
-                  />
-                  <AppButton
-                    width={120}
-                    className={"text-left"}
-                    title={"Employee List"}
-                    onClick={() => navigate("/employee-list")}
-                    backgroundColor={"#fff"}
-                    color={"#000"}
-                  />
-                  <AppButton
-                    width={120}
-                    className={"text-left"}
-                    title={"Worksites"}
-                    // onClick={onlogout}
-                    backgroundColor={"#fff"}
-                    color={"#000"}
-                  />
-                  <AppButton
-                    width={120}
-                    className={"text-left"}
-                    title={"Scheduler"}
-                    // onClick={onlogout}
-                    backgroundColor={"#fff"}
-                    color={"#000"}
-                  />
-                  <AppButton
-                    width={120}
-                    className={"text-left"}
-                    title={"Settings"}
-                    // onClick={onlogout}
-                    backgroundColor={"#fff"}
-                    color={"#000"}
-                  />
+                <div style={{ width: 300, borderRadius: 12 }}>
+                  {list.map((item, index) => (
+                    <div
+                      onClick={() => item.route && navigate(item?.route)}
+                      className="dropdownMenu"
+                      key={index}
+                    >
+                      <div className="dropdownicon">{item.icon}</div>
+                      <div>{item.title}</div>
+                    </div>
+                  ))}
                 </div>
               </Popover>
               <img

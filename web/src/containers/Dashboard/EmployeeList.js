@@ -55,7 +55,7 @@ export default function EmployeeList({}) {
 
   return (
     <div>
-      <Layout>
+      <Layout noFooter>
         <div className="container adjustMaxWidth minheight80vh">
           <div className="headingrowBetween">
             <div>
@@ -106,6 +106,7 @@ export default function EmployeeList({}) {
               <Grid item md={6} xs={12} key={index}>
                 <div className="listContainer">
                   <div
+                    onClick={() => navigate(`/employees-view/${item?.id}`)}
                     style={{
                       flexDirection: "row",
                       display: "flex",

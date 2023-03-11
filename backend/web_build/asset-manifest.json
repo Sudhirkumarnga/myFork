@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.2d9f157a.css",
-    "main.js": "/static/js/main.c3d731a9.js",
+    "main.css": "/static/css/main.82be698f.css",
+    "main.js": "/static/js/main.68f43bd4.js",
     "static/js/787.fea5cc7c.chunk.js": "/static/js/787.fea5cc7c.chunk.js",
     "static/media/loginBG2.jpg": "/static/media/loginBG2.c3457d99cf9fac585f1b.jpg",
     "static/media/loginBG3.jpg": "/static/media/loginBG3.21bdcb3d9fd03b2a50fc.jpg",
@@ -16,31 +16,39 @@
     "static/media/closeEYE.jpg": "/static/media/closeEYE.93bb054a92414b5c56d3.jpg",
     "static/media/logo.svg": "/static/media/logo.d5a8d3f13635fb9893aa0892ac9a4593.svg",
     "static/media/havepool.svg": "/static/media/havepool.af0b1a584315b35e9bba.svg",
+    "static/media/Settingsicon.svg": "/static/media/Settingsicon.50092ea49de08438f985b9dc3a5f29d0.svg",
     "static/media/LogoText.svg": "/static/media/LogoText.603642af414fe0d7727ed44ddac58e0a.svg",
     "index.html": "/index.html",
     "static/media/instagram.svg": "/static/media/instagram.b8b277bd8b3285be2ca54bcaf8bf2038.svg",
+    "static/media/employeelist.svg": "/static/media/employeelist.a20eac9ed34c188cbc6284e1ea8af5cc.svg",
     "static/media/trash.svg": "/static/media/trash.70d39139ea155996886e32f74c61d0ab.svg",
     "static/media/twitter.svg": "/static/media/twitter.79fb129cd974f6bbea32f628ff2f2e9d.svg",
     "static/media/Schedular.svg": "/static/media/Schedular.66cab6c3a48cfa956c209172f7c79e77.svg",
+    "static/media/message.svg": "/static/media/message.5f07f885877a7739070a85e3800a5815.svg",
     "static/media/lock.svg": "/static/media/lock.18a1d44935e2bbe85f454eac0e4d0e67.svg",
+    "static/media/delete.svg": "/static/media/delete.25bf0684e9861e16cf181df94ad6ba69.svg",
     "static/media/Payroll.svg": "/static/media/Payroll.29ddfa56249ecd901cfeaad73279b8e4.svg",
+    "static/media/edit.svg": "/static/media/edit.e1180d176d0d41afeac64c33334189de.svg",
     "static/media/bell.svg": "/static/media/bell.89debb210f21abc3108398bc611d92a2.svg",
     "static/media/linkedin.svg": "/static/media/linkedin.1544d3a96c990db857353d8cba9ebbb4.svg",
     "static/media/calendarGreen.svg": "/static/media/calendarGreen.0c50db370b766a85910f112d51ee68c4.svg",
     "static/media/eye.svg": "/static/media/eye.fa6cc063deb4dff5b35f81ef0ce6ded8.svg",
     "static/media/Home.svg": "/static/media/Home.417d2301ea9493e47b7e85ac87121fae.svg",
+    "static/media/worksites.svg": "/static/media/worksites.f5fee62200ec86282aa5500a1f5aaa9f.svg",
+    "static/media/myprofile.svg": "/static/media/myprofile.0252e145e1322debe3ae07e3c5206dab.svg",
     "static/media/Message.svg": "/static/media/Message.e5e04206b2e4af773d76e92b642bb647.svg",
     "static/media/search.svg": "/static/media/search.1752d4e1f6658216b46308480d07eac6.svg",
+    "static/media/schedular.svg": "/static/media/schedular.5518aa8a9731d910cb2af670a5b8f6be.svg",
     "static/media/menu.svg": "/static/media/menu.418e004f03839bd268023c2b686b2aa2.svg",
     "static/media/facebook.svg": "/static/media/facebook.c5ed8bf04242be9192021f00d15e66e9.svg",
     "static/media/chevronRight.svg": "/static/media/chevronRight.51bf1bf61fc9affbd0ed98f8b8e027e3.svg",
     "static/media/chevronDown.svg": "/static/media/chevronDown.0e2a552047b5874c5c34254eb74ba316.svg",
-    "main.2d9f157a.css.map": "/static/css/main.2d9f157a.css.map",
-    "main.c3d731a9.js.map": "/static/js/main.c3d731a9.js.map",
+    "main.82be698f.css.map": "/static/css/main.82be698f.css.map",
+    "main.68f43bd4.js.map": "/static/js/main.68f43bd4.js.map",
     "787.fea5cc7c.chunk.js.map": "/static/js/787.fea5cc7c.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.2d9f157a.css",
-    "static/js/main.c3d731a9.js"
+    "static/css/main.82be698f.css",
+    "static/js/main.68f43bd4.js"
   ]
 }
