@@ -25,7 +25,9 @@ import {
   AdminLogin,
   Users,
   Feedback,
-  Subscriptions
+  Subscriptions,
+  EmployeeView,
+  WorkSiteList
 } from "./containers"
 import AppContext from "./Context"
 import "./styles.css"
@@ -150,6 +152,8 @@ function App() {
               <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
               <Route path={ROUTES.PAYROLL} element={<Payroll />} />
               <Route path={ROUTES.EMPLOYEELIST} element={<EmployeeList />} />
+              <Route path={ROUTES.EMPLOYEEVIEW} element={<EmployeeView />} />
+              <Route path={ROUTES.WORKSITELIST} element={<WorkSiteList />} />
               <Route path={ROUTES.HOME} element={<MainHome />} />
               <Route path={ROUTES.LOGIN} element={<Login />} />
               <Route

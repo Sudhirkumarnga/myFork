@@ -1022,12 +1022,38 @@ small {
     border-radius: 10px;
 }
 
+.listContainer1 {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
 .title {
     font-weight: 500;
 }
 
 .job {
     color: #818080
+}
+
+.dropdownMenu {
+    width: 250px;
+    cursor: pointer;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    padding: 0px 15px;
+}
+
+.dropdownPaper {
+    border-radius: 15px !important;
+    padding: 10px;
+
+}
+
+.dropdownicon {
+    width: 50px;
 }
 
 .dob {

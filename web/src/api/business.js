@@ -8,6 +8,10 @@ export const getAllEmployee = token => {
   return API.get(`api/v1/employee/`, token)
 }
 
+export const getEmployee = (id, token) => {
+  return API.get(`api/v1/employee/${id}/`, token)
+}
+
 export const createEmployee = (payload, token) => {
   return API.post(`api/v1/employee/`, payload, token)
 }

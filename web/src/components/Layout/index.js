@@ -47,7 +47,7 @@ const Drawer = styled(MuiDrawer, {
   }
 }))
 
-function LayoutContent({ children }) {
+function LayoutContent({ children, noFooter }) {
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
   const location = useLocation()
@@ -190,12 +190,12 @@ function LayoutContent({ children }) {
       >
         <DashboardHeader />
         <Box sx={{ p: 5 }}>{children}</Box>
-        <MainFooter />
+        {!noFooter && <MainFooter />}
       </Box>
     </Box>
   )
 }
 
-export default function Layout({ children }) {
-  return <LayoutContent children={children} />
+export default function Layout({ children, noFooter }) {
+  return <LayoutContent children={children} noFooter />
 }
