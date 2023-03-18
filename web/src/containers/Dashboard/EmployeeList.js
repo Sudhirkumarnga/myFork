@@ -69,7 +69,7 @@ export default function EmployeeList({}) {
                 height={30}
                 width={150}
                 borderRadius={10}
-                onPress={() => handleChange("visible", true)}
+                onClick={() => navigate("/employees/add")}
                 title={"Add Employee"}
               />
               <AppButton
@@ -108,6 +108,7 @@ export default function EmployeeList({}) {
                   <div
                     onClick={() => navigate(`/employees-view/${item?.id}`)}
                     style={{
+                      cursor: "pointer",
                       flexDirection: "row",
                       display: "flex",
                       alignItems: "center"

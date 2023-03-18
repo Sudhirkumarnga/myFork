@@ -20,7 +20,8 @@ export default function AppInput({
   type,
   select,
   selectOptions,
-  height
+  height,
+  max
 }) {
   return (
     <div style={{ width: "100%" }} className={className}>
@@ -73,6 +74,7 @@ export default function AppInput({
               ) : (
                 <input
                   type={type}
+                  max={max}
                   placeholder={placeholder}
                   onChange={value => onChange(name, value.target.value)}
                   value={value}

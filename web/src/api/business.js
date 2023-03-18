@@ -28,6 +28,10 @@ export const getAllWorksites = token => {
   return API.get(`api/v1/worksite/`, token)
 }
 
+export const getWorksitesDetail = (id, token) => {
+  return API.get(`api/v1/worksite/${id}/`, token)
+}
+
 export const createWorksite = (payload, token) => {
   return API.post(`api/v1/worksite/`, payload, token)
 }

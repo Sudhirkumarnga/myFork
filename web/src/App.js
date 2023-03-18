@@ -27,11 +27,13 @@ import {
   Feedback,
   Subscriptions,
   EmployeeView,
-  WorkSiteList
+  WorkSiteList,
+  WorksiteView,
+  AddEmployee
 } from "./containers"
 import AppContext from "./Context"
 import "./styles.css"
-import { getProfile } from "./api/auth"
+import { getCities, getCountries, getProfile, getStates } from "./api/auth"
 import "react-date-range/dist/styles.css" // main style file
 import "react-date-range/dist/theme/default.css" // theme css file
 import { SnackbarProvider } from "notistack"
@@ -60,6 +62,10 @@ function App() {
   const [upcomingShiftData, setUpcomingShiftData] = useState(null)
   const [earnings, setEarnings] = useState([])
   const [earningLoading, setEarningLoading] = useState(false)
+  const [countries, setCountries] = useState([])
+  const [cities, setCities] = useState([])
+  const [states, setStates] = useState([])
+  const [loadingCity, setLoadingCity] = useState(false)
   const [upcomingShiftTimesDataList, setupcomingShiftTimesDataList] = useState(
     []
   )
@@ -122,6 +128,32 @@ function App() {
     }
   }
 
+  const _getCountries = async () => {
+    try {
+      const countries = await getCountries(token)
+      _getCities("")
+      const states = await getStates(token)
+      setCountries(countries?.data?.results)
+      setCities(cities?.data)
+      setStates(states?.data?.results)
+    } catch (error) {
+      alert(getSimplifiedError(error))
+    }
+  }
+
+  const _getCities = async payload => {
+    try {
+      setLoadingCity(true)
+      const body = payload || ""
+      const cities = await getCities(body, token)
+      setCities(cities?.data)
+      setLoadingCity(false)
+    } catch (error) {
+      setLoadingCity(false)
+      alert(getSimplifiedError(error))
+    }
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -142,7 +174,11 @@ function App() {
         employeeUsers,
         _getAdminData,
         feedbacks,
-        subscriptions
+        subscriptions,
+        _getCountries,
+        countries,
+        cities,
+        states
       }}
     >
       <SnackbarProvider>
@@ -153,7 +189,10 @@ function App() {
               <Route path={ROUTES.PAYROLL} element={<Payroll />} />
               <Route path={ROUTES.EMPLOYEELIST} element={<EmployeeList />} />
               <Route path={ROUTES.EMPLOYEEVIEW} element={<EmployeeView />} />
+              <Route path={ROUTES.ADDEMPLOYEE} element={<AddEmployee />} />
+              <Route path={ROUTES.EDITEMPLOYEE} element={<AddEmployee />} />
               <Route path={ROUTES.WORKSITELIST} element={<WorkSiteList />} />
+              <Route path={ROUTES.WORKSITEVIEW} element={<WorksiteView />} />
               <Route path={ROUTES.HOME} element={<MainHome />} />
               <Route path={ROUTES.LOGIN} element={<Login />} />
               <Route
