@@ -665,6 +665,31 @@ section {
     border-radius: 4px;
 }
 
+.dropdown-container {
+    width: 100%;
+    padding-top: 8px;
+    height: 55px;
+    background: #F4F4F4 !important;
+    border: none !important;
+    border-bottom: 1px solid #C9D0D8 !important;
+    border-radius: 4px;
+}
+
+.dropdown-container:active {
+    border: none !important;
+    outline: none !important;
+}
+
+.critical {
+    margin-top: 42px !important;
+    margin-bottom: 16px !important;
+}
+
+.dropdown-container:focus {
+    border: none !important;
+    outline: none !important;
+}
+
 .dropdown:focus {
     outline: none;
 }
@@ -873,6 +898,10 @@ button:focus {
     font-weight: 600 !important;
 }
 
+.font-bold500 {
+    font-weight: 500 !important;
+}
+
 .text_yellow {
     color: #F9BA00 !important;
 }
@@ -1027,6 +1056,10 @@ small {
     justify-content: space-between;
     padding: 10px;
     border-bottom: 1px solid #eee;
+}
+
+.text-wrap {
+    word-wrap: break-word !important;
 }
 
 .title {

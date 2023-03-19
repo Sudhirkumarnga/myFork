@@ -252,7 +252,7 @@ export default function EmployeeView({}) {
                 <Grid item md={6} lg={4} xs={12}>
                   <AppButton
                     title={"Edit"}
-                    onClick={() => navigate(`/edit-employee/${employee?.id}`)}
+                    onClick={() => navigate(`/employees/edit/${employee?.id}`)}
                     borderColor={COLORS.primary}
                     prefix={<EditIcon className="mr-4" />}
                     borderRadius={12}

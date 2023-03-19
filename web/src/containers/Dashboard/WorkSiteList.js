@@ -25,8 +25,6 @@ export default function WorkSiteList({}) {
     allWorksites: []
   })
 
-  console.log("user", adminProfile)
-
   const { loading, allWorksites, isDisplay } = state
 
   const handleChange = (key, value) => {
@@ -79,7 +77,7 @@ export default function WorkSiteList({}) {
                 height={30}
                 width={150}
                 borderRadius={10}
-                onPress={() => handleChange("visible", true)}
+                onClick={() => navigate("/worksites/add")}
                 title={"Add Worksite"}
               />
             </div>
@@ -100,7 +98,6 @@ export default function WorkSiteList({}) {
               <Grid item md={6} xs={12} key={index}>
                 <div className="listContainer1">
                   <div
-                    onClick={() => navigate(`/employees-view/${item?.id}`)}
                     style={{
                       flexDirection: "row",
                       display: "flex",
@@ -129,6 +126,13 @@ export default function WorkSiteList({}) {
                     }}
                   >
                     <div
+                      onClick={() =>
+                        navigate(
+                          UserType !== "admin"
+                            ? `/worksite/map/${item?.id}`
+                            : `/worksites/${item?.id}`
+                        )
+                      }
                       style={{
                         alignItems: "flex-end",
                         flexDirection: "column",
@@ -136,7 +140,9 @@ export default function WorkSiteList({}) {
                         justifyContent: "flex-end"
                       }}
                     >
-                      <div className="job mt-4 font-12">View details</div>
+                      <div className="c-pointer job mt-4 font-12">
+                        View details
+                      </div>
                     </div>
                   </div>
                 </div>
