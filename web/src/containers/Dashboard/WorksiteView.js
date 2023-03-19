@@ -156,7 +156,7 @@ export default function WorksiteView({}) {
                   height={30}
                   width={150}
                   borderRadius={10}
-                  // onPress={() => handleChange("visible", true)}
+                  onClick={() => navigate("/worksites/add")}
                   title={"Add Worksite"}
                 />
               </div>
@@ -267,7 +267,16 @@ export default function WorksiteView({}) {
                       height: "100%"
                     }}
                   >
-                    <div className="job c-pointer">View details</div>
+                    <div
+                      onClick={() =>
+                        navigate(
+                          `/worksites/${worksiteData?.id}/task/edit/${task?.id}`
+                        )
+                      }
+                      className="job c-pointer"
+                    >
+                      View details
+                    </div>
                   </div>
                 </div>
               </Grid>
@@ -276,7 +285,9 @@ export default function WorksiteView({}) {
               <Grid item md={6} lg={4} xs={12}>
                 <AppButton
                   title={"Edit"}
-                  onClick={() => navigate(`/edit-workite/${worksiteData?.id}`)}
+                  onClick={() =>
+                    navigate(`/worksites/edit/${worksiteData?.id}`)
+                  }
                   borderColor={COLORS.primary}
                   prefix={<EditIcon className="mr-4" />}
                   borderRadius={12}
@@ -297,7 +308,9 @@ export default function WorksiteView({}) {
               <Grid item md={6} lg={4} xs={12}>
                 <AppButton
                   title={"Create a task"}
-                  // onClick={() => createMessageList(employee)}
+                  onClick={() =>
+                    navigate(`/worksites/${worksiteData?.id}/task/add`)
+                  }
                   backgroundColor={COLORS.primary}
                   borderRadius={12}
                   color={COLORS.white}

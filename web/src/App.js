@@ -29,7 +29,9 @@ import {
   EmployeeView,
   WorkSiteList,
   WorksiteView,
-  AddEmployee
+  AddEmployee,
+  AddWorksite,
+  AddTask
 } from "./containers"
 import AppContext from "./Context"
 import "./styles.css"
@@ -193,6 +195,10 @@ function App() {
               <Route path={ROUTES.EDITEMPLOYEE} element={<AddEmployee />} />
               <Route path={ROUTES.WORKSITELIST} element={<WorkSiteList />} />
               <Route path={ROUTES.WORKSITEVIEW} element={<WorksiteView />} />
+              <Route path={ROUTES.ADDWORKSITE} element={<AddWorksite />} />
+              <Route path={ROUTES.ADDTASK} element={<AddTask />} />
+              <Route path={ROUTES.EDITTASK} element={<AddTask />} />
+              <Route path={ROUTES.EDITWORKSITE} element={<AddWorksite />} />
               <Route path={ROUTES.HOME} element={<MainHome />} />
               <Route path={ROUTES.LOGIN} element={<Login />} />
               <Route

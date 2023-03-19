@@ -77,7 +77,7 @@ export default function WorkSiteList({}) {
                 height={30}
                 width={150}
                 borderRadius={10}
-                onPress={() => handleChange("visible", true)}
+                onClick={() => navigate("/worksites/add")}
                 title={"Add Worksite"}
               />
             </div>

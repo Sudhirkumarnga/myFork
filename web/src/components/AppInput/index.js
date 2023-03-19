@@ -21,7 +21,8 @@ export default function AppInput({
   select,
   selectOptions,
   height,
-  max
+  max,
+  multiple
 }) {
   return (
     <div style={{ width: "100%" }} className={className}>
@@ -59,6 +60,7 @@ export default function AppInput({
               {select ? (
                 <select
                   value={value}
+                  multiple={multiple}
                   style={{
                     border: "none",
                     backgroundColor: backgroundColor || "#F7F7F7",
