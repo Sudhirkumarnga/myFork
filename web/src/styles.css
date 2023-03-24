@@ -680,6 +680,10 @@ section {
     outline: none !important;
 }
 
+#shadow-host-companion{
+    padding: 0px !important;
+}
+
 .critical {
     margin-top: 42px !important;
     margin-bottom: 16px !important;

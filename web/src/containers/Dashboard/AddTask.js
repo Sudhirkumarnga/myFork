@@ -311,8 +311,8 @@ export default function AddTask({}) {
                 </Grid>
               </Grid>
               <Grid
-                containerv
-                justifyItems={"flex-end"}
+                container
+                justifyContent={"flex-end"}
                 spacing={3}
                 className="mt-5"
               >
@@ -333,12 +333,24 @@ export default function AddTask({}) {
                     style={{ display: "none" }}
                   />
                 </Grid>
+                {tid && (
+                  <Grid item md={6} lg={4} xs={12}>
+                    <AppButton
+                      title={"Delete Task"}
+                      onClick={_deleteTask}
+                      loading={loadingDelete}
+                      backgroundColor={COLORS.primary}
+                      borderRadius={12}
+                      color={COLORS.white}
+                    />
+                  </Grid>
+                )}
               </Grid>
               <Grid
                 container
                 spacing={3}
                 justifyContent={"flex-end"}
-                className="mt-5"
+                className="mt-2"
               >
                 <Grid item md={6} lg={4} xs={12}>
                   <AppButton
