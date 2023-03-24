@@ -157,9 +157,13 @@ export default function AddWorksite({}) {
 
   const getOptions = values => {
     const list = []
-    values?.map(value => {
-      list.push({ label: value, value: value })
-    })
+    if (Array.isArray(values)) {
+      values?.map(value => {
+        list.push({ label: value, value: value })
+      })
+    }else{
+      list.push({ label: values, value: values })
+    }
     return list
   }
 
@@ -314,11 +318,14 @@ export default function AddWorksite({}) {
                   <MultiSelect
                     options={DAYS}
                     value={clear_frequency_by_day}
+                    overrideStrings={{
+                      selectSomeItems: "Cleaning frequency by day"
+                    }}
                     onChange={props =>
                       handleChange("clear_frequency_by_day", props)
                     }
                     className="dropdown"
-                    labelledBy="Select"
+                    labelledBy="Cleaning frequency by day"
                   />
                 </Grid>
                 <Grid item md={6} xs={12}>

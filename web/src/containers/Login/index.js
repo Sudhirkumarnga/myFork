@@ -81,7 +81,7 @@ export default function Login({}) {
 
   const handleSignup = async isBusiness => {
     try {
-      this.handleChange("loading", true, true)
+      handleChange("loading", true)
       const {
         first_name,
         last_name,
