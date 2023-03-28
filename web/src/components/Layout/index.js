@@ -57,6 +57,10 @@ function LayoutContent({ children, noFooter }) {
   const [open1, setOpen1] = React.useState(false)
 
   React.useEffect(() => {
+    localStorage.getItem("token")
+    const user = localStorage.getItem("user")
+    const userData = JSON.parse(user)
+    setUser(userData)
     _getUpcomingShift()
     _getProfile()
     _getEarnings("")
@@ -153,10 +157,10 @@ function LayoutContent({ children, noFooter }) {
                 <ListItemText primary="Scheduler" />
               </ListItemButton>
               <ListItemButton
-                selected={location.pathname === "/messages"}
+                selected={location.pathname.includes("/messages")}
                 onClick={() => handleListItemClick("/messages", 3)}
                 className={
-                  location.pathname === "/messages"
+                  location.pathname.includes("/messages")
                     ? "listButtonActive"
                     : "listButton"
                 }

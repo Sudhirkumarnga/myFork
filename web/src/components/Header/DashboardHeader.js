@@ -10,6 +10,8 @@ import { ReactComponent as Settings } from "../../assets/svg/Settingsicon.svg"
 import { ReactComponent as Employeelist } from "../../assets/svg/employeelist.svg"
 import { ReactComponent as Worksites } from "../../assets/svg/worksites.svg"
 import { ReactComponent as Schedular } from "../../assets/svg/schedular.svg"
+import { ReactComponent as Report } from "../../assets/svg/report.svg"
+import { ReactComponent as Timer } from "../../assets/svg/timer.svg"
 import menuIcon from "../../assets/svg/menu.svg"
 import AppButton from "../AppButton"
 import { Popover } from "@mui/material"
@@ -72,6 +74,8 @@ export default function DashboardHeader() {
     { title: "My Profile", route: "", icon: <Myprofile /> },
     { title: "Employee List", route: "/employee-list", icon: <Employeelist /> },
     { title: "Worksites", route: "/worksites", icon: <Worksites /> },
+    { title: "Report", route: "/worksites", icon: <Report /> },
+    { title: "Timer off Requests", route: "/timer-request", icon: <Timer /> },
     { title: "Scheduler", route: "", icon: <Schedular /> },
     { title: "Settings", route: "", icon: <Settings /> }
   ]
