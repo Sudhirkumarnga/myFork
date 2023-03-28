@@ -31,7 +31,13 @@ import {
   WorksiteView,
   AddEmployee,
   AddWorksite,
-  AddTask
+  AddTask,
+  MessagesScene,
+  MessageChat,
+  GroupMessageChat,
+  NewMessageScene,
+  GroupMessageScene,
+  TimerRequest
 } from "./containers"
 import AppContext from "./Context"
 import "./styles.css"
@@ -196,6 +202,15 @@ function App() {
               <Route path={ROUTES.WORKSITELIST} element={<WorkSiteList />} />
               <Route path={ROUTES.WORKSITEVIEW} element={<WorksiteView />} />
               <Route path={ROUTES.ADDWORKSITE} element={<AddWorksite />} />
+              <Route path={ROUTES.MESSAGE} element={<MessagesScene />} />
+              <Route path={ROUTES.MESSAGEDETAIL} element={<MessageChat />} />
+              <Route path={ROUTES.USERS} element={<NewMessageScene />} />
+              <Route path={ROUTES.GROUPUSERS} element={<GroupMessageScene />} />
+              <Route path={ROUTES.TIMERREQUEST} element={<TimerRequest />} />
+              <Route
+                path={ROUTES.GROUPMESSAGEDETAIL}
+                element={<GroupMessageChat />}
+              />
               <Route path={ROUTES.ADDTASK} element={<AddTask />} />
               <Route path={ROUTES.EDITTASK} element={<AddTask />} />
               <Route path={ROUTES.EDITWORKSITE} element={<AddWorksite />} />

@@ -680,7 +680,26 @@ section {
     outline: none !important;
 }
 
-#shadow-host-companion{
+.EmojiPicker {
+    position: absolute !important;
+    bottom: 100px !important;
+}
+
+.messageBoxHeight {
+    height: 60vh;
+    margin-top: 10px;
+    overflow: auto;
+}
+
+.messagelist {
+    border-top: 1px solid #eee;
+    cursor: pointer;
+    display: flex;
+    padding: 15px 0px;
+    width: 100%;
+}
+
+#shadow-host-companion {
     padding: 0px !important;
 }
 
@@ -1072,6 +1091,19 @@ small {
 
 .job {
     color: #818080
+}
+
+.titlelist {
+    color: #818080;
+    margin-top: 15px;
+    font-size: 14px;
+    width: 100%;
+}
+
+.valuelist {
+    color: #000;
+    width: 100%;
+    font-size: 14px;
 }
 
 .dropdownMenu {
