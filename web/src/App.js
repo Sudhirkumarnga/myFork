@@ -37,7 +37,9 @@ import {
   GroupMessageChat,
   NewMessageScene,
   GroupMessageScene,
-  TimerRequest
+  TimerRequest,
+  Scheduler,
+  AddEvents
 } from "./containers"
 import AppContext from "./Context"
 import "./styles.css"
@@ -203,6 +205,9 @@ function App() {
               <Route path={ROUTES.WORKSITEVIEW} element={<WorksiteView />} />
               <Route path={ROUTES.ADDWORKSITE} element={<AddWorksite />} />
               <Route path={ROUTES.MESSAGE} element={<MessagesScene />} />
+              <Route path={ROUTES.SCHEDULER} element={<Scheduler />} />
+              <Route path={ROUTES.ADD_EVENT} element={<AddEvents />} />
+              <Route path={ROUTES.EDIT_EVENT} element={<AddEvents />} />
               <Route path={ROUTES.MESSAGEDETAIL} element={<MessageChat />} />
               <Route path={ROUTES.USERS} element={<NewMessageScene />} />
               <Route path={ROUTES.GROUPUSERS} element={<GroupMessageScene />} />
