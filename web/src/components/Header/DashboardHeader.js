@@ -76,8 +76,8 @@ export default function DashboardHeader() {
     { title: "Worksites", route: "/worksites", icon: <Worksites /> },
     { title: "Report", route: "/worksites", icon: <Report /> },
     { title: "Timer off Requests", route: "/timer-request", icon: <Timer /> },
-    { title: "Scheduler", route: "", icon: <Schedular /> },
-    { title: "Settings", route: "", icon: <Settings /> }
+    { title: "Scheduler", route: "/scheduler", icon: <Schedular /> },
+    { title: "Settings", route: "/settings", icon: <Settings /> }
   ]
   return (
     <div>
