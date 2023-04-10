@@ -39,7 +39,10 @@ import {
   GroupMessageScene,
   TimerRequest,
   Scheduler,
-  AddEvents
+  AddEvents,
+  Settings,
+  ChangePassword,
+  UserFeedback
 } from "./containers"
 import AppContext from "./Context"
 import "./styles.css"
@@ -220,6 +223,9 @@ function App() {
               <Route path={ROUTES.EDITTASK} element={<AddTask />} />
               <Route path={ROUTES.EDITWORKSITE} element={<AddWorksite />} />
               <Route path={ROUTES.HOME} element={<MainHome />} />
+              <Route path={ROUTES.SETTINGS} element={<Settings />} />
+              <Route path={ROUTES.USERFEEDBACK} element={<UserFeedback />} />
+              <Route path={ROUTES.CHANGEPASSWORD} element={<ChangePassword />} />
               <Route path={ROUTES.LOGIN} element={<Login />} />
               <Route
                 path={ROUTES.SUBSCRIPTION}

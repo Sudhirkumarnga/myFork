@@ -127,7 +127,6 @@ function MessageChat({ navigation }) {
   }, [user])
 
   const _uploadImage = async file => {
-    console.log("file", file)
     handleChange("uploading", true)
     const storage = getStorage()
     const innerstorageRef = storageRef(storage, "Chat/" + file?.name)

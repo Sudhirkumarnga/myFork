@@ -691,6 +691,16 @@ section {
     bottom: 100px !important;
 }
 
+.logoutText {
+    color: #000;
+    font-size: 22px;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-weight: 500;
+
+}
+
 .messageBoxHeight {
     height: 60vh;
     margin-top: 10px;
@@ -1099,7 +1109,7 @@ small {
     color: #818080
 }
 
-.column{
+.column {
     display: flex;
     flex-direction: column;
 }
