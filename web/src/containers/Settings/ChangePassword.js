@@ -67,44 +67,6 @@ export default function ChangePassword({}) {
     }
   }
 
-  // renderTextInput () {
-  //   return (
-  //     <View>
-  //       <PrimaryTextInput
-  //         ref={o => (this.confirmPassword = o)}
-  //         label='Current Password'
-  //         correctPassword={this.state.passwordValidation}
-  //         onChangeText={text => this.setState({ oldPassword: text })}
-  //         passwordPolicy={true}
-  //         regex={
-  //           /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/
-  //         }
-  //         onPasswordValidationCheck={true}
-  //       />
-  //       {this.forms.map(item => {
-  //         return (
-  //           <PrimaryTextInput
-  //             {...item}
-  //             onChangeText={text => this.isFormValid(text, 'password')}
-  //             ref={o => (this[item.key] = o)}
-  //           />
-  //         )
-  //       })}
-  //       <PrimaryTextInput
-  //         onChangeText={text => this.isFormValid(text, 'confirmPassword')}
-  //         ref={o => (this.confirmPassword = o)}
-  //         passwordPolicy={true}
-  //         label='Confirm Password'
-  //         regex={
-  //           /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/
-  //         }
-  //         correctPassword={this.state.passwordValidation}
-  //         onPasswordValidationCheck={true}
-  //       />
-  //     </View>
-  //   )
-  // }
-
   return (
     <div>
       <Layout noFooter>
