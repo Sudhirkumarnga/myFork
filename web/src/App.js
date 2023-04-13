@@ -42,7 +42,10 @@ import {
   AddEvents,
   Settings,
   ChangePassword,
-  UserFeedback
+  UserFeedback,
+  Reports,
+  ReportsView,
+  CreateInspection
 } from "./containers"
 import AppContext from "./Context"
 import "./styles.css"
@@ -225,6 +228,9 @@ function App() {
               <Route path={ROUTES.HOME} element={<MainHome />} />
               <Route path={ROUTES.SETTINGS} element={<Settings />} />
               <Route path={ROUTES.USERFEEDBACK} element={<UserFeedback />} />
+              <Route path={ROUTES.REPORTS} element={<Reports />} />
+              <Route path={ROUTES.REPORTSLIST} element={<ReportsView />} />
+              <Route path={ROUTES.CREATEINSPECTION} element={<CreateInspection />} />
               <Route path={ROUTES.CHANGEPASSWORD} element={<ChangePassword />} />
               <Route path={ROUTES.LOGIN} element={<Login />} />
               <Route

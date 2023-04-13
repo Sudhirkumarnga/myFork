@@ -74,7 +74,7 @@ export default function DashboardHeader() {
     { title: "My Profile", route: "", icon: <Myprofile /> },
     { title: "Employee List", route: "/employee-list", icon: <Employeelist /> },
     { title: "Worksites", route: "/worksites", icon: <Worksites /> },
-    { title: "Report", route: "/worksites", icon: <Report /> },
+    { title: "Report", route: "/reports", icon: <Report /> },
     { title: "Timer off Requests", route: "/timer-request", icon: <Timer /> },
     { title: "Scheduler", route: "/scheduler", icon: <Schedular /> },
     { title: "Settings", route: "/settings", icon: <Settings /> }
