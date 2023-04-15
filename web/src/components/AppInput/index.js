@@ -20,7 +20,9 @@ export default function AppInput({
   type,
   select,
   selectOptions,
-  height
+  height,
+  max,
+  multiple
 }) {
   return (
     <div style={{ width: "100%" }} className={className}>
@@ -58,6 +60,7 @@ export default function AppInput({
               {select ? (
                 <select
                   value={value}
+                  multiple={multiple}
                   style={{
                     border: "none",
                     backgroundColor: backgroundColor || "#F7F7F7",
@@ -73,6 +76,7 @@ export default function AppInput({
               ) : (
                 <input
                   type={type}
+                  max={max}
                   placeholder={placeholder}
                   onChange={value => onChange(name, value.target.value)}
                   value={value}

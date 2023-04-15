@@ -25,11 +25,31 @@ import {
   AdminLogin,
   Users,
   Feedback,
-  Subscriptions
+  Subscriptions,
+  EmployeeView,
+  WorkSiteList,
+  WorksiteView,
+  AddEmployee,
+  AddWorksite,
+  AddTask,
+  MessagesScene,
+  MessageChat,
+  GroupMessageChat,
+  NewMessageScene,
+  GroupMessageScene,
+  TimerRequest,
+  Scheduler,
+  AddEvents,
+  Settings,
+  ChangePassword,
+  UserFeedback,
+  Reports,
+  ReportsView,
+  CreateInspection
 } from "./containers"
 import AppContext from "./Context"
 import "./styles.css"
-import { getProfile } from "./api/auth"
+import { getCities, getCountries, getProfile, getStates } from "./api/auth"
 import "react-date-range/dist/styles.css" // main style file
 import "react-date-range/dist/theme/default.css" // theme css file
 import { SnackbarProvider } from "notistack"
@@ -58,6 +78,10 @@ function App() {
   const [upcomingShiftData, setUpcomingShiftData] = useState(null)
   const [earnings, setEarnings] = useState([])
   const [earningLoading, setEarningLoading] = useState(false)
+  const [countries, setCountries] = useState([])
+  const [cities, setCities] = useState([])
+  const [states, setStates] = useState([])
+  const [loadingCity, setLoadingCity] = useState(false)
   const [upcomingShiftTimesDataList, setupcomingShiftTimesDataList] = useState(
     []
   )
@@ -72,10 +96,10 @@ function App() {
       const Employee = await getAdminUsers("?role=Employee")
       const Feedback = await getFeedbacks()
       const Subscription = await getSubscriptions()
-      setBusinessUsers(Organization?.data?.results)
-      setEmployeeUsers(Employee?.data?.results)
-      setFeedbacks(Feedback?.data?.results)
-      setSubscriptions(Subscription?.data?.results)
+      setBusinessUsers(Organization?.data)
+      setEmployeeUsers(Employee?.data)
+      setFeedbacks(Feedback?.data)
+      setSubscriptions(Subscription?.data)
     } catch (error) {
       alert(getSimplifiedError(error))
     }
@@ -120,6 +144,32 @@ function App() {
     }
   }
 
+  const _getCountries = async () => {
+    try {
+      const countries = await getCountries(token)
+      _getCities("")
+      const states = await getStates(token)
+      setCountries(countries?.data?.results)
+      setCities(cities?.data)
+      setStates(states?.data?.results)
+    } catch (error) {
+      alert(getSimplifiedError(error))
+    }
+  }
+
+  const _getCities = async payload => {
+    try {
+      setLoadingCity(true)
+      const body = payload || ""
+      const cities = await getCities(body, token)
+      setCities(cities?.data)
+      setLoadingCity(false)
+    } catch (error) {
+      setLoadingCity(false)
+      alert(getSimplifiedError(error))
+    }
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -140,7 +190,11 @@ function App() {
         employeeUsers,
         _getAdminData,
         feedbacks,
-        subscriptions
+        subscriptions,
+        _getCountries,
+        countries,
+        cities,
+        states
       }}
     >
       <SnackbarProvider>
@@ -150,7 +204,34 @@ function App() {
               <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
               <Route path={ROUTES.PAYROLL} element={<Payroll />} />
               <Route path={ROUTES.EMPLOYEELIST} element={<EmployeeList />} />
+              <Route path={ROUTES.EMPLOYEEVIEW} element={<EmployeeView />} />
+              <Route path={ROUTES.ADDEMPLOYEE} element={<AddEmployee />} />
+              <Route path={ROUTES.EDITEMPLOYEE} element={<AddEmployee />} />
+              <Route path={ROUTES.WORKSITELIST} element={<WorkSiteList />} />
+              <Route path={ROUTES.WORKSITEVIEW} element={<WorksiteView />} />
+              <Route path={ROUTES.ADDWORKSITE} element={<AddWorksite />} />
+              <Route path={ROUTES.MESSAGE} element={<MessagesScene />} />
+              <Route path={ROUTES.SCHEDULER} element={<Scheduler />} />
+              <Route path={ROUTES.ADD_EVENT} element={<AddEvents />} />
+              <Route path={ROUTES.EDIT_EVENT} element={<AddEvents />} />
+              <Route path={ROUTES.MESSAGEDETAIL} element={<MessageChat />} />
+              <Route path={ROUTES.USERS} element={<NewMessageScene />} />
+              <Route path={ROUTES.GROUPUSERS} element={<GroupMessageScene />} />
+              <Route path={ROUTES.TIMERREQUEST} element={<TimerRequest />} />
+              <Route
+                path={ROUTES.GROUPMESSAGEDETAIL}
+                element={<GroupMessageChat />}
+              />
+              <Route path={ROUTES.ADDTASK} element={<AddTask />} />
+              <Route path={ROUTES.EDITTASK} element={<AddTask />} />
+              <Route path={ROUTES.EDITWORKSITE} element={<AddWorksite />} />
               <Route path={ROUTES.HOME} element={<MainHome />} />
+              <Route path={ROUTES.SETTINGS} element={<Settings />} />
+              <Route path={ROUTES.USERFEEDBACK} element={<UserFeedback />} />
+              <Route path={ROUTES.REPORTS} element={<Reports />} />
+              <Route path={ROUTES.REPORTSLIST} element={<ReportsView />} />
+              <Route path={ROUTES.CREATEINSPECTION} element={<CreateInspection />} />
+              <Route path={ROUTES.CHANGEPASSWORD} element={<ChangePassword />} />
               <Route path={ROUTES.LOGIN} element={<Login />} />
               <Route
                 path={ROUTES.SUBSCRIPTION}

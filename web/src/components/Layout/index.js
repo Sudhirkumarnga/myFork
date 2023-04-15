@@ -47,7 +47,7 @@ const Drawer = styled(MuiDrawer, {
   }
 }))
 
-function LayoutContent({ children }) {
+function LayoutContent({ children, noFooter }) {
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
   const location = useLocation()
@@ -57,6 +57,10 @@ function LayoutContent({ children }) {
   const [open1, setOpen1] = React.useState(false)
 
   React.useEffect(() => {
+    localStorage.getItem("token")
+    const user = localStorage.getItem("user")
+    const userData = JSON.parse(user)
+    setUser(userData)
     _getUpcomingShift()
     _getProfile()
     _getEarnings("")
@@ -153,10 +157,10 @@ function LayoutContent({ children }) {
                 <ListItemText primary="Scheduler" />
               </ListItemButton>
               <ListItemButton
-                selected={location.pathname === "/messages"}
+                selected={location.pathname.includes("/messages")}
                 onClick={() => handleListItemClick("/messages", 3)}
                 className={
-                  location.pathname === "/messages"
+                  location.pathname.includes("/messages")
                     ? "listButtonActive"
                     : "listButton"
                 }
@@ -190,12 +194,12 @@ function LayoutContent({ children }) {
       >
         <DashboardHeader />
         <Box sx={{ p: 5 }}>{children}</Box>
-        <MainFooter />
+        {!noFooter && <MainFooter />}
       </Box>
     </Box>
   )
 }
 
-export default function Layout({ children }) {
-  return <LayoutContent children={children} />
+export default function Layout({ children, noFooter }) {
+  return <LayoutContent children={children} noFooter />
 }
