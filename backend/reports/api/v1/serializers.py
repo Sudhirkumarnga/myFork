@@ -9,18 +9,18 @@ from business.services import convert_image_from_bse64_to_blob
 class LocationVarianceReportSerializer(ModelSerializer):
     class Meta:
         model = Attendance
-        fields = ('event', 'clock_in_time', 'employee', 'location', 'latitude', 'longitude', 'created_at')
+        fields = ('id', 'event', 'clock_in_time', 'employee', 'location', 'latitude', 'longitude', 'created_at')
 
     def to_representation(self, data):
         data = super(LocationVarianceReportSerializer, self).to_representation(data)
-        event = Event.objects.get(id=data['event'])
+        event = Event.objects.filter(id=data['event'])
         data['clockin'] = data['clock_in_time']
         data['employee'] = Employee.objects.get(id=data['employee']).user.get_full_name()
-        data['worksite'] = event.worksite.name
-        data['actual_time'] = event.start_time
-        data['worksite_location'] = event.worksite.location
+        data['worksite'] = event.first().worksite.name if event else None
+        data['actual_time'] = event.first().start_time if event else None
+        data['worksite_location'] = event.first().worksite.location if event else None
         data['actual_location'] = data['location']
-        data['distance_deviation'] = calculate_distance_deviation(data, event.worksite)
+        data['distance_deviation'] = calculate_distance_deviation(data, event.first().worksite) if event else None
         del data['clock_in_time']
         del data['latitude']
         del data['longitude']
@@ -36,13 +36,13 @@ class ScheduleVarianceReportSerializer(ModelSerializer):
 
     def to_representation(self, data):
         data = super(ScheduleVarianceReportSerializer, self).to_representation(data)
-        event = Event.objects.get(id=data['event'])
+        event = Event.objects.filter(id=data['event'])
         attendance = Attendance.objects.get(id=data['id'])
         data['employee'] = Employee.objects.get(id=data['employee']).user.get_full_name()
-        data['worksite'] = event.worksite.name
-        data['actual_time'] = event.start_time
+        data['worksite'] = event.first().worksite.name if event else None
+        data['actual_time'] = event.first().start_time if event else None
         data['edited_time'] = data['clock_in_time']
-        data['scheduled_shift_duration'] = (event.end_time - event.start_time) // 60
+        data['scheduled_shift_duration'] = (event.first().end_time - event.first().start_time) // 60 if event else None
         try:
             data['actual_shift_duration'] = (attendance.clock_out_time - attendance.clock_in_time) // 60
             data['variance'] = data['scheduled_shift_duration'] - data['actual_shift_duration']
