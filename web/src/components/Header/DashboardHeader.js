@@ -94,7 +94,7 @@ export default function DashboardHeader() {
           </li>
           <li className="d-flex justify-content-end align-items-center">
             <div className="mr-2 d-flex c-pointer align-items-center">
-              <img src={bell} className={"mr-4"} />
+              <img onClick={()=>navigate('/notifications')} src={bell} className={"mr-4"} />
               <Popover
                 id={id}
                 open={open}

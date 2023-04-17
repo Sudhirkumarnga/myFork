@@ -45,11 +45,19 @@ import {
   UserFeedback,
   Reports,
   ReportsView,
-  CreateInspection
+  CreateInspection,
+  InspectionDetails,
+  Notifications
 } from "./containers"
 import AppContext from "./Context"
 import "./styles.css"
-import { getCities, getCountries, getProfile, getStates } from "./api/auth"
+import {
+  getAllNotifications,
+  getCities,
+  getCountries,
+  getProfile,
+  getStates
+} from "./api/auth"
 import "react-date-range/dist/styles.css" // main style file
 import "react-date-range/dist/theme/default.css" // theme css file
 import { SnackbarProvider } from "notistack"
@@ -78,6 +86,7 @@ function App() {
   const [upcomingShiftData, setUpcomingShiftData] = useState(null)
   const [earnings, setEarnings] = useState([])
   const [earningLoading, setEarningLoading] = useState(false)
+  const [notifications, setNotifications] = useState([])
   const [countries, setCountries] = useState([])
   const [cities, setCities] = useState([])
   const [states, setStates] = useState([])
@@ -170,6 +179,15 @@ function App() {
     }
   }
 
+  const _getNotification = async () => {
+    try {
+      const res = await getAllNotifications(token)
+      setNotifications(res?.data?.results)
+    } catch (error) {
+      alert(getSimplifiedError(error))
+    }
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -194,7 +212,9 @@ function App() {
         _getCountries,
         countries,
         cities,
-        states
+        states,
+        _getNotification,
+        notifications
       }}
     >
       <SnackbarProvider>
@@ -230,8 +250,19 @@ function App() {
               <Route path={ROUTES.USERFEEDBACK} element={<UserFeedback />} />
               <Route path={ROUTES.REPORTS} element={<Reports />} />
               <Route path={ROUTES.REPORTSLIST} element={<ReportsView />} />
-              <Route path={ROUTES.CREATEINSPECTION} element={<CreateInspection />} />
-              <Route path={ROUTES.CHANGEPASSWORD} element={<ChangePassword />} />
+              <Route
+                path={ROUTES.INSPECTIONREPORTS}
+                element={<InspectionDetails />}
+              />
+              <Route path={ROUTES.NOTIFICATIONS} element={<Notifications />} />
+              <Route
+                path={ROUTES.CREATEINSPECTION}
+                element={<CreateInspection />}
+              />
+              <Route
+                path={ROUTES.CHANGEPASSWORD}
+                element={<ChangePassword />}
+              />
               <Route path={ROUTES.LOGIN} element={<Login />} />
               <Route
                 path={ROUTES.SUBSCRIPTION}
