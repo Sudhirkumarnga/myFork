@@ -35,6 +35,7 @@
     "react-dom": "^18.1.0",
     "react-drag-drop-files": "^2.3.7",
     "react-google-autocomplete": "^2.7.0",
+    "react-google-charts": "^4.0.0",
     "react-google-maps": "^9.4.5",
     "react-google-places-autocomplete": "^3.3.4",
     "react-multi-select-component": "^4.3.4",

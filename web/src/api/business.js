@@ -128,6 +128,10 @@ export const createInspectionReport = (payload, token) => {
   return API.post(`api/v1/inspection-report/`, payload, token)
 }
 
+export const getInspectionReport = (id, token) => {
+  return API.get(`api/v1/inspection-report/${id}/`, token)
+}
+
 export const createFeedback = (payload, token) => {
   return API.post(`api/v1/task-feedback/`, payload, token)
 }
