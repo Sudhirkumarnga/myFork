@@ -475,6 +475,7 @@ section {
     background-color: #fff !important;
     width: 100% !important;
     height: 100% !important;
+    overflow-y: auto;
 }
 
 .width60 {
@@ -1765,6 +1766,20 @@ select:focus {
     border-radius: 5px;
 }
 
+.inputBox {
+    width: 100%;
+    font-size: 14px;
+    padding-left: 15px;
+    margin-bottom: 5px;
+    height: 50px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    background-color: rgb(247, 247, 247);
+    border: 1px solid rgb(206, 206, 206);
+    border-radius: 5px;
+}
+
 .companyInput {
     width: 85%;
     margin-left: 0%;
@@ -2891,6 +2906,14 @@ select:focus {
 
 .minHeight40vw {
     min-height: 40vw !important;
+}
+
+.profile_image {
+    width: 100px;
+    border-radius: 10px;
+    cursor: pointer;
+    height: 100px;
+    object-fit: cover;
 }
 
 .refer_to_client {

@@ -22,7 +22,9 @@ export default function AppInput({
   selectOptions,
   height,
   max,
-  multiple
+  min,
+  multiple,
+  autoComplete
 }) {
   return (
     <div style={{ width: "100%" }} className={className}>
@@ -50,6 +52,7 @@ export default function AppInput({
               value={value}
               style={{
                 border: "none",
+                paddingTop: 10,
                 backgroundColor: backgroundColor || "#F7F7F7",
                 color: color || "#000",
                 width: "100%"
@@ -77,6 +80,8 @@ export default function AppInput({
                 <input
                   type={type}
                   max={max}
+                  autoComplete={autoComplete}
+                  min={min}
                   placeholder={placeholder}
                   onChange={value => onChange(name, value.target.value)}
                   value={value}

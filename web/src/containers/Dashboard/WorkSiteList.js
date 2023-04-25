@@ -134,14 +134,16 @@ export default function WorkSiteList({}) {
                         )
                       }
                       style={{
-                        alignItems: "flex-end",
+                        marginTop: UserType !== "admin" ? -22 : 0,
+                        alignItems:
+                          UserType !== "admin" ? "flex-start" : "flex-end",
                         flexDirection: "column",
                         display: "flex",
                         justifyContent: "flex-end"
                       }}
                     >
                       <div className="c-pointer job mt-4 font-12">
-                        View details
+                        {UserType !== "admin" ? "Map view" : "View details"}
                       </div>
                     </div>
                   </div>

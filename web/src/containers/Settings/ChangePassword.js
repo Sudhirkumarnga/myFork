@@ -82,6 +82,7 @@ export default function ChangePassword({}) {
               <AppInput
                 className="mb-4 mt-3"
                 value={oldPassword}
+                autoComplete={"new-password"}
                 type={isShow1 ? "text" : "password"}
                 name={"oldPassword"}
                 onChange={handleChange}

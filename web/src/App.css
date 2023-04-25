@@ -350,6 +350,12 @@ input:focus {
   width: 48%;
 }
 
+.maxHeight400FullW {
+  max-height: 380px;
+  overflow-y: auto;
+  width: 100%;
+}
+
 .zipcode {
   width: 100%;
   height: 50px;

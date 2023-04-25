@@ -17,6 +17,7 @@ export default function Login({}) {
 
   const { enqueueSnackbar } = useSnackbar()
   const UserType = localStorage.getItem("UserType")
+  const token = localStorage.getItem("token")
   const { user, setUser, _getProfile } = useContext(AppContext)
   const path = window.location.pathname
   const [state, setState] = useState({
@@ -31,18 +32,16 @@ export default function Login({}) {
     employee_types: "",
     first_name: "",
     last_name: "",
+    business_code: "",
     phone: "",
     isShow: false
   })
 
   useEffect(() => {
-    // if (path) {
-    //   handleChange("activeTab", path === "/signup" ? 0 : 1)
-    // }
-    if (user) {
+    if (token) {
       navigate("/dashboard")
     }
-  }, [path, user])
+  }, [token])
 
   const {
     email,
@@ -54,7 +53,8 @@ export default function Login({}) {
     last_name,
     phone,
     is_read_terms,
-    isShow
+    isShow,
+    business_code
   } = state
 
   const handleChange = (key, value) => {
@@ -82,30 +82,31 @@ export default function Login({}) {
   const handleSignup = async isBusiness => {
     try {
       handleChange("loading", true)
-      const {
-        first_name,
-        last_name,
-        email,
-        password,
-        phone,
-        business_code,
-        termsConditions
-      } = this.state
-      const payload = {
-        first_name,
-        last_name,
-        email,
-        password,
-        phone,
-        business_code,
-        is_read_terms: termsConditions
+      let payload
+      if (UserType === "admin") {
+        payload = {
+          name: first_name + " " + last_name,
+          email,
+          password,
+          phone,
+          employee_types: employee_types || "Cleaner",
+          is_read_terms
+        }
+      } else {
+        payload = {
+          first_name,
+          last_name,
+          email,
+          password,
+          phone,
+          business_code,
+          is_read_terms
+        }
       }
       const res = await signupUser(payload)
-      handleChange("loading", false, true)
-      navigate("VerifyAccount", {
-        email: payload?.email,
-        userData: payload
-      })
+      handleChange("loading", false)
+      navigate("/verify/email")
+      localStorage.setItem("email", payload?.email)
       enqueueSnackbar(`"Signed up Successfully, Please verify your account!"`, {
         variant: "success",
         anchorOrigin: {
@@ -115,10 +116,10 @@ export default function Login({}) {
       })
     } catch (error) {
       console.warn("error", error)
-      handleChange("loading", false, true)
+      handleChange("loading", false)
       const errorText = Object.values(error?.response?.data)
       enqueueSnackbar(`Error: ${errorText[0]}`, {
-        variant: "success",
+        variant: "error",
         anchorOrigin: {
           vertical: "bottom",
           horizontal: "right"
@@ -175,7 +176,17 @@ export default function Login({}) {
   return (
     <Grid container className="authSection">
       <AuthLeft />
-      <Grid item xs={12} md={4} className="divCenter loginRight">
+      <Grid
+        item
+        xs={12}
+        md={4}
+        style={{
+          justifyContent: activeTab === 1 ? "flex-start" : "center",
+          paddingTop: activeTab === 1 ? 50 : 0,
+          paddingBottom: activeTab === 1 ? 50 : 0
+        }}
+        className="divCenter loginRight"
+      >
         <div className=" text-center font-30 font-bold">
           {activeTab === 2
             ? "How do you refer to your employees?"
@@ -271,6 +282,15 @@ export default function Login({}) {
               />
             </>
           )}
+          {activeTab === 1 && UserType === "employee" && (
+            <AppInput
+              value={business_code}
+              name={"business_code"}
+              onChange={handleChange}
+              className="mb-3 mt-3"
+              placeholder={"Business Code"}
+            />
+          )}
           {activeTab === 0 && (
             <div className="flex_end mb-4">
               <div
@@ -308,7 +328,11 @@ export default function Login({}) {
           )}
           <AppButton
             title={
-              activeTab === 2 ? "Sign up" : activeTab === 1 ? "Next" : "Login"
+              activeTab === 2 || (activeTab === 1 && UserType === "employee")
+                ? "Sign up"
+                : activeTab === 1
+                ? "Next"
+                : "Login"
             }
             onClick={() =>
               activeTab === 2
