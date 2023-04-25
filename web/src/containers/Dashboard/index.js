@@ -49,7 +49,7 @@ export default function Dashboard({}) {
           <div className="heading">My Dashboard</div>
           <Divider className="mt-4" />
           <Grid container spacing={1} className="mt-4">
-            {upcomingShiftData?.status && (
+            {/* {upcomingShiftData?.status && (
               <Grid md={6} xs={12}>
                 <div className="upcomingBox width95">
                   <img src={calendarGreen} width={30} />
@@ -111,7 +111,7 @@ export default function Dashboard({}) {
                   </div>
                 </div>
               </Grid>
-            )}
+            )} */}
             <Grid md={6} xs={12}>
               <div
                 className="upcomingBox"

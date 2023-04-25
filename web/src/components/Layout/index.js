@@ -51,37 +51,28 @@ function LayoutContent({ children, noFooter }) {
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
   const location = useLocation()
+  const UserType = localStorage.getItem("UserType")
   const { setUser, _getUpcomingShift, _getProfile, _getEarnings } =
     useContext(AppContext)
   const [open, setOpen] = React.useState(true)
   const [open1, setOpen1] = React.useState(false)
+  const token = localStorage.getItem("token")
 
   React.useEffect(() => {
-    localStorage.getItem("token")
-    const user = localStorage.getItem("user")
-    const userData = JSON.parse(user)
-    setUser(userData)
-    _getUpcomingShift()
-    _getProfile()
-    _getEarnings("")
+    if (!token) {
+      navigate("/")
+    } else {
+      const user = localStorage.getItem("user")
+      const userData = JSON.parse(user)
+      setUser(userData)
+      _getUpcomingShift()
+      _getProfile()
+      _getEarnings("")
+    }
   }, [])
 
   const handleListItemClick = (route, index) => {
     navigate(route)
-  }
-
-  const onlogout = () => {
-    localStorage.removeItem("token")
-    localStorage.removeItem("user")
-    setUser(null)
-    enqueueSnackbar(`Logout!`, {
-      variant: "success",
-      anchorOrigin: {
-        vertical: "bottom",
-        horizontal: "right"
-      }
-    })
-    navigate("/login")
   }
 
   return (
@@ -118,44 +109,90 @@ function LayoutContent({ children, noFooter }) {
                 />
                 <ListItemText primary="Home" />
               </ListItemButton>
-              <ListItemButton
-                selected={location.pathname === "/payroll"}
-                onClick={() => handleListItemClick("/payroll", 2)}
-                className={
-                  location.pathname === "/payroll"
-                    ? "listButtonActive"
-                    : "listButton"
-                }
-              >
-                <img
-                  src={Portfolio}
-                  className={
-                    location.pathname.includes("/payroll")
-                      ? "iconDashboardActive"
-                      : "iconDashboard"
-                  }
-                />
-                <ListItemText primary="Payroll" />
-              </ListItemButton>
-              <ListItemButton
-                selected={location.pathname === "/scheduler"}
-                onClick={() => handleListItemClick("/scheduler", 2)}
-                className={
-                  location.pathname === "/scheduler"
-                    ? "listButtonActive"
-                    : "listButton"
-                }
-              >
-                <img
-                  src={Offers}
-                  className={
-                    location.pathname.includes("/scheduler")
-                      ? "iconDashboardActive"
-                      : "iconDashboard"
-                  }
-                />
-                <ListItemText primary="Scheduler" />
-              </ListItemButton>
+              {UserType === "admin" ? (
+                <>
+                  <ListItemButton
+                    selected={location.pathname === "/payroll"}
+                    onClick={() => handleListItemClick("/payroll", 2)}
+                    className={
+                      location.pathname === "/payroll"
+                        ? "listButtonActive"
+                        : "listButton"
+                    }
+                  >
+                    <img
+                      src={Portfolio}
+                      className={
+                        location.pathname.includes("/payroll")
+                          ? "iconDashboardActive"
+                          : "iconDashboard"
+                      }
+                    />
+                    <ListItemText primary="Payroll" />
+                  </ListItemButton>
+                  <ListItemButton
+                    selected={location.pathname === "/scheduler"}
+                    onClick={() => handleListItemClick("/scheduler", 2)}
+                    className={
+                      location.pathname === "/scheduler"
+                        ? "listButtonActive"
+                        : "listButton"
+                    }
+                  >
+                    <img
+                      src={Offers}
+                      className={
+                        location.pathname.includes("/scheduler")
+                          ? "iconDashboardActive"
+                          : "iconDashboard"
+                      }
+                    />
+                    <ListItemText primary="Scheduler" />
+                  </ListItemButton>
+                </>
+              ) : (
+                <>
+                  <ListItemButton
+                    selected={location.pathname === "/scheduler"}
+                    onClick={() => handleListItemClick("/scheduler", 2)}
+                    className={
+                      location.pathname === "/scheduler"
+                        ? "listButtonActive"
+                        : "listButton"
+                    }
+                  >
+                    <img
+                      src={Offers}
+                      className={
+                        location.pathname.includes("/scheduler")
+                          ? "iconDashboardActive"
+                          : "iconDashboard"
+                      }
+                    />
+                    <ListItemText primary="Schedule" />
+                  </ListItemButton>
+                  <ListItemButton
+                    selected={location.pathname === "/earnings"}
+                    onClick={() => handleListItemClick("/earnings", 2)}
+                    className={
+                      location.pathname === "/earnings"
+                        ? "listButtonActive"
+                        : "listButton"
+                    }
+                  >
+                    <img
+                      src={Portfolio}
+                      className={
+                        location.pathname.includes("/earnings")
+                          ? "iconDashboardActive"
+                          : "iconDashboard"
+                      }
+                    />
+                    <ListItemText primary="My Earnings" />
+                  </ListItemButton>
+                </>
+              )}
+
               <ListItemButton
                 selected={location.pathname.includes("/messages")}
                 onClick={() => handleListItemClick("/messages", 3)}

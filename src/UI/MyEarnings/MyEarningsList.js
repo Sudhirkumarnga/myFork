@@ -51,8 +51,6 @@ export default function MyEarningsListScene({ navigation }) {
     handleChange("visible", false)
   }
 
-  console.warn('earnings?.worksites',earnings?.worksites);
-
   return (
     <View style={styles.container}>
       <View

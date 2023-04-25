@@ -47,7 +47,13 @@ import {
   ReportsView,
   CreateInspection,
   InspectionDetails,
-  Notifications
+  Notifications,
+  WorksiteMapView,
+  LeaveRequest,
+  MyEarnings,
+  VerifyAccount,
+  EmpProfile,
+  Profile
 } from "./containers"
 import AppContext from "./Context"
 import "./styles.css"
@@ -214,7 +220,9 @@ function App() {
         cities,
         states,
         _getNotification,
-        notifications
+        notifications,
+        setAdminProfile,
+        _getCities
       }}
     >
       <SnackbarProvider>
@@ -222,6 +230,11 @@ function App() {
           <ThemeProvider theme={theme}>
             <Routes>
               <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
+              <Route path={ROUTES.VERIFYACCOUNT} element={<VerifyAccount />} />
+              <Route path={ROUTES.PROFILECREATE} element={<Profile />} />
+              <Route path={ROUTES.PROFILEUPDATE} element={<Profile />} />
+              <Route path={ROUTES.EMPLOYEEPROFILECREATE} element={<EmpProfile />} />
+              <Route path={ROUTES.EMPLOYEEPROFILEUPDATE} element={<EmpProfile />} />
               <Route path={ROUTES.PAYROLL} element={<Payroll />} />
               <Route path={ROUTES.EMPLOYEELIST} element={<EmployeeList />} />
               <Route path={ROUTES.EMPLOYEEVIEW} element={<EmployeeView />} />
@@ -229,6 +242,7 @@ function App() {
               <Route path={ROUTES.EDITEMPLOYEE} element={<AddEmployee />} />
               <Route path={ROUTES.WORKSITELIST} element={<WorkSiteList />} />
               <Route path={ROUTES.WORKSITEVIEW} element={<WorksiteView />} />
+              <Route path={ROUTES.WORKSITEMAPVIEW} element={<WorksiteMapView />} />
               <Route path={ROUTES.ADDWORKSITE} element={<AddWorksite />} />
               <Route path={ROUTES.MESSAGE} element={<MessagesScene />} />
               <Route path={ROUTES.SCHEDULER} element={<Scheduler />} />
@@ -249,6 +263,8 @@ function App() {
               <Route path={ROUTES.SETTINGS} element={<Settings />} />
               <Route path={ROUTES.USERFEEDBACK} element={<UserFeedback />} />
               <Route path={ROUTES.REPORTS} element={<Reports />} />
+              <Route path={ROUTES.LEAVEREQUEST} element={<LeaveRequest />} />
+              <Route path={ROUTES.MYEARNINGS} element={<MyEarnings />} />
               <Route path={ROUTES.REPORTSLIST} element={<ReportsView />} />
               <Route
                 path={ROUTES.INSPECTIONREPORTS}

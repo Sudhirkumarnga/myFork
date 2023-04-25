@@ -272,16 +272,18 @@ export default function Scheduler({}) {
                 // onClick={() => navigate("/employees/add")}
                 title={"Filter"}
               />
-              <AppButton
-                backgroundColor={COLORS.greyButton}
-                color={COLORS.white}
-                height={35}
-                width={150}
-                borderRadius={10}
-                loading={loadingPublish}
-                onClick={_publishAllEvent}
-                title={"Publish All"}
-              />
+              {!isEmp && (
+                <AppButton
+                  backgroundColor={COLORS.greyButton}
+                  color={COLORS.white}
+                  height={35}
+                  width={150}
+                  borderRadius={10}
+                  loading={loadingPublish}
+                  onClick={_publishAllEvent}
+                  title={"Publish All"}
+                />
+              )}
             </div>
           </div>
           <Divider className="mt-4" />
@@ -388,7 +390,7 @@ export default function Scheduler({}) {
               .format("YYYY-MM-DD h:mm:A")}
           </div>
           <div className="d-flex justify-content-between">
-            <div className="maxHeight400">
+            <div className={!isEmp ? "maxHeight400" : "maxHeight400FullW"}>
               <div className="heading1">{"Tasks"}</div>
               {selectedEvent?.selected_tasks?.map((task, index) => (
                 <div
@@ -406,11 +408,13 @@ export default function Scheduler({}) {
                 </div>
               ))}
             </div>
-            <div>
-              <Divider orientation="vertical" />
-            </div>
-            <div className="maxHeight400">
-              {!isEmp && (
+            {!isEmp && (
+              <div>
+                <Divider orientation="vertical" />
+              </div>
+            )}
+            {!isEmp && (
+              <div className="maxHeight400">
                 <div className="">
                   <div className="heading1">{"Assigned Employees"}</div>
                   {selectedEvent?.employees?.map((item, index) => (
@@ -455,8 +459,8 @@ export default function Scheduler({}) {
                     </div>
                   ))}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
           {!isEmp && (
             <Grid container className="mt-4" justifyContent={"flex-end"}>
@@ -477,22 +481,24 @@ export default function Scheduler({}) {
           )}
         </div>
       </Dialog>
-      <Fab
-        onClick={() => navigate("/event/add")}
-        sx={{
-          position: "absolute",
-          bottom: 16,
-          right: 16,
-          color: "#fff",
-          backgroundColor: "#06726A",
-          "&:hover": {
-            backgroundColor: "#06726A"
-          }
-        }}
-        aria-label={"Add"}
-      >
-        <Add />
-      </Fab>
+      {!isEmp && (
+        <Fab
+          onClick={() => navigate("/event/add")}
+          sx={{
+            position: "absolute",
+            bottom: 16,
+            right: 16,
+            color: "#fff",
+            backgroundColor: "#06726A",
+            "&:hover": {
+              backgroundColor: "#06726A"
+            }
+          }}
+          aria-label={"Add"}
+        >
+          <Add />
+        </Fab>
+      )}
     </div>
   )
 }

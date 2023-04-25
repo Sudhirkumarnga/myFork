@@ -20,6 +20,7 @@ export default function Settings({}) {
   const { setAdminProfile, setUser } = useContext(AppContext)
   const { enqueueSnackbar } = useSnackbar()
   const token = localStorage.getItem("token")
+  const UserType = localStorage.getItem("UserType")
   const navigate = useNavigate()
   const [state, setState] = useState({
     visible: false,
@@ -31,11 +32,41 @@ export default function Settings({}) {
         route: "/change-password",
         title: "Change Password"
       },
-      // {
-      //   icon: 'lock',
-      //   screen: 'paymentScene',
-      //   title: 'Payments'
-      // },
+      {
+        icon: paymentsIcon,
+        route: "/subscription",
+        title: "Payments"
+      },
+      {
+        icon: termsIcon,
+        link: "https://cleanr.pro/terms-and-conditions",
+        title: "Terms & Conditions"
+      },
+      {
+        icon: privacyIcon,
+        link: "https://cleanr.pro/privacy-policy",
+        title: "Privacy Policy"
+      },
+      {
+        icon: feedbackIcon,
+        route: "/feedback",
+        title: "Support/Send Feedback"
+      },
+      {
+        icon: logoutIcon,
+        title: "Logout"
+      },
+      {
+        icon: deleteIcon,
+        title: "Delete account"
+      }
+    ],
+    data1: [
+      {
+        icon: lockIcon,
+        route: "/change-password",
+        title: "Change Password"
+      },
       {
         icon: termsIcon,
         link: "https://cleanr.pro/terms-and-conditions",
@@ -71,11 +102,12 @@ export default function Settings({}) {
     }))
   }
 
-  const logout = async () => {
-    setUser(null)
-    setAdminProfile(null)
+  const logout = () => {
+    // setUser(null)
+    // setAdminProfile(null)
     localStorage.removeItem("token")
     localStorage.removeItem("user")
+    localStorage.removeItem("UserType")
     navigate("/")
   }
 
@@ -118,39 +150,41 @@ export default function Settings({}) {
             </div>
           </div>
           <Divider className="mt-4 mb-4" />
-          {state.data?.map((item, index) => (
-            <div
-              key={index}
-              style={{
-                flexDirection: "row",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                padding: 10,
-                marginVertical: 5
-              }}
-              onClick={() =>
-                item.link
-                  ? openLink(item?.link)
-                  : item.title === "Logout"
-                  ? handleChange("visible", true)
-                  : item.title === "Delete account"
-                  ? handleChange("visible1", true)
-                  : navigate(item.route)
-              }
-            >
-              <img
-                src={item.icon}
+          {(UserType === "admin" ? state.data : state.data1)?.map(
+            (item, index) => (
+              <div
+                key={index}
                 style={{
-                  height: 20,
-                  width: 20,
-                  marginRight: 20,
-                  resizeMode: "contain"
+                  flexDirection: "row",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  padding: 10,
+                  marginVertical: 5
                 }}
-              />
-              <div>{item.title}</div>
-            </div>
-          ))}
+                onClick={() =>
+                  item.link
+                    ? openLink(item?.link)
+                    : item.title === "Logout"
+                    ? handleChange("visible", true)
+                    : item.title === "Delete account"
+                    ? handleChange("visible1", true)
+                    : navigate(item.route)
+                }
+              >
+                <img
+                  src={item.icon}
+                  style={{
+                    height: 20,
+                    width: 20,
+                    marginRight: 20,
+                    resizeMode: "contain"
+                  }}
+                />
+                <div>{item.title}</div>
+              </div>
+            )
+          )}
           {/* <LogoutModal
         visible={this.state.visible}
         onCancel={() => this.setState({ visible: false })}
