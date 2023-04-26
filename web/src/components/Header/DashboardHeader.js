@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import bell from "../../assets/svg/bell.svg"
 import "rsuite/dist/rsuite.min.css"
@@ -25,39 +25,17 @@ export default function DashboardHeader() {
   const navigate = useNavigate()
   const location = useLocation()
   const [state, setState] = useState({
-    visible: false,
+    search: "",
     dropdownOpen: false
   })
+  const { search } = state
+  const handleChange = (name, value) => {
+    setState(pre => ({ ...pre, [name]: value }))
+  }
+
   const { user, setUser, adminProfile } = useContext(AppContext)
+  const UserType = localStorage.getItem("UserType")
   const [anchorEl, setAnchorEl] = useState(null)
-  const { dropdownOpen, visible } = state
-  const showDrawer = () => {
-    setState(pre => ({
-      ...pre,
-      visible: true
-    }))
-  }
-
-  const onClose = () => {
-    setState(pre => ({
-      ...pre,
-      visible: false
-    }))
-  }
-
-  const onlogout = () => {
-    localStorage.removeItem("token")
-    localStorage.removeItem("user")
-    setUser(null)
-    enqueueSnackbar(`Logout!`, {
-      variant: "success",
-      anchorOrigin: {
-        vertical: "bottom",
-        horizontal: "right"
-      }
-    })
-    navigate("/login")
-  }
 
   const handleClick = event => {
     setAnchorEl(event.currentTarget)
@@ -71,12 +49,26 @@ export default function DashboardHeader() {
   let userData = localStorage.getItem("userData")
   userData = JSON.parse(userData)
   const list = [
-    { title: "My Profile", route: "", icon: <Myprofile /> },
+    {
+      title: "My Profile",
+      route: "/business/profile/update",
+      icon: <Myprofile />
+    },
     { title: "Employee List", route: "/employee-list", icon: <Employeelist /> },
     { title: "Worksites", route: "/worksites", icon: <Worksites /> },
     { title: "Report", route: "/reports", icon: <Report /> },
     { title: "Timer off Requests", route: "/timer-request", icon: <Timer /> },
     { title: "Scheduler", route: "/scheduler", icon: <Schedular /> },
+    { title: "Settings", route: "/settings", icon: <Settings /> }
+  ]
+  const listE = [
+    { title: "My Profile", route: "/profile/update", icon: <Myprofile /> },
+    { title: "Worksites", route: "/worksites", icon: <Worksites /> },
+    {
+      title: "Timer off Requests",
+      route: "/time-off-request",
+      icon: <Timer />
+    },
     { title: "Settings", route: "/settings", icon: <Settings /> }
   ]
   return (
@@ -86,7 +78,11 @@ export default function DashboardHeader() {
           <li className="d-flex align-items-center">
             <AppInput
               placeholder={"Search"}
+              autoComplete={"new-password"}
+              value={search}
+              name={"search"}
               borderRadius={10}
+              onChange={handleChange}
               inputWidthFull
               height={40}
               postfix={<img src={searchIcon} width={"20px"} />}
@@ -94,7 +90,11 @@ export default function DashboardHeader() {
           </li>
           <li className="d-flex justify-content-end align-items-center">
             <div className="mr-2 d-flex c-pointer align-items-center">
-              <img src={bell} className={"mr-4"} />
+              <img
+                onClick={() => navigate("/notifications")}
+                src={bell}
+                className={"mr-4"}
+              />
               <Popover
                 id={id}
                 open={open}
@@ -108,7 +108,7 @@ export default function DashboardHeader() {
                 }}
               >
                 <div style={{ width: 300, borderRadius: 12 }}>
-                  {list.map((item, index) => (
+                  {(UserType === "admin" ? list : listE).map((item, index) => (
                     <div
                       onClick={() => item.route && navigate(item?.route)}
                       className="dropdownMenu"

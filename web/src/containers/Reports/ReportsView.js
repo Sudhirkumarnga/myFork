@@ -15,6 +15,7 @@ import { AppButton, AppInput, Layout } from "../../components"
 import { CloseOutlined } from "@mui/icons-material"
 import { COLORS } from "../../constants"
 import { useSnackbar } from "notistack"
+import { Chart } from "react-google-charts"
 
 export default function ReportsView() {
   const { enqueueSnackbar } = useSnackbar()
@@ -137,10 +138,11 @@ export default function ReportsView() {
     }
   }
 
-  function toHoursAndMinutes(totalMinutes) {
-    const hours = Math.floor(totalMinutes / 60)
-    const minutes = totalMinutes % 60
-    return `${hours}h${minutes > 0 ? ` ${minutes.toFixed(0)}m` : ""}`
+  const options = {
+    pieHole: 0.73,
+    is3D: false,
+    colors: sliceColor,
+    legend: "none"
   }
 
   return (
@@ -250,12 +252,43 @@ export default function ReportsView() {
                       <td>{item?.worksite?.name}</td>
                       <td>{item?.name}</td>
                       <td>
-                        <div>
+                        <div className="d-flex align-items-center">
+                          {Number(item?.stats?.SATISFACTORY) > 0 ||
+                          Number(item?.stats?.NEEDS_ATTENTION) > 0 ||
+                          Number(item?.stats?.UNSATISFACTORY) > 0 ? (
+                            <Chart
+                              chartType="PieChart"
+                              width="50px"
+                              height="50px"
+                              options={options}
+                              data={[
+                                ["Task", "Hours per Day"],
+                                [
+                                  "SATISFACTORY",
+                                  item?.stats?.SATISFACTORY
+                                    ? Number(item?.stats?.SATISFACTORY)
+                                    : 0
+                                ],
+                                [
+                                  "NEEDS_ATTENTION",
+                                  item?.stats?.NEEDS_ATTENTION
+                                    ? Number(item?.stats?.NEEDS_ATTENTION)
+                                    : 0
+                                ],
+                                [
+                                  "UNSATISFACTORY",
+                                  item?.stats?.UNSATISFACTORY
+                                    ? Number(item?.stats?.UNSATISFACTORY)
+                                    : 0
+                                ]
+                              ]}
+                            />
+                          ) : (
+                            <div style={{ width: 50 }} />
+                          )}
                           <div
                             onClick={() =>
-                              navigate("/InspectionDetails", {
-                                item
-                              })
+                              navigate(`/reports/inspection/${item?.id}`)
                             }
                             className="text_primary c-pointer"
                           >

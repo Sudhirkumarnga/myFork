@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react"
 import { AppButton, AppInput, HomeHeader } from "../../components"
 import { Grid, Typography, Divider } from "@mui/material"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { COLORS } from "../../constants"
 import { useSnackbar } from "notistack"
 import { createPayment, makePayment, getPlans } from "../../api/subscription"
@@ -11,6 +11,7 @@ import CreditCardInput from "react-credit-card-input"
 
 export default function Checkout({}) {
   const { enqueueSnackbar } = useSnackbar()
+  const navigate = useNavigate()
   const { id } = useParams()
   const [state, setState] = useState({
     loading: false,
@@ -104,7 +105,7 @@ export default function Checkout({}) {
         }
       })
       handleChange("loading", false)
-      // navigate('/')
+      navigate('/business/profile/create')
     } catch (error) {
       handleChange("loading", false)
       const errorText = Object.values(error?.response?.data)

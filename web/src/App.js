@@ -45,11 +45,25 @@ import {
   UserFeedback,
   Reports,
   ReportsView,
-  CreateInspection
+  CreateInspection,
+  InspectionDetails,
+  Notifications,
+  WorksiteMapView,
+  LeaveRequest,
+  MyEarnings,
+  VerifyAccount,
+  EmpProfile,
+  Profile
 } from "./containers"
 import AppContext from "./Context"
 import "./styles.css"
-import { getCities, getCountries, getProfile, getStates } from "./api/auth"
+import {
+  getAllNotifications,
+  getCities,
+  getCountries,
+  getProfile,
+  getStates
+} from "./api/auth"
 import "react-date-range/dist/styles.css" // main style file
 import "react-date-range/dist/theme/default.css" // theme css file
 import { SnackbarProvider } from "notistack"
@@ -78,6 +92,7 @@ function App() {
   const [upcomingShiftData, setUpcomingShiftData] = useState(null)
   const [earnings, setEarnings] = useState([])
   const [earningLoading, setEarningLoading] = useState(false)
+  const [notifications, setNotifications] = useState([])
   const [countries, setCountries] = useState([])
   const [cities, setCities] = useState([])
   const [states, setStates] = useState([])
@@ -170,6 +185,15 @@ function App() {
     }
   }
 
+  const _getNotification = async () => {
+    try {
+      const res = await getAllNotifications(token)
+      setNotifications(res?.data?.results)
+    } catch (error) {
+      alert(getSimplifiedError(error))
+    }
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -194,7 +218,11 @@ function App() {
         _getCountries,
         countries,
         cities,
-        states
+        states,
+        _getNotification,
+        notifications,
+        setAdminProfile,
+        _getCities
       }}
     >
       <SnackbarProvider>
@@ -202,6 +230,11 @@ function App() {
           <ThemeProvider theme={theme}>
             <Routes>
               <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
+              <Route path={ROUTES.VERIFYACCOUNT} element={<VerifyAccount />} />
+              <Route path={ROUTES.PROFILECREATE} element={<Profile />} />
+              <Route path={ROUTES.PROFILEUPDATE} element={<Profile />} />
+              <Route path={ROUTES.EMPLOYEEPROFILECREATE} element={<EmpProfile />} />
+              <Route path={ROUTES.EMPLOYEEPROFILEUPDATE} element={<EmpProfile />} />
               <Route path={ROUTES.PAYROLL} element={<Payroll />} />
               <Route path={ROUTES.EMPLOYEELIST} element={<EmployeeList />} />
               <Route path={ROUTES.EMPLOYEEVIEW} element={<EmployeeView />} />
@@ -209,6 +242,7 @@ function App() {
               <Route path={ROUTES.EDITEMPLOYEE} element={<AddEmployee />} />
               <Route path={ROUTES.WORKSITELIST} element={<WorkSiteList />} />
               <Route path={ROUTES.WORKSITEVIEW} element={<WorksiteView />} />
+              <Route path={ROUTES.WORKSITEMAPVIEW} element={<WorksiteMapView />} />
               <Route path={ROUTES.ADDWORKSITE} element={<AddWorksite />} />
               <Route path={ROUTES.MESSAGE} element={<MessagesScene />} />
               <Route path={ROUTES.SCHEDULER} element={<Scheduler />} />
@@ -229,9 +263,22 @@ function App() {
               <Route path={ROUTES.SETTINGS} element={<Settings />} />
               <Route path={ROUTES.USERFEEDBACK} element={<UserFeedback />} />
               <Route path={ROUTES.REPORTS} element={<Reports />} />
+              <Route path={ROUTES.LEAVEREQUEST} element={<LeaveRequest />} />
+              <Route path={ROUTES.MYEARNINGS} element={<MyEarnings />} />
               <Route path={ROUTES.REPORTSLIST} element={<ReportsView />} />
-              <Route path={ROUTES.CREATEINSPECTION} element={<CreateInspection />} />
-              <Route path={ROUTES.CHANGEPASSWORD} element={<ChangePassword />} />
+              <Route
+                path={ROUTES.INSPECTIONREPORTS}
+                element={<InspectionDetails />}
+              />
+              <Route path={ROUTES.NOTIFICATIONS} element={<Notifications />} />
+              <Route
+                path={ROUTES.CREATEINSPECTION}
+                element={<CreateInspection />}
+              />
+              <Route
+                path={ROUTES.CHANGEPASSWORD}
+                element={<ChangePassword />}
+              />
               <Route path={ROUTES.LOGIN} element={<Login />} />
               <Route
                 path={ROUTES.SUBSCRIPTION}
