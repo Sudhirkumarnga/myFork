@@ -36,7 +36,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 
 class WorkSiteViewSet(ModelViewSet):
-    permission_classes = [IsAuthenticated, IsOrganizationAdmin, IsActiveSubscription]
+    permission_classes = [IsAuthenticated, IsActiveSubscription]
     serializer_class = WorksiteSerializer
     queryset = WorkSite.objects.filter()
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
