@@ -40,6 +40,7 @@
     "react-google-charts": "^4.0.0",
     "react-google-maps": "^9.4.5",
     "react-google-places-autocomplete": "^3.3.4",
+    "react-hot-toast": "^2.4.0",
     "react-multi-select-component": "^4.3.4",
     "react-otp-input": "^2.4.0",
     "react-router-dom": "^6.3.0",
