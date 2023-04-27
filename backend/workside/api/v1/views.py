@@ -14,6 +14,7 @@ from django.db.models import Q
 from workside.models import *
 from workside.api.v1.serializers import (
     AttendaceTimesSerializer,
+    WorksiteDetailSerializer,
     WorksiteSerializer,
     TaskSerializer,
     TaskAttachmentSerializer,
@@ -476,6 +477,37 @@ class WorksiteListView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+
+class WorksiteDetailView(APIView):
+    queryset = WorkSite.objects.filter()
+    permission_classes = [IsAuthenticated, IsActiveSubscription]
+    http_method_names = ['get']
+    
+    def get(self, request):
+        try:
+            worksite=request.query_params.get("worksit", None)
+            serializer = WorksiteDetailSerializer(self.queryset.filter(id=worksite).first(), many=False)
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=True,
+                    message="Worksites successfully returned.",
+                    status=SmartWorkHorseStatus.Success.value,
+                    response=serializer.data
+                ),
+                status=status.HTTP_201_CREATED,
+                headers={},
+            )
+        except Exception as e:
+            return Response(
+                SmartWorkHorseResponse.get_response(
+                    success=False,
+                    message="Something went wrong.",
+                    status=SmartWorkHorseStatus.Error.value,
+                    error={str(e)},
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+    
 
 class UpcomingShiftView(APIView):
     queryset = Event.objects.filter()

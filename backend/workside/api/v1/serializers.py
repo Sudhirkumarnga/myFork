@@ -350,6 +350,20 @@ class WorksiteListSerializer(serializers.ModelSerializer):
         data['logo'] = WorkSite.objects.get(id=data['id']).business.profile_image.url if WorkSite.objects.get(id=data['id']).business.profile_image else None
         return data
 
+
+class WorksiteDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WorkSite
+        fields = '__all__'
+
+    def to_representation(self, data):
+        data = super(WorksiteDetailSerializer, self).to_representation(data)
+        data['worksite_name'] = data['name']
+        data['logo'] = WorkSite.objects.get(id=data['id']).business.profile_image.url if WorkSite.objects.get(id=data['id']).business.profile_image else None
+        return data    
+
+
+
 class EventAssignedEmployeeSerializer(serializers.ModelSerializer):
     employee = serializers.SerializerMethodField()
 
