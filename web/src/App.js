@@ -72,6 +72,7 @@ import { getEarnings } from "./api/business"
 import EmployeeList from "./containers/Dashboard/EmployeeList"
 import { getAdminUsers, getFeedbacks, getSubscriptions } from "./api/admin"
 import { getSimplifiedError } from "./utils/error"
+import Notification from "./Notification"
 const stripePromise = loadStripe(
   "pk_test_51LHszpICUZwLvblBOHgQGNgtQLWZVoQUelbi5JiK5e8rV4noTDSZ3DRCFPCoYyunryIL4OlDhwUFNAeJqKb0Lvlj00Hk8mUFpw"
 )
@@ -227,14 +228,21 @@ function App() {
     >
       <SnackbarProvider>
         <Elements stripe={stripePromise}>
+          <Notification />
           <ThemeProvider theme={theme}>
             <Routes>
               <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
               <Route path={ROUTES.VERIFYACCOUNT} element={<VerifyAccount />} />
               <Route path={ROUTES.PROFILECREATE} element={<Profile />} />
               <Route path={ROUTES.PROFILEUPDATE} element={<Profile />} />
-              <Route path={ROUTES.EMPLOYEEPROFILECREATE} element={<EmpProfile />} />
-              <Route path={ROUTES.EMPLOYEEPROFILEUPDATE} element={<EmpProfile />} />
+              <Route
+                path={ROUTES.EMPLOYEEPROFILECREATE}
+                element={<EmpProfile />}
+              />
+              <Route
+                path={ROUTES.EMPLOYEEPROFILEUPDATE}
+                element={<EmpProfile />}
+              />
               <Route path={ROUTES.PAYROLL} element={<Payroll />} />
               <Route path={ROUTES.EMPLOYEELIST} element={<EmployeeList />} />
               <Route path={ROUTES.EMPLOYEEVIEW} element={<EmployeeView />} />
@@ -242,7 +250,10 @@ function App() {
               <Route path={ROUTES.EDITEMPLOYEE} element={<AddEmployee />} />
               <Route path={ROUTES.WORKSITELIST} element={<WorkSiteList />} />
               <Route path={ROUTES.WORKSITEVIEW} element={<WorksiteView />} />
-              <Route path={ROUTES.WORKSITEMAPVIEW} element={<WorksiteMapView />} />
+              <Route
+                path={ROUTES.WORKSITEMAPVIEW}
+                element={<WorksiteMapView />}
+              />
               <Route path={ROUTES.ADDWORKSITE} element={<AddWorksite />} />
               <Route path={ROUTES.MESSAGE} element={<MessagesScene />} />
               <Route path={ROUTES.SCHEDULER} element={<Scheduler />} />

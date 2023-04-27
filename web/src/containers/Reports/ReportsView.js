@@ -138,6 +138,12 @@ export default function ReportsView() {
     }
   }
 
+  function toHoursAndMinutes(totalMinutes) {
+    const hours = Math.floor(totalMinutes / 60)
+    const minutes = totalMinutes % 60
+    return `${hours}h${minutes > 0 ? ` ${minutes.toFixed(0)}m` : ""}`
+  }
+
   const options = {
     pieHole: 0.73,
     is3D: false,
@@ -315,19 +321,27 @@ export default function ReportsView() {
                           moment
                             .utc(item?.updated_at || item?.created_at)
                             .local()
-                            .fromNow()}
+                            .format("LL")}
                       </td>
                     </>
                   )}
                   {title === "Location Variances" && (
                     <>
+                      <td>
+                        {moment
+                          .utc(item?.clockin)
+                          .local()
+                          .format("YYYY/MM/DD hh:mm")}
+                      </td>
                       <td>{item?.employee}</td>
                       <td>{item?.worksite}</td>
                       <td>
-                        {moment
-                          .utc(item?.actual_time)
-                          .local()
-                          .format("YYYY/MM/DD hh:mm")}
+                        {item?.actual_time
+                          ? moment
+                              .utc(item?.actual_time)
+                              .local()
+                              .format("YYYY/MM/DD hh:mm")
+                          : "-"}
                       </td>
                       <td className="text_primary">{item?.actual_location}</td>
                       <td className="text_primary">
@@ -352,15 +366,17 @@ export default function ReportsView() {
                       <td>{item?.worksite}</td>
                       <td>{item?.actual_time}</td>
                       <td>{item?.edited_time}</td>
-                      <td>{item?.actual_shift_duration}</td>
-                      <td>{item?.scheduled_shift_duration}</td>
-                      <td>{item?.variance}</td>
+                      <td>{toHoursAndMinutes(item?.actual_shift_duration)}</td>
+                      <td>
+                        {toHoursAndMinutes(item?.scheduled_shift_duration)}
+                      </td>
+                      <td>{toHoursAndMinutes(item?.variance)}</td>
                       <td>
                         {(item?.created_at || item?.updated_at) &&
                           moment
                             .utc(item?.updated_at || item?.created_at)
                             .local()
-                            .fromNow()}
+                            .format("LL")}
                       </td>
                     </>
                   )}

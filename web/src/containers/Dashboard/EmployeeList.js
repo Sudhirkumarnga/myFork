@@ -65,14 +65,14 @@ export default function EmployeeList({}) {
               <AppButton
                 backgroundColor={COLORS.greyButton}
                 color={COLORS.white}
-                className={"mr-4"}
+                // className={"mr-4"}
                 height={30}
                 width={150}
                 borderRadius={10}
                 onClick={() => navigate("/employees/add")}
                 title={"Add Employee"}
               />
-              <AppButton
+              {/* <AppButton
                 backgroundColor={COLORS.greyButton}
                 color={COLORS.white}
                 height={30}
@@ -80,7 +80,7 @@ export default function EmployeeList({}) {
                 borderRadius={10}
                 onPress={() => handleChange("visible", true)}
                 title={"Filter"}
-              />
+              /> */}
             </div>
           </div>
           <Divider className="mt-4" />
