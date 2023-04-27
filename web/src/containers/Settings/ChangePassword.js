@@ -112,7 +112,7 @@ export default function ChangePassword({}) {
                     className={"c-pointer"}
                   />
                 }
-                placeholder={"Current Password"}
+                placeholder={"New Password"}
               />
               <AppInput
                 className="mb-4 mt-3"
@@ -129,7 +129,7 @@ export default function ChangePassword({}) {
                     className={"c-pointer"}
                   />
                 }
-                placeholder={"Current Password"}
+                placeholder={"Confirm Password"}
               />
               <Grid container justifyContent={"flex-end"}>
                 <Grid item md={8}>

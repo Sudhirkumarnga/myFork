@@ -69,18 +69,20 @@ export default function WorkSiteList({}) {
             <div>
               <div className="heading">My Worksites</div>
             </div>
-            <div className="d-flex">
-              <AppButton
-                backgroundColor={COLORS.greyButton}
-                color={COLORS.white}
-                className={"mr-4"}
-                height={30}
-                width={150}
-                borderRadius={10}
-                onClick={() => navigate("/worksites/add")}
-                title={"Add Worksite"}
-              />
-            </div>
+            {UserType === "admin" && (
+              <div className="d-flex">
+                <AppButton
+                  backgroundColor={COLORS.greyButton}
+                  color={COLORS.white}
+                  // className={"mr-4"}
+                  height={30}
+                  width={150}
+                  borderRadius={10}
+                  onClick={() => navigate("/worksites/add")}
+                  title={"Add Worksite"}
+                />
+              </div>
+            )}
           </div>
           <Divider className="mt-4" />
           {loading && (

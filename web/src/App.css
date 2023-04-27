@@ -339,6 +339,9 @@ input:focus {
   width: 400px;
 }
 
+#shadow-host-content{
+  padding: 0% !important;
+}
 .eventModal {
   padding: 20px !important;
   width: 600px;
