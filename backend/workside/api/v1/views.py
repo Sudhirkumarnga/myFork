@@ -485,7 +485,7 @@ class WorksiteDetailView(APIView):
     
     def get(self, request):
         try:
-            worksite=request.query_params.get("worksit", None)
+            worksite=request.query_params.get("worksite", None)
             serializer = WorksiteDetailSerializer(self.queryset.filter(id=worksite).first(), many=False)
             return Response(
                 SmartWorkHorseResponse.get_response(
