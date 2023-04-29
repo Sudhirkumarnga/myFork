@@ -32,6 +32,10 @@ export const getWorksitesDetail = (id, token) => {
   return API.get(`api/v1/worksite/${id}/`, token)
 }
 
+export const getWorksitesMapDetail = (id, token) => {
+  return API.get(`api/v1/worksites_details/?worksite=${id}`, token)
+}
+
 export const createWorksite = (payload, token) => {
   return API.post(`api/v1/worksite/`, payload, token)
 }
