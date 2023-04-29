@@ -4,7 +4,7 @@ import { Divider, Grid } from "@mui/material"
 import { Layout } from "../../components"
 import { useParams } from "react-router-dom"
 import { useSnackbar } from "notistack"
-import { getWorksitesDetail } from "../../api/business"
+import { getWorksitesDetail, getWorksitesMapDetail } from "../../api/business"
 import { COLORS } from "../../constants"
 import {
   GoogleMap,
@@ -50,13 +50,14 @@ export default function WorksiteMapView({ route }) {
     loading: false,
     pinLocation: null,
     worksiteData: null,
+    zoom: 8,
     center: {
       lat: -3.745,
       lng: -38.523
     }
   })
 
-  const { currentLocation, pinLocation, worksiteData, center } = state
+  const { currentLocation, zoom, pinLocation, worksiteData, center } = state
 
   const handleChange = (name, value) => {
     setState(pre => ({ ...pre, [name]: value }))
@@ -97,6 +98,9 @@ export default function WorksiteMapView({ route }) {
           lat: addressComponent.lat,
           lng: addressComponent.lng
         })
+        setTimeout(() => {
+          handleChange("zoom", 12)
+        }, 100);
       })
       .catch(error => console.warn(error))
   }, [worksiteData])
@@ -105,9 +109,9 @@ export default function WorksiteMapView({ route }) {
     try {
       handleChange("loading", true)
       let token = localStorage.getItem("token")
-      const res = await getWorksitesDetail(id, token)
+      const res = await getWorksitesMapDetail(id, token)
       handleChange("loading", false)
-      handleChange("worksiteData", res?.data)
+      handleChange("worksiteData", res?.data?.response)
     } catch (error) {
       handleChange("loading", false)
       const showWError = Object.values(error.response?.data?.error)
@@ -193,7 +197,7 @@ export default function WorksiteMapView({ route }) {
                       height: 500
                     }}
                     center={pinLocation}
-                    zoom={12}
+                    zoom={zoom}
                     onLoad={onLoad}
                     onUnmount={onUnmount}
                   >

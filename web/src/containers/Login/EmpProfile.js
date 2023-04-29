@@ -244,16 +244,16 @@ export default function EmpProfile({}) {
               backgroundColor={COLORS.primary}
               color={COLORS.white}
               loading={loading}
-              disabled={
-                !first_name ||
-                !last_name ||
-                !phone ||
-                !date_of_birth ||
-                !gender ||
-                !first_name1 ||
-                !last_name1 ||
-                !phone1
-              }
+              // disabled={
+              //   !first_name ||
+              //   !last_name ||
+              //   !phone ||
+              //   !date_of_birth ||
+              //   !gender ||
+              //   !first_name1 ||
+              //   !last_name1 ||
+              //   !phone1
+              // }
               onClick={handleRequest}
               title={"Submit"}
             />
