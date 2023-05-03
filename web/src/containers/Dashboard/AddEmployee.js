@@ -1,6 +1,6 @@
 // @ts-nocheck
 /* eslint-disable no-empty-pattern */
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { AppButton, AppInput, Layout } from "../../components"
 import { Grid, Divider, CircularProgress, Switch } from "@mui/material"
 import { useNavigate, useParams } from "react-router-dom"
@@ -25,13 +25,15 @@ export default function AddEmployee({}) {
   const navigate = useNavigate()
   const { _getCountries, states, cities, loadingCity, _getCities } =
     useContext(AppContext)
+  const ref = useRef()
   const { enqueueSnackbar } = useSnackbar()
   const token = localStorage.getItem("token")
   const { id } = useParams()
   const [state, setState] = useState({
     loading: false,
     isDisplay: true,
-    employee: null
+    employee: null,
+    type: "text"
   })
 
   const {
@@ -41,6 +43,7 @@ export default function AddEmployee({}) {
     phone,
     mobile,
     date_of_birth,
+    type,
     address_line_one,
     address_line_two,
     selectedState,
@@ -244,12 +247,14 @@ export default function AddEmployee({}) {
                   />
                   <AppInput
                     value={date_of_birth}
+                    onFocus={() => handleChange("type", "date")}
+                    onBlur={() => handleChange("type", "text")}
                     name={"date_of_birth"}
-                    type={"date"}
+                    type={date_of_birth ? "date" : type}
                     max={moment().format("YYYY-MM-DD")}
                     onChange={handleChange}
                     className="mb-3 mt-3"
-                    placeholder={"Last Name"}
+                    placeholder={"Date of Birth"}
                   />
                   <div className="heading font-18">{"Contact"}</div>
                   <AppInput

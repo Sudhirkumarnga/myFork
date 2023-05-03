@@ -123,7 +123,7 @@ export default function EmployeeList({}) {
                         marginRight: 10
                       }}
                     />
-                    <div>
+                    <div className="width70">
                       <div className="title">
                         {item?.personal_information?.first_name +
                           " " +

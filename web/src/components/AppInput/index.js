@@ -24,7 +24,10 @@ export default function AppInput({
   max,
   min,
   multiple,
-  autoComplete
+  autoComplete,
+  onFocus,
+  onBlur,
+  ref
 }) {
   return (
     <div style={{ width: "100%" }} className={className}>
@@ -80,8 +83,11 @@ export default function AppInput({
                 <input
                   type={type}
                   max={max}
+                  ref={ref}
                   autoComplete={autoComplete}
                   min={min}
+                  onFocus={onFocus}
+                  onBlur={onBlur}
                   placeholder={placeholder}
                   onChange={value => onChange(name, value.target.value)}
                   value={value}
