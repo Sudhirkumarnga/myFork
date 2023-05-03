@@ -169,7 +169,7 @@ function LayoutContent({ children, noFooter }) {
                           : "iconDashboard"
                       }
                     />
-                    <ListItemText primary="Schedule" />
+                    <ListItemText primary="Scheduler" />
                   </ListItemButton>
                   <ListItemButton
                     selected={location.pathname === "/earnings"}

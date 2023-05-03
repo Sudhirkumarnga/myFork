@@ -905,6 +905,9 @@ button:focus {
 .width80 {
     width: 80% !important;
 }
+.width70 {
+    max-width: 60% !important;
+}
 
 .bg-blue-light {
     background-color: #F2FAFD !important;
@@ -1118,6 +1121,7 @@ small {
     display: flex;
     justify-content: space-between;
     padding: 10px;
+    height: 100%;
     border-radius: 10px;
 }
 
