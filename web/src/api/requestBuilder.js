@@ -1,15 +1,15 @@
-import { API_URL } from './config'
-import axios from 'axios'
+import { API_URL } from "./config"
+import axios from "axios"
 
 const buildRequest = request => {
-  const { body, method, url } = request
-
+  const { body, method, url, token: getToken } = request
+console.log('getToken',getToken);
   const contentType =
-    body instanceof FormData ? 'multipart/form-data' : 'application/json'
-  const token = localStorage.getItem('token')
+    body instanceof FormData ? "multipart/form-data" : "application/json"
+  const token = localStorage.getItem("token") || getToken
   const headers = {
-    Accept: 'application/json',
-    Authorization: token ? `Token ${token}` : ''
+    Accept: "application/json",
+    Authorization: token ? `Token ${token}` : ""
   }
 
   const apiUrl = API_URL()
@@ -29,7 +29,7 @@ const buildRequest = request => {
 export const defaultResponse = {
   status: 500,
   data: {
-    error: 'Server error'
+    error: "Server error"
   }
 }
 

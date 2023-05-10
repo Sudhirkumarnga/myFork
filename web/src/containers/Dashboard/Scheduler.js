@@ -256,7 +256,7 @@ export default function Scheduler({}) {
   return (
     <div>
       <Layout noFooter>
-        <div className="container adjustMaxWidth minheight80vh">
+        <div className="adjustMaxWidth minheight80vh">
           <div className="headingrowBetween">
             <div>
               <div className="heading">Scheduler</div>
@@ -481,7 +481,7 @@ export default function Scheduler({}) {
           )}
         </div>
       </Dialog>
-      {!isEmp && (
+      {UserType === "admin" && (
         <Fab
           onClick={() => navigate("/event/add")}
           sx={{

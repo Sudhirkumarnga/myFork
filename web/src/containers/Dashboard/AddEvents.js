@@ -57,6 +57,10 @@ export default function AddEvents({}) {
     deleteAll: false,
     deleteThis: true,
     deleteFollowing: false,
+    type: "text",
+    type2: "text",
+    type3: "text",
+    type4: "text",
     selectedEvent: null
   })
   const {
@@ -91,7 +95,11 @@ export default function AddEvents({}) {
     deleteAll,
     deleteFollowing,
     deleteThis,
-    selectedEvent
+    selectedEvent,
+    type,
+    type2,
+    type3,
+    type4
   } = state
 
   const getReminderListText = value => {
@@ -315,7 +323,7 @@ export default function AddEvents({}) {
 
   return (
     <Layout noFooter>
-      <div className="container adjustMaxWidth minheight80vh">
+      <div className="adjustMaxWidth minheight80vh">
         <div className="headingrowBetween">
           <div>
             <div className="heading">
@@ -356,8 +364,10 @@ export default function AddEvents({}) {
             >
               <div style={{ width: "48%" }}>
                 <AppInput
-                  type={"date"}
                   value={start_date}
+                  onFocus={() => handleChange("type", "date")}
+                  onBlur={() => handleChange("type", "text")}
+                  type={start_date ? "date" : type}
                   max={new Date("2050/01/01")}
                   // label="From"
                   name="start_date"
@@ -367,7 +377,9 @@ export default function AddEvents({}) {
               </div>
               <div style={{ width: "48%" }}>
                 <AppInput
-                  type={"date"}
+                  onFocus={() => handleChange("type2", "date")}
+                  onBlur={() => handleChange("type2", "text")}
+                  type={end_date ? "date" : type2}
                   max={new Date("2050/01/01")}
                   value={end_date}
                   // label="To"
@@ -389,7 +401,9 @@ export default function AddEvents({}) {
             >
               <div style={{ width: "48%" }}>
                 <AppInput
-                  type={"time"}
+                  onFocus={() => handleChange("type3", "time")}
+                  onBlur={() => handleChange("type3", "text")}
+                  type={start_time_text ? "time" : type3}
                   value={start_time_text}
                   // label="From"
                   name="start_time_text"
@@ -399,7 +413,9 @@ export default function AddEvents({}) {
               </div>
               <div style={{ width: "48%" }}>
                 <AppInput
-                  type={"time"}
+                  onFocus={() => handleChange("type4", "time")}
+                  onBlur={() => handleChange("type4", "text")}
+                  type={end_time_text ? "time" : type4}
                   value={end_time_text}
                   // label="To"
                   name={"end_time_text"}

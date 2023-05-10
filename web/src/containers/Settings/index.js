@@ -103,8 +103,8 @@ export default function Settings({}) {
   }
 
   const logout = () => {
-    // setUser(null)
-    // setAdminProfile(null)
+    setUser(null)
+    setAdminProfile(null)
     localStorage.removeItem("token")
     localStorage.removeItem("user")
     localStorage.removeItem("UserType")
@@ -143,7 +143,7 @@ export default function Settings({}) {
   return (
     <div>
       <Layout noFooter>
-        <div className="container adjustMaxWidth minheight80vh">
+        <div className="adjustMaxWidth minheight80vh">
           <div className="headingrowBetween">
             <div>
               <div className="heading">Settings</div>

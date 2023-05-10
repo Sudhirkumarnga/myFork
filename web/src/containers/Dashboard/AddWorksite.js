@@ -161,7 +161,7 @@ export default function AddWorksite({}) {
       values?.map(value => {
         list.push({ label: value, value: value })
       })
-    }else{
+    } else {
       list.push({ label: values, value: values })
     }
     return list
@@ -254,7 +254,7 @@ export default function AddWorksite({}) {
   return (
     <div>
       <Layout noFooter>
-        <div className="container adjustMaxWidth minheight80vh">
+        <div className="adjustMaxWidth minheight80vh">
           <div className="headingrowBetween">
             <div>
               <div className="heading">

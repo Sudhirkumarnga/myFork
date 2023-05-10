@@ -159,7 +159,7 @@ export default function WorksiteMapView({ route }) {
   return (
     <div>
       <Layout noFooter>
-        <div className="container adjustMaxWidth minheight80vh">
+        <div className="adjustMaxWidth minheight80vh">
           <div className="headingrowBetween">
             <div className="headingrowBetween">
               <div className="heading">{worksiteData?.name}</div>

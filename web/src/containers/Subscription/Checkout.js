@@ -123,9 +123,9 @@ export default function Checkout({}) {
     <div>
       <HomeHeader />
       <section className="bg-white">
-        <div className="container divCenter loginContainer">
+        <div className="divCenter loginContainer">
           <Grid container justifyContent={"center"}>
-            <Grid item xs={12} className="">
+            <Grid item xs={12} className="ml-5 mr-5">
               <div className="font-24 mb-4 font-bold">Checkout</div>
               <Divider />
               <Grid container spacing={2} className="mt-4 mb-4">
