@@ -1,4 +1,6 @@
+import axios from "axios"
 import { API } from "./"
+import { API_URL } from "./config"
 
 export const signupUser = payload => {
   return API.post("api/v1/auth/signup/", payload)
@@ -42,6 +44,15 @@ export const forgotpassword = payload => {
 
 export const getProfile = token => {
   return API.get(`api/v1/profile/`, token)
+}
+
+export const getProfileForBusiness = token => {
+  return axios.get(API_URL() + `api/v1/profile/`, {
+    headers: {
+      Accept: "application/json",
+      Authorization: token ? `Token ${token}` : ""
+    }
+  })
 }
 
 export const createAdminProfile = (payload, token) => {

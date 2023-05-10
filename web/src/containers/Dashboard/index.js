@@ -45,7 +45,7 @@ export default function Dashboard({}) {
   return (
     <div>
       <Layout>
-        <div className="container adjustMaxWidth minheight80vh">
+        <div className="adjustMaxWidth minheight80vh">
           <div className="heading">My Dashboard</div>
           <Divider className="mt-4" />
           <Grid container spacing={1} className="mt-4">

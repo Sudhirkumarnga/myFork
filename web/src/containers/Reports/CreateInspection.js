@@ -211,7 +211,7 @@ export default function CreateInspection({}) {
   return (
     <div>
       <Layout noFooter>
-        <div className="container adjustMaxWidth minheight80vh">
+        <div className="adjustMaxWidth minheight80vh">
           <div className="headingrowBetween">
             <div>
               <div className="heading">Create Inspection Report</div>

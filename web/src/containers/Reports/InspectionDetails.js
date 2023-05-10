@@ -113,7 +113,7 @@ export default function InspectionDetails({}) {
   return (
     <div>
       <Layout noFooter>
-        <div className="container adjustMaxWidth minheight80vh">
+        <div className="adjustMaxWidth minheight80vh">
           <div className="headingrowBetween">
             <div>
               <div className="heading">{item?.name}</div>

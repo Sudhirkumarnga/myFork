@@ -5,12 +5,18 @@ import { AppButton, AppInput, AuthLeft } from "../../components"
 import { Grid, Checkbox } from "@mui/material"
 import eyeIcon from "../../assets/svg/eye.svg"
 import { useNavigate } from "react-router-dom"
-import { loginUser, signupUser } from "../../api/auth"
+import {
+  getProfile,
+  getProfileForBusiness,
+  loginUser,
+  signupUser
+} from "../../api/auth"
 import AppContext from "../../Context"
 import { useContext } from "react"
 import { COLORS } from "../../constants"
 import { useSnackbar } from "notistack"
 import eyeCLose from "../../assets/images/closeEYE.jpg"
+import { getleaveRequest } from "../../api/business"
 
 export default function Login({}) {
   const navigate = useNavigate()
@@ -136,6 +142,9 @@ export default function Login({}) {
         password
       }
       const res = await loginUser(payload)
+      localStorage.setItem("token", res?.data?.key)
+      localStorage.setItem("user", JSON.stringify(res?.data?.user))
+      const res1 = await getleaveRequest(res?.data?.key)
       handleChange("loading", false)
       if (
         UserType === "admin" &&
@@ -151,8 +160,7 @@ export default function Login({}) {
         alert("Please use employee user")
         return
       }
-      localStorage.setItem("token", res?.data?.key)
-      localStorage.setItem("user", JSON.stringify(res?.data?.user))
+
       setUser(res?.data?.user)
       enqueueSnackbar(`Login Successful`, {
         variant: "success",
@@ -166,7 +174,11 @@ export default function Login({}) {
       handleChange("loading", false)
       const errorText = Object.values(error?.response?.data)
       if (errorText.length > 0) {
-        alert(`Error: ${errorText[0]}`)
+        if (errorText[0] === "Business Subscription currently is not active.") {
+          navigate("/subscription")
+        } else {
+          alert(`Error: ${errorText[0]}`)
+        }
       } else {
         alert(`Error: ${error}`)
       }

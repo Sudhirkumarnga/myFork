@@ -189,8 +189,8 @@ export default function Profile({}) {
     <div>
       <HomeHeader />
       <div
-        className="container adjustMaxWidth minheight80vh"
-        style={{ marginTop: 100 }}
+        className="adjustMaxWidth minheight80vh ml-5 mr-5"
+        style={{  marginTop: 100 }}
       >
         <div className="headingrowBetween align-items-center">
           <div className="">
@@ -332,12 +332,9 @@ export default function Profile({}) {
               color={COLORS.white}
               loading={loading}
               disabled={
-                !first_name ||
-                !last_name ||
-                !phone ||
-                !date_of_birth ||
-                !name ||
-                !pay_frequency
+                !first_name || !last_name || !phone || !date_of_birth || !name
+                // ||
+                // !pay_frequency
               }
               onClick={handleRequest}
               title={"Submit"}
@@ -378,7 +375,8 @@ export default function Profile({}) {
             >
               <div
                 style={{
-                  color: COLORS.darkBlack
+                  color: COLORS.darkBlack,
+                  cursor: "pointer"
                 }}
               >
                 {item?.name}

@@ -103,7 +103,7 @@ export default function Users({}) {
   return (
     <div>
       <AdminLayout>
-        <div className="container adjustMaxWidth minheight80vh">
+        <div className="adjustMaxWidth minheight80vh">
           <Grid spacing={3} container>
             <Grid item md={6} xs={12}>
               <AppInput
