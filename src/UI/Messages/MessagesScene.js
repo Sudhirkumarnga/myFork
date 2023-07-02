@@ -7,13 +7,7 @@ import {
   ActivityIndicator,
   FlatList
 } from "react-native"
-import {
-  BaseScene,
-  Header,
-  PrimaryTextInput,
-  Button,
-  DateSelectionView
-} from "../Common"
+import { Header, PrimaryTextInput } from "../Common"
 import { Fonts, Colors, Images, Strings } from "../../res"
 import MessageCell from "./MessageCell"
 import database from "@react-native-firebase/database"

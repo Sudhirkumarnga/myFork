@@ -317,6 +317,8 @@ export default function AddEvents({}) {
     } else return []
   }
 
+  console.log('selected_tasks',selected_tasks);
+
   if (loadingMain) {
     return <Loader />
   }
@@ -609,8 +611,9 @@ export default function AddEvents({}) {
           }}
         >
           <Checkbox
-            onCLick={() => {
+            onClick={() => {
               if (
+                selected_tasks?.length > 0 &&
                 selected_tasks?.length === getWorksiteTask(worksite)?.length
               ) {
                 handleChange("selected_tasks", [])
@@ -619,7 +622,7 @@ export default function AddEvents({}) {
                   const tasklist = []
                   getWorksiteTask(worksite)?.forEach(element => {
                     if (element) {
-                      tasklist.push(element?.id?.toString())
+                      tasklist.push(element?.id)
                     }
                   })
                   handleChange("selected_tasks", tasklist)
@@ -627,7 +630,10 @@ export default function AddEvents({}) {
               }
             }}
             checked={
-              selected_tasks?.length == getWorksiteTask(worksite)?.length
+              selected_tasks?.length > 0 &&
+              selected_tasks?.length === getWorksiteTask(worksite)?.length
+                ? true
+                : false
             }
           />
           <div>Select all</div>
@@ -660,7 +666,7 @@ export default function AddEvents({}) {
                     ])
                   }
                 }}
-                isChecked={selected_tasks?.includes(task?.id)}
+                checked={selected_tasks?.includes(task?.id)}
               />
               <div>{task?.name}</div>
             </div>
