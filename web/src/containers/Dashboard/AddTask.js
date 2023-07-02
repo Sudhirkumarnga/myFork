@@ -318,7 +318,7 @@ export default function AddTask({}) {
               >
                 <Grid item md={6} lg={4} xs={12}>
                   <AppButton
-                    title={"Upload worksite logo"}
+                    title={"Upload worksite picture"}
                     onClick={() => hiddenFileInput.current.click()}
                     borderColor={COLORS.primary}
                     prefix={<UploadIcon className="mr-4" />}
