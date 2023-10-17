@@ -35,3 +35,5 @@ urlpatterns = [
     path("", include("subscriptions.api.v1.urls")),
     path("", include("push_notification.urls")),
 ]
+
+
