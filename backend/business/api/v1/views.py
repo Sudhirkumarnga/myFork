@@ -32,6 +32,9 @@ from business.services import (
     get_payroll_hours
 )
 from workside.models import Event
+import phonenumbers
+from phonenumbers import carrier
+from phonenumbers.phonenumberutil import number_type
 
 
 class CountryListApiView(ListAPIView):
@@ -164,8 +167,19 @@ class EmployeeViewset(ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+    @staticmethod
+    def phone_number_validation(number):
+        ph = carrier._is_mobile(number_type(phonenumbers.parse(number)))
+        return ph
+
     def create(self, request, *args, **kwargs):
         try:
+            if "contact" in request.data:
+                if "mobile" in request.data["contact"]:
+                    request.data["contact"]["mobile"] = request.data["contact"]["mobile"].replace("+", "").replace("-", "")
+                    request.data["contact"]["mobile"] = "+" + format(int(request.data["contact"]["mobile"][:-1]), ",").replace(",", "-") + request.data["contact"]["mobile"][-1]
+                    if not self.phone_number_validation(request.data["contact"]["mobile"]):
+                        return Response({"error": "Phone number is not correct"}, status=status.HTTP_400_BAD_REQUEST)
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
@@ -193,6 +207,12 @@ class EmployeeViewset(ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         try:
+            if "contact" in request.data:
+                if "mobile" in request.data["contact"]:
+                    request.data["contact"]["mobile"] = request.data["contact"]["mobile"].replace("+", "").replace("-", "")
+                    request.data["contact"]["mobile"] = "+" + format(int(request.data["contact"]["mobile"][:-1]), ",").replace(",", "-") + request.data["contact"]["mobile"][-1]
+                    if not self.phone_number_validation(request.data["contact"]["mobile"]):
+                        return Response({"error": "Phone number is not correct"}, status=status.HTTP_400_BAD_REQUEST)
             partial = kwargs.pop('partial', False)
             instance = self.get_object()
             serializer = self.get_serializer(instance, data=request.data, partial=partial)
@@ -545,7 +565,8 @@ class DeleteAccountView(APIView):
     permission_classes = [IsAuthenticated, IsActiveSubscription]
 
     def delete(self, request, *args, **kwargs):
-        self.request.user.delete()
+        # self.request.user.delete()
+        User.objects.filter(id=request.user.id).delete()
         return Response(status=status.HTTP_200_OK)
 
 

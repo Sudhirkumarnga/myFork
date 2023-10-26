@@ -14,6 +14,10 @@ from workside.services import (
 from business.models import Attendance
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
+from django.core.exceptions import ValidationError
+import phonenumbers
+from phonenumbers import carrier
+from phonenumbers.phonenumberutil import number_type
 
 
 class TaskSerializerforWorksite(ModelSerializer):
@@ -78,13 +82,29 @@ class WorksiteSerializer(ModelSerializer):
             many=True
         ).data
 
+    @staticmethod
+    def phone_number_validation(number):
+        ph = carrier._is_mobile(number_type(phonenumbers.parse(number)))
+        return ph
+
     def create(self, validated_data):
         request = self.context['request']
+        if "contact_phone_number" in request.data["contact_person"]:
+            request.data["contact_person"]["contact_phone_number"] = request.data["contact_person"]["contact_phone_number"].replace("+", "").replace("-", "")
+            request.data["contact_person"]["contact_phone_number"] = "+" + format(int(request.data["contact_person"]["contact_phone_number"][:-1]), ",").replace(",", "-") + request.data["contact_person"]["contact_phone_number"][-1]
+            if not self.phone_number_validation(request.data["contact_person"]["contact_phone_number"]):
+                raise ValidationError("Phone number is not correct")
         worksite = create_worksite(request.user, request.data)
         return worksite
 
     def update(self, instance, validated_data):
         request = self.context['request']
+        if "contact_phone_number" in request.data["contact_person"]:
+            request.data["contact_person"]["contact_phone_number"] = request.data["contact_person"][
+                "contact_phone_number"].replace("+", "").replace("-", "")
+            request.data["contact_person"]["contact_phone_number"] = "+" + format(int(request.data["contact_person"]["contact_phone_number"][:-1]), ",").replace(",", "-") + request.data["contact_person"]["contact_phone_number"][-1]
+            if not self.phone_number_validation(request.data["contact_person"]["contact_phone_number"]):
+                raise ValidationError("Phone number is not correct")
         update_worksite(request.user, request.data, instance)
         return WorkSite.objects.get(id=instance.id)
 

@@ -30,6 +30,10 @@ from business.services import (
     update_user_for_employee,
     update_employee, create_feedback
 )
+import phonenumbers
+from phonenumbers import carrier
+from phonenumbers.phonenumberutil import number_type
+from django.core.exceptions import ValidationError
 
 
 def convert_image_from_bse64_to_blob(image):
@@ -162,8 +166,19 @@ class EmployeeSerializer(ModelSerializer):
             many=False
         ).data
 
+    @staticmethod
+    def phone_number_validation(number):
+        ph = carrier._is_mobile(number_type(phonenumbers.parse(number)))
+        return ph
+
     def create(self, validated_data):
         request = self.context['request']
+        if "contact" in request.data:
+            if "mobile" in request.data["contact"]:
+                request.data["contact"]["mobile"] = request.data["contact"]["mobile"].replace("+", "").replace("-", "")
+                request.data["contact"]["mobile"] = "+" + format(int(request.data["contact"]["mobile"][:-1]), ",").replace(",", "-") + request.data["contact"]["mobile"][-1]
+                if not self.phone_number_validation(request.data["contact"]["mobile"]):
+                    raise ValidationError("mobile number is not correct")
         business = Business.objects.get(user=request.user)
         if not business.subscription:
             raise serializers.ValidationError(
@@ -181,6 +196,12 @@ class EmployeeSerializer(ModelSerializer):
 
     def update(self, instance, validated_data):
         request = self.context['request']
+        if "contact" in request.data:
+            if "mobile" in request.data["contact"]:
+                request.data["contact"]["mobile"] = request.data["contact"]["mobile"].replace("+", "").replace("-", "")
+                request.data["contact"]["mobile"] = "+" + format(int(request.data["contact"]["mobile"][:-1]), ",").replace(",", "-") + request.data["contact"]["mobile"][-1]
+                if not self.phone_number_validation(request.data["contact"]["mobile"]):
+                    raise ValidationError("mobile number is not correct")
         employee_user, password = update_user_for_employee(request.data, instance)
         employee = update_employee(employee_user, request.data)
         send_email_to_employee(employee_user, password)

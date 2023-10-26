@@ -94,7 +94,8 @@ class Employee(TimeStampedModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     business = models.ForeignKey(Business, on_delete=models.CASCADE, null=True, blank=True)
     profile_image = models.FileField(_('Profile Picture'), upload_to=employee_directory_path, null=True, blank=True)
-    mobile = PhoneNumberField(null=True, blank=True)
+    # mobile = PhoneNumberField(null=True, blank=True)
+    mobile = models.CharField(max_length=20, null=True, blank=True)
     address_line_one = models.TextField(null=True, blank=True, )
     address_line_two = models.TextField(null=True, blank=True)
     city = models.ForeignKey(City, on_delete=models.CASCADE, null=True, blank=True)
@@ -126,7 +127,8 @@ class Employee(TimeStampedModel):
 class EmergencyContact(TimeStampedModel):
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
-    phone = PhoneNumberField(null=True, blank=True)
+    # phone = PhoneNumberField(null=True, blank=True)
+    phone = models.CharField(max_length=20, null=True, blank=True)
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name="emergency_contact")
     is_active = models.BooleanField(default=True)
 
