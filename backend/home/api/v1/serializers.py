@@ -47,7 +47,6 @@ class SignupSerializer(serializers.ModelSerializer):
 
     def _get_request(self):
         request = self.context.get('request')
-        print("===>", request.data)
         if request and not isinstance(request, HttpRequest) and hasattr(request, '_request'):
             request = request._request
         return request

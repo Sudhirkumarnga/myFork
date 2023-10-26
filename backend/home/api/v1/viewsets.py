@@ -60,10 +60,10 @@ class SignupViewSet(RegisterView):
 
         if allauth_settings.EMAIL_VERIFICATION == 'mandatory':
             otp = User_OTP.objects.get(user=user).otp
-            # send_account_confirmation_email(
-            #     user,
-            #     otp
-            # )
+            send_account_confirmation_email(
+                user,
+                otp
+            )
             create_notification({
                     "name": "Welcome",
                     "description": "Welcome to Smart Work Horse",
