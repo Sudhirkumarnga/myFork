@@ -16,7 +16,10 @@ from rest_auth.models import TokenModel
 from rest_auth.views import LoginView
 from django.conf import settings
 from rest_framework import status
-
+import phonenumbers
+from phonenumbers import carrier
+from phonenumbers.phonenumberutil import number_type
+from django.core.exceptions import ValidationError
 from rest_auth.app_settings import (
     TokenSerializer,
     UserDetailsSerializer,
@@ -38,7 +41,17 @@ from home.services import (
 
 class SignupViewSet(RegisterView):
 
+    @staticmethod
+    def phone_number_validation(number):
+        ph = carrier._is_mobile(number_type(phonenumbers.parse(number)))
+        return ph
+
     def perform_create(self, serializer):
+        if "phone" in self.request.data:
+            self.request.data["phone"] = self.request.data["phone"].replace("+", "").replace("-", "")
+            self.request.data["phone"] = "+" + format(int(self.request.data["phone"][:-1]), ",").replace(",", "-") + self.request.data["phone"][-1]
+            if not self.phone_number_validation(self.request.data["phone"]):
+                raise ValidationError("Phone number is not correct")
         user = serializer.save(self.request)
         if getattr(settings, 'REST_USE_JWT', False):
             self.token = jwt_encode(user)
@@ -47,10 +60,10 @@ class SignupViewSet(RegisterView):
 
         if allauth_settings.EMAIL_VERIFICATION == 'mandatory':
             otp = User_OTP.objects.get(user=user).otp
-            send_account_confirmation_email(
-                user,
-                otp
-            )
+            # send_account_confirmation_email(
+            #     user,
+            #     otp
+            # )
             create_notification({
                     "name": "Welcome",
                     "description": "Welcome to Smart Work Horse",

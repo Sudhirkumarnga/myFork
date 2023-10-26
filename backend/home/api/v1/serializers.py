@@ -20,7 +20,6 @@ from home.services import (
     generate_user_otp,
     create_emergency_contact, update_subscription, get_remaining_employee_limit
 )
-
 User = get_user_model()
 
 
@@ -48,6 +47,7 @@ class SignupSerializer(serializers.ModelSerializer):
 
     def _get_request(self):
         request = self.context.get('request')
+        print("===>", request.data)
         if request and not isinstance(request, HttpRequest) and hasattr(request, '_request'):
             request = request._request
         return request
@@ -78,8 +78,13 @@ class SignupSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(_("Invalid Organization Code"))
         return data
 
-    def create(self, validated_data):
 
+    def create(self, validated_data):
+        if validated_data.get("phone", None):
+            ph = validated_data.get("phone").replace("+", "").replace("-", "")
+            ph = "+" + format(int(ph[:-1]), ",").replace(",", "-") + ph[-1]
+        else:
+            ph = None
         if validated_data.__contains__('business_code'):
             user = User(
                 email=validated_data.get('email'),
@@ -90,7 +95,7 @@ class SignupSerializer(serializers.ModelSerializer):
                     validated_data.get('email'),
                     'user'
                 ]),
-                phone=validated_data.get('phone'),
+                phone=ph,
                 is_read_terms=validated_data.get('is_read_terms'),
                 role='Employee'
             )
@@ -104,6 +109,7 @@ class SignupSerializer(serializers.ModelSerializer):
                     validated_data.get('email'),
                     'user'
                 ]),
+                phone=ph,
                 is_read_terms=validated_data.get('is_read_terms'),
                 role='Organization Admin'
             )
