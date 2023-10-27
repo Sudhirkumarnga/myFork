@@ -567,7 +567,7 @@ class DeleteAccountView(APIView):
     def delete(self, request, *args, **kwargs):
         # self.request.user.delete()
         User.objects.filter(id=request.user.id).delete()
-        return Response(status=status.HTTP_200_OK)
+        return Response({"msg": "User deleted successfully"}, status=status.HTTP_200_OK)
 
 
 class FeedbackView(APIView):
